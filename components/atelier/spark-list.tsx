@@ -4,6 +4,7 @@ import { TYPE_LABELS } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, Flame } from "lucide-react";
 import { relativeWeek } from "@/lib/utils";
+import { QuickDelete } from "./quick-delete";
 
 type Props = {
   sparks: Idea[];
@@ -17,10 +18,13 @@ export function SparkList({ sparks, hasActive }: Props) {
   return (
     <ul className="grid gap-px bg-line rounded-2xl overflow-hidden border border-line">
       {sparks.map((s) => (
-        <li key={s.id}>
+        <li
+          key={s.id}
+          className="group flex items-stretch bg-bg hover:bg-cream transition-colors"
+        >
           <Link
             href={`/atelier/idea/${s.id}`}
-            className="group flex items-center gap-4 bg-bg hover:bg-cream px-4 lg:px-5 py-3.5 transition-colors"
+            className="flex flex-1 items-center gap-4 px-4 lg:px-5 py-3.5 min-w-0"
           >
             <span
               className="h-2.5 w-2.5 rounded-full bg-marigold spark-dot flex-shrink-0"
@@ -48,13 +52,12 @@ export function SparkList({ sparks, hasActive }: Props) {
               </span>
             </div>
             <span className="text-ink-faint group-hover:text-marigold-deep transition-colors flex-shrink-0">
-              {hasActive ? (
-                <ArrowUpRight size={16} />
-              ) : (
-                <Flame size={16} />
-              )}
+              {hasActive ? <ArrowUpRight size={16} /> : <Flame size={16} />}
             </span>
           </Link>
+          <div className="flex items-center pr-3">
+            <QuickDelete id={s.id} title={s.title} />
+          </div>
         </li>
       ))}
     </ul>

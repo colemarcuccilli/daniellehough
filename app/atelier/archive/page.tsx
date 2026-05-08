@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, Archive as ArchiveIcon } from "lucide-react";
 import type { Idea } from "@/lib/types";
 import { TYPE_LABELS } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+import { QuickDelete } from "@/components/atelier/quick-delete";
 
 export const dynamic = "force-dynamic";
 
@@ -98,10 +99,10 @@ function Section({
 function Row({ idea }: { idea: Idea }) {
   const date = idea.completed_at ?? idea.archived_at ?? idea.created_at;
   return (
-    <li>
+    <li className="group flex items-stretch bg-bg hover:bg-cream transition-colors">
       <Link
         href={`/atelier/idea/${idea.id}`}
-        className="group flex items-center gap-4 bg-bg hover:bg-cream px-4 lg:px-5 py-3.5 transition-colors"
+        className="flex flex-1 items-center gap-4 px-4 lg:px-5 py-3.5 min-w-0"
       >
         <span
           className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${
@@ -126,6 +127,9 @@ function Row({ idea }: { idea: Idea }) {
           </span>
         </div>
       </Link>
+      <div className="flex items-center pr-3">
+        <QuickDelete id={idea.id} title={idea.title} />
+      </div>
     </li>
   );
 }

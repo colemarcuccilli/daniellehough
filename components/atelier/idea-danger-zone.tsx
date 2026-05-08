@@ -54,12 +54,17 @@ export function IdeaDangerZone({
   };
 
   const onDelete = () => {
-    if (!confirm("Delete forever? This can't be undone.")) return;
+    if (
+      !confirm(
+        "Delete this idea forever? This can't be undone — it skips the archive entirely.",
+      )
+    )
+      return;
     start(async () => {
       try {
         await deleteIdea(id);
         toast.success("Gone.");
-        router.push("/atelier/archive");
+        router.push("/atelier");
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Couldn't delete");
       }
@@ -69,28 +74,16 @@ export function IdeaDangerZone({
   return (
     <div className="flex flex-wrap items-center gap-2 ml-auto">
       {status === "archived" ? (
-        <>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={pending}
-            onClick={onUnarchive}
-          >
-            <RotateCcw size={14} />
-            unarchive
-          </Button>
-          <Button
-            type="button"
-            variant="danger"
-            size="sm"
-            disabled={pending}
-            onClick={onDelete}
-          >
-            <Trash2 size={14} />
-            delete forever
-          </Button>
-        </>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={pending}
+          onClick={onUnarchive}
+        >
+          <RotateCcw size={14} />
+          unarchive
+        </Button>
       ) : (
         <Button
           type="button"
@@ -103,6 +96,16 @@ export function IdeaDangerZone({
           archive
         </Button>
       )}
+      <Button
+        type="button"
+        variant="danger"
+        size="sm"
+        disabled={pending}
+        onClick={onDelete}
+      >
+        <Trash2 size={14} />
+        delete forever
+      </Button>
     </div>
   );
 }
