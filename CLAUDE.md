@@ -33,15 +33,19 @@ before relaxing the constraint.
 
 ## Auth model
 
-- Magic link via Supabase Auth.
+- Email + password via Supabase Auth (`signInWithPassword`).
 - A single allowlist (`ATELIER_OWNER_EMAIL`) is checked in
-  `app/atelier/login/actions.ts` BEFORE calling Supabase, so non-owners
-  never even trigger an email send.
-- The login page does NOT report whether an email is allowed — it always
-  shows "check your inbox" — so we don't leak who has access.
+  `app/atelier/login/actions.ts` BEFORE calling Supabase. Non-owners get
+  the same generic "email and password don't match" error as bad
+  credentials, so we never leak who has access.
+- The owner is pre-created via SQL (see `0001_ideas.sql` siblings) — no
+  signup flow exists in the app. Adding a second owner means another
+  manual SQL insert + updating the allowlist.
 - `proxy.ts` redirects unauthenticated visitors hitting `/atelier/*` to
   `/atelier/login`, and authed visitors hitting `/atelier/login` to
   `/atelier`.
+- `app/auth/callback/route.ts` exists for future magic-link / OAuth
+  flows but is not wired into the password path.
 
 ## Stack notes
 

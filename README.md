@@ -40,12 +40,8 @@ npm run dev
 ```
 
 Apply the schema in `supabase/migrations/0001_ideas.sql` via the Supabase
-SQL editor or `supabase db push`. After applying, configure Supabase Auth:
-
-1. Authentication → Providers → Email: enable "Magic Link"
-2. Authentication → URL Configuration → Site URL: your production URL
-3. Authentication → URL Configuration → Redirect URLs:
-   `https://your-domain/auth/callback`, `http://localhost:3000/auth/callback`
+SQL editor or `supabase db push`. The owner account is pre-created via a
+direct `auth.users` SQL insert (bcrypt-hashed password, email pre-confirmed) — there's no in-app signup flow.
 
 ## Routes
 

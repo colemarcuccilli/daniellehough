@@ -1,49 +1,41 @@
 "use server";
 
-import { headers } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
 const schema = z.object({
   email: z.string().trim().email(),
+  password: z.string().min(6).max(200),
   next: z.string().optional().default("/atelier"),
 });
 
-export async function sendMagicLink(formData: FormData): Promise<void> {
+export async function signIn(formData: FormData): Promise<void> {
   const parsed = schema.safeParse({
     email: formData.get("email"),
+    password: formData.get("password"),
     next: formData.get("next") || "/atelier",
   });
   if (!parsed.success) {
-    throw new Error("Please give a valid email.");
+    throw new Error("Email and password please.");
   }
 
   const owner = process.env.ATELIER_OWNER_EMAIL?.trim().toLowerCase();
   const requested = parsed.data.email.toLowerCase();
 
-  // Allowlist enforcement: silently succeed for non-owners so we don't
-  // leak who has access. Only actually send the link if it matches.
+  // Allowlist enforcement — non-owners get a generic failure so we don't
+  // leak who has access. We never even hit Supabase for them.
   if (!owner || requested !== owner) {
-    // small artificial delay would normally guard timing — Supabase already
-    // returns generic responses, but we skip the call entirely here.
-    return;
+    throw new Error("That email and password don't match.");
   }
 
-  const h = await headers();
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
-
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
+  const { error } = await supabase.auth.signInWithPassword({
     email: requested,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(
-        parsed.data.next,
-      )}`,
-      shouldCreateUser: true,
-    },
+    password: parsed.data.password,
   });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    // Generic message — same shape regardless of which thing failed.
+    throw new Error("That email and password don't match.");
+  }
 }

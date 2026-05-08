@@ -3,11 +3,12 @@ import { Sun } from "@/components/public/sun";
 
 export const metadata = { title: "Atelier · sign in" };
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; sent?: string }>;
+  searchParams: Promise<{ next?: string }>;
 }) {
+  const sp = await searchParams;
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       <div className="relative hidden lg:flex items-center justify-center bg-marigold/10 grain border-r border-line overflow-hidden">
@@ -37,22 +38,13 @@ export default function LoginPage({
               Sign in to the studio
             </h1>
             <p className="text-sm text-ink-soft">
-              We&rsquo;ll send a one-time link to your inbox.
+              Email and password &mdash; the studio is private.
             </p>
           </header>
 
-          <LoginFormWrapper searchParams={searchParams} />
+          <LoginForm next={sp.next} />
         </div>
       </div>
     </div>
   );
-}
-
-async function LoginFormWrapper({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string; sent?: string }>;
-}) {
-  const sp = await searchParams;
-  return <LoginForm next={sp.next} sent={sp.sent === "1"} />;
 }
