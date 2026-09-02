@@ -1,39 +1,38 @@
 import Link from "next/link";
+import { BrandLink } from "@/components/public/logo";
+import { MobileMenu } from "@/components/public/mobile-menu";
+import { buttonStyles } from "@/components/ui/button";
 
-const links = [
-  { href: "/work", label: "Work" },
+export const NAV_LINKS = [
+  { href: "/portfolio", label: "Portfolio" },
+  { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
 export function Nav() {
   return (
-    <header className="sticky top-0 z-30 backdrop-blur-md bg-bg/70 border-b border-line/50">
-      <nav className="mx-auto max-w-6xl px-6 lg:px-10 h-16 flex items-center justify-between">
-        <Link
-          href="/"
-          aria-label="Danielle Hough — home"
-          className="group flex items-center gap-2"
-        >
-          <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-full bg-marigold text-ink font-display font-semibold text-sm transition-transform group-hover:rotate-12">
-            d
-          </span>
-          <span className="font-display text-base tracking-tight hidden sm:inline">
-            Danielle Hough
-          </span>
-        </Link>
-        <ul className="flex items-center gap-1">
-          {links.map((l) => (
+    <header className="sticky top-0 z-40 bg-bg/85 backdrop-blur-md border-b border-line">
+      <nav className="mx-auto max-w-7xl px-5 sm:px-8 h-16 flex items-center justify-between gap-6">
+        <BrandLink />
+        <ul className="hidden md:flex items-center gap-1">
+          {NAV_LINKS.map((l) => (
             <li key={l.href}>
               <Link
                 href={l.href}
-                className="px-3 py-2 text-sm text-ink-soft hover:text-ink transition-colors rounded-md hover:bg-cream"
+                className="px-3 py-2 text-sm text-ink-soft hover:text-ink rounded-sm hover:bg-cream transition-colors"
               >
                 {l.label}
               </Link>
             </li>
           ))}
+          <li className="ml-3">
+            <Link href="/contact?kind=retainer" className={buttonStyles({ variant: "outline", size: "sm" })}>
+              Start a project
+            </Link>
+          </li>
         </ul>
+        <MobileMenu links={NAV_LINKS} />
       </nav>
     </header>
   );

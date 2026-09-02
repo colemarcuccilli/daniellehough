@@ -1,0 +1,42 @@
+{
+  "categories": [
+    { "slug": "military-aviation", "name": "Military & Aviation", "tagline": "Flight lines, ceremonies, and air shows, photographed by someone who serves.", "cover_project": "air-force-tucson" },
+    { "slug": "events", "name": "Events", "tagline": "Fundraisers, race days, showers, and celebrations, covered start to finish.", "cover_project": "indy-grand-prix-2026" },
+    { "slug": "families", "name": "Families", "tagline": "Newborns, extended families, and the in-between moments.", "cover_project": "the-lennards" },
+    { "slug": "couples", "name": "Couples & Proposals", "tagline": "The question, the yes, and everyone who was hiding behind the trees.", "cover_project": "madi-and-reid" },
+    { "slug": "portraits", "name": "Portraits", "tagline": "Headshots, seniors, dancers, and personal branding.", "cover_project": "dance-recital-portraits-2026" },
+    { "slug": "nature-wildlife", "name": "Nature & Wildlife", "tagline": "Landscapes and the animals that let me get close.", "cover_project": "cheboygan-michigan" },
+    { "slug": "creative", "name": "Creative", "tagline": "Concept shoots and personal series.", "cover_project": "ghoul" },
+    { "slug": "business", "name": "Business & Commercial", "tagline": "Facilities, process, product, and team headshots for retainer clients.", "published": false }
+  ],
+  "projects": {
+    "AirForceTucson": { "slug": "air-force-tucson", "title": "Air Force · Tucson", "subtitle": "F-16 operations on the flight line", "category": "military-aviation", "location": "Tucson, Arizona", "shot_on": "2026-02-15", "sort_order": 1, "featured": true, "cover": 11,
+      "description": "Flight line, cockpit, and takeoff coverage of F-16 operations in Tucson: pre-flight checks under the sunshades, pilots walking out, and jets climbing against the Catalina Mountains." },
+    "GrissomAirShow2026": { "slug": "grissom-air-show-2026", "title": "Grissom Air Show 2026", "subtitle": "The Thunderbirds over Indiana", "category": "military-aviation", "location": "Grissom Air Reserve Base, Indiana", "shot_on": "2026-08-29", "sort_order": 2, "featured": true, "cover": 7,
+      "description": "The U.S. Air Force Thunderbirds in formation, an F-16 seen from the boom, and the crowd on the ground at the 2026 Grissom Air Show." },
+    "AirForceMaintinance": { "slug": "air-force-maintenance", "title": "Air Force Maintenance", "subtitle": "Recognition ceremony on the hangar floor", "category": "military-aviation", "location": "Indiana", "shot_on": "2025-12-05", "sort_order": 3, "cover": 7,
+      "description": "Awards and recognition for the maintainers who keep the jets flying, presented on the hangar floor in front of the aircraft they work on." },
+    "IndyGrandPrix2026": { "slug": "indy-grand-prix-2026", "title": "Indy Grand Prix 2026", "subtitle": "Race day at Indianapolis Motor Speedway", "category": "events", "location": "Indianapolis, Indiana", "shot_on": "2026-05-09", "sort_order": 1, "featured": true, "cover": 4,
+      "description": "Color guard, pit lane, cars at speed on the front stretch, and the champagne on the podium." },
+    "Fundraiser": { "slug": "fundraiser-night", "title": "Fundraiser Night", "subtitle": "A fifties-themed casino night", "category": "events", "shot_on": "2026-04-18", "sort_order": 2, "cover": 5,
+      "description": "Pink Ladies jackets, poker tables, and raffle baskets. Event coverage that captures the room and the people who showed up for the cause." },
+    "OliviaBabyShower": { "slug": "olivias-baby-shower", "title": "Olivia's Baby Shower", "subtitle": "Celebrating before the arrival", "category": "events", "shot_on": "2026-06-14", "sort_order": 3, "cover": 3,
+      "description": "Four generations in one room, the cake, and a lot of hands on one very round belly." },
+    "TheLennards": { "slug": "the-lennards", "title": "The Lennards", "subtitle": "In-home newborn session", "category": "families", "shot_on": "2026-07-11", "sort_order": 1, "featured": true, "cover": 6,
+      "description": "A quiet morning at home with a brand-new daughter: window light, the nursery, tiny feet, and the dog keeping watch." },
+    "CopelyFamily": { "slug": "the-copley-family", "title": "The Copley Family", "subtitle": "Three generations, one autumn afternoon", "category": "families", "shot_on": "2025-10-04", "sort_order": 2, "featured": true, "cover": 9,
+      "description": "Grandparents, kids, grandkids, and the dog, photographed together and in every combination in the early fall light." },
+    "AdamTaylor": { "slug": "the-taylors", "title": "The Taylors", "subtitle": "Family session in the November woods", "category": "families", "client": "Adam Taylor", "shot_on": "2025-11-08", "sort_order": 3, "cover": 1 },
+    "HollyFamilyPhotos": { "slug": "the-holly-family", "title": "The Holly Family", "subtitle": "On the hangar floor", "category": "families", "shot_on": "2025-12-05", "sort_order": 4, "cover": 1 },
+    "MadiReidProposal": { "slug": "madi-and-reid", "title": "Madi & Reid", "subtitle": "A surprise proposal by the water", "category": "couples", "shot_on": "2026-07-31", "sort_order": 1, "featured": true, "cover": 1,
+      "description": "He asked under the willows. She said yes. Then the family walked out from where they had been hiding." },
+    "GirlsDanceRecital2026": { "slug": "dance-recital-portraits-2026", "title": "Dance Recital Portraits", "subtitle": "Costume portraits before the big show", "category": "portraits", "shot_on": "2026-05-31", "sort_order": 1, "cover": 1 },
+    "CheboyganMI": { "slug": "cheboygan-michigan", "title": "Cheboygan, Michigan", "subtitle": "Lake Huron, the lighthouse, and whatever else was moving", "category": "nature-wildlife", "location": "Cheboygan, Michigan", "shot_on": "2026-05-15", "sort_order": 1, "cover": 4 },
+    "Nature": { "slug": "arizona-mountains", "title": "Arizona Mountains", "subtitle": "Granite, pine, and desert haze above Tucson", "category": "nature-wildlife", "location": "Arizona", "shot_on": "2026-02-16", "sort_order": 2, "cover": 2 },
+    "Animals/Birds": { "slug": "birds", "title": "Birds", "subtitle": "Cardinals, crows, and starlings on wires", "category": "nature-wildlife", "sort_order": 3, "cover": 1 },
+    "Animals/Cats": { "slug": "cats", "title": "Cats", "subtitle": "Feline portraits, at home", "category": "nature-wildlife", "sort_order": 4, "cover": 6 },
+    "DogsinSnow": { "slug": "dogs-in-the-snow", "title": "Dogs in the Snow", "category": "nature-wildlife", "shot_on": "2025-11-29", "sort_order": 5, "cover": 0 },
+    "Ghoul": { "slug": "ghoul", "title": "Ghoul", "subtitle": "A Halloween series", "category": "creative", "shot_on": "2025-10-28", "sort_order": 1, "cover": 0,
+      "description": "Two sheet ghosts in sunglasses take a walk through town. A personal series shot over one October afternoon." }
+  }
+}

@@ -1,43 +1,64 @@
 @import "tailwindcss";
+@import "yet-another-react-lightbox/styles.css";
 
 @theme inline {
-  --color-bg: #ffffff;
-  --color-cream: #faf6ee;
-  --color-cream-deep: #f1ead8;
-  --color-ink: #161616;
-  --color-ink-soft: #4a4a4a;
-  --color-ink-faint: #9a9a9a;
-  --color-line: #e8e0cc;
+  /* surfaces */
+  --color-bg: #fffdf8;
+  --color-cream: #faf5ea;
+  --color-cream-deep: #f1e8d4;
+  --color-paper: #ffffff;
 
-  --color-marigold: #f4c430;
-  --color-marigold-bright: #ffe066;
-  --color-marigold-deep: #c79a18;
-  --color-marigold-glow: #fff3b0;
+  /* ink */
+  --color-ink: #1b1d1e;
+  --color-ink-soft: #4a5052;
+  --color-ink-faint: #8a9194;
+  --color-line: #e4dcc9;
+  --color-line-strong: #c9bfa6;
 
-  --color-terracotta: #c2502e;
-  --color-rose: #f5d6c8;
+  /* brand yellow from the bulb */
+  --color-marigold: #f8c858;
+  --color-marigold-bright: #ffd966;
+  --color-marigold-deep: #d9a32e;
+  --color-marigold-glow: #fff0c2;
+
+  /* supporting colour */
+  --color-slate: #3f5459;
+  --color-slate-deep: #2b3b40;
+  --color-slate-soft: #dce6e8;
+  --color-coral: #e2603e;
+  --color-coral-soft: #fbe1d6;
+  --color-sky: #c7dde6;
   --color-moss: #6b7e4e;
+  --color-moss-soft: #e3e9d6;
 
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-geist-sans);
-  --font-hand: var(--font-caveat);
   --font-mono: var(--font-geist-mono);
 
-  --radius-soft: 0.5rem;
-  --radius-organic: 1.25rem;
-  --radius-pill: 999px;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
 
-  --shadow-paper: 0 1px 0 rgba(22, 22, 22, 0.04), 0 12px 32px -16px rgba(22, 22, 22, 0.16);
-  --shadow-glow: 0 0 0 4px rgba(244, 196, 48, 0.18), 0 12px 32px -12px rgba(199, 154, 24, 0.4);
+  --shadow-hard: 3px 3px 0 0 var(--color-ink);
+  --shadow-hard-sm: 2px 2px 0 0 var(--color-ink);
 }
 
 :root {
   --background: var(--color-bg);
   --foreground: var(--color-ink);
+  --yarl__color_backdrop: rgba(27, 29, 30, 0.96);
+  --yarl__color_button: #faf5ea;
+  --yarl__color_button_active: #f8c858;
+  --yarl__slide_captions_container_background: rgba(27, 29, 30, 0.6);
 }
 
 * {
   border-color: var(--color-line);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -45,6 +66,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
@@ -52,76 +74,110 @@ body {
   color: var(--color-ink);
 }
 
-@keyframes pulse-soft {
-  0%, 100% { opacity: 0.55; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
+/* ---------- typographic helpers ---------- */
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
 }
-
-@keyframes drift {
-  0% { transform: translate(0, 0); }
-  33% { transform: translate(6px, -8px); }
-  66% { transform: translate(-4px, 6px); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes sun-rays {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(8deg); }
-}
-
-@keyframes underline-grow {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-.spark-dot {
-  animation: pulse-soft 4s ease-in-out infinite, drift 14s ease-in-out infinite;
-}
-
-.sun-rays {
-  animation: sun-rays 18s ease-in-out infinite;
-  transform-origin: center;
-}
-
-.hand-underline {
-  position: relative;
-  display: inline-block;
-}
-.hand-underline::after {
+.eyebrow::before {
   content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -0.1em;
-  height: 0.35em;
-  background: var(--color-marigold);
-  z-index: -1;
-  transform-origin: left;
-  border-radius: 999px;
-  opacity: 0.7;
+  width: 1.5rem;
+  height: 1px;
+  background: var(--color-marigold-deep);
+}
+.eyebrow.no-rule::before {
+  display: none;
 }
 
-.paper {
-  background: var(--color-cream);
-  border: 1px solid var(--color-line);
-  box-shadow: var(--shadow-paper);
-  border-radius: var(--radius-organic);
+.display {
+  font-family: var(--font-display), Georgia, serif;
+  font-variation-settings: "SOFT" 30, "WONK" 0, "opsz" 144;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
 }
 
-.grain {
+.prose-basic p + p {
+  margin-top: 1em;
+}
+
+/* ---------- outline system ---------- */
+.outline-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-md);
+}
+.outline-card-soft {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+}
+.hairline {
+  border-top: 1px solid var(--color-line);
+}
+.mark-underline {
+  background-image: linear-gradient(transparent 74%, var(--color-marigold) 74%, var(--color-marigold) 95%, transparent 95%);
+  background-repeat: no-repeat;
+  padding: 0 0.08em;
+}
+
+/* ---------- photo tiles (see lib/rows.ts for the row layout) ---------- */
+.tile {
   position: relative;
-  isolation: isolate;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--tone, var(--color-cream-deep));
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+  transition: outline-color 200ms ease;
 }
-.grain::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background-image: radial-gradient(rgba(22, 22, 22, 0.04) 1px, transparent 1px);
-  background-size: 3px 3px;
-  opacity: 0.5;
-  mix-blend-mode: multiply;
+.tile:hover,
+.tile:focus-visible {
+  outline: 2px solid var(--color-marigold);
+}
+.tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 300ms ease;
+}
+.tile:hover img {
+  transform: scale(1.025);
+}
+
+/* ---------- lightbox tweaks ---------- */
+.yarl__slide_captions_container {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+.yarl__slide_description {
+  font-size: 0.875rem;
+  color: var(--color-cream);
+}
+
+/* ---------- motion ---------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise {
+  animation: rise 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.rise-2 { animation-delay: 120ms; }
+.rise-3 { animation-delay: 240ms; }
+
+@keyframes glow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.glow-dot {
+  animation: glow 3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -130,4 +186,5 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+  html { scroll-behavior: auto; }
 }

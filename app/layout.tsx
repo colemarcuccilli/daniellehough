@@ -1,20 +1,10 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Fraunces, Caveat } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], display: "swap" });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" });
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
@@ -22,36 +12,39 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-const caveat = Caveat({
-  variable: "--font-caveat",
-  subsets: ["latin"],
-  display: "swap",
-});
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://daniellehough.vercel.app";
 
 export const metadata: Metadata = {
   title: {
-    default: "Danielle Hough — Photographer & Visionary",
-    template: "%s · Danielle Hough",
+    default: "VisionaryHaus · Danielle Nicole Hough, Photographer",
+    template: "%s · VisionaryHaus",
   },
   description:
-    "Photography, video, and quiet visions by Danielle Hough.",
-  metadataBase: new URL("https://daniellehough.com"),
+    "VisionaryHaus is the photography studio of Danielle Nicole Hough: content retainers for businesses, headshot days, event coverage, and family sessions across Indiana.",
+  metadataBase: new URL(siteUrl),
   openGraph: {
-    title: "Danielle Hough",
+    siteName: "VisionaryHaus",
+    title: "VisionaryHaus · Danielle Nicole Hough, Photographer",
     description:
-      "Photography, video, and quiet visions by Danielle Hough.",
+      "Content retainers for businesses, headshot days, event coverage, and family sessions across Indiana.",
     type: "website",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "VisionaryHaus photography" }],
   },
+  twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export const viewport: Viewport = {
+  themeColor: "#f8c858",
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${caveat.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
         {children}
@@ -59,9 +52,11 @@ export default function RootLayout({
           position="bottom-right"
           toastOptions={{
             style: {
-              background: "var(--color-cream)",
+              background: "var(--color-paper)",
               color: "var(--color-ink)",
-              border: "1px solid var(--color-line)",
+              border: "1px solid var(--color-ink)",
+              borderRadius: "6px",
+              boxShadow: "3px 3px 0 0 var(--color-ink)",
               fontFamily: "var(--font-sans)",
             },
           }}

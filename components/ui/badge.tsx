@@ -3,24 +3,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeStyles = cva(
-  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
+  "inline-flex items-center gap-1.5 rounded-xs px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.14em] leading-5 border",
   {
     variants: {
       tone: {
-        cream: "bg-cream text-ink-soft border border-line",
-        marigold: "bg-marigold/20 text-marigold-deep border border-marigold/40",
-        ink: "bg-ink text-bg",
-        terracotta: "bg-terracotta/15 text-terracotta border border-terracotta/30",
-        moss: "bg-moss/15 text-moss border border-moss/30",
-        outline: "bg-bg text-ink-soft border border-ink/15",
+        cream: "bg-cream text-ink-soft border-line-strong",
+        marigold: "bg-marigold text-ink border-ink",
+        ink: "bg-ink text-cream border-ink",
+        coral: "bg-coral-soft text-coral border-coral/40",
+        moss: "bg-moss-soft text-moss border-moss/40",
+        slate: "bg-slate-soft text-slate border-slate/30",
+        outline: "bg-transparent text-ink border-ink",
       },
     },
     defaultVariants: { tone: "cream" },
   },
 );
 
-export type BadgeProps = HTMLAttributes<HTMLSpanElement> &
-  VariantProps<typeof badgeStyles>;
+export type BadgeProps = HTMLAttributes<HTMLSpanElement> & VariantProps<typeof badgeStyles>;
 
 export function Badge({ className, tone, ...props }: BadgeProps) {
   return <span className={cn(badgeStyles({ tone }), className)} {...props} />;

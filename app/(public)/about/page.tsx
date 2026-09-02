@@ -1,82 +1,135 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { getProjects } from "@/lib/queries";
+import { photoUrl } from "@/lib/images";
 import { buttonStyles } from "@/components/ui/button";
-import { Sun } from "@/components/public/sun";
+import { Container, SectionHeading } from "@/components/public/section";
+import { JustifiedGrid } from "@/components/public/justified-grid";
+import { projectHref } from "@/components/public/project-card";
+import { LogoMark } from "@/components/public/logo";
+import { CtaBand } from "@/components/public/cta-band";
 
-export const metadata = { title: "About" };
+export const revalidate = 600;
 
-export default function AboutPage() {
+export const metadata: Metadata = {
+  title: "About Danielle",
+  description:
+    "Danielle Nicole Hough is an Indiana photographer and a current member of the Indiana National Guard and the United States Air Force.",
+};
+
+const PRINCIPLES = [
+  {
+    title: "Show up ready",
+    body: "Gear checked, shot list built, plan for the light. The day is for making pictures, not for figuring out what we are doing.",
+  },
+  {
+    title: "Consistent, not precious",
+    body: "A retainer only works if quarter three looks like quarter one. Every gallery is edited to the same standard so your library actually matches.",
+  },
+  {
+    title: "Deadlines are real",
+    body: "Military public affairs does not accept late. Neither does a recruiting campaign or a grand opening. You get a delivery date and you get the files on it.",
+  },
+];
+
+export default async function AboutPage() {
+  const projects = await getProjects({ featuredOnly: true });
+  const strip = projects.filter((p) => p.cover).slice(0, 5);
+
   return (
-    <article className="relative">
-      <div className="pointer-events-none absolute top-12 right-0 opacity-30">
-        <Sun size={220} />
-      </div>
-
-      <div className="mx-auto max-w-3xl px-6 lg:px-10 pt-20 pb-16">
-        <p className="font-hand text-2xl text-terracotta mb-4">
-          a little about —
-        </p>
-        <h1 className="font-display text-6xl lg:text-7xl tracking-tight leading-[0.95] mb-12">
-          Who is making <em>this</em>?
-        </h1>
-
-        <div className="space-y-8 text-lg text-ink leading-[1.7]">
-          <p className="text-2xl text-ink-soft font-display italic leading-snug">
-            I&rsquo;m Danielle. I take pictures, I make films, and I keep
-            notebooks I never finish — until I do.
-          </p>
-
-          <p>
-            My work tries to find the soft pause inside loud moments. I
-            grew up paying close attention to ordinary things: the angle of
-            late afternoon sun across a kitchen, somebody&rsquo;s hands when
-            they think nobody is watching, the second after a person
-            laughs.
-          </p>
-
-          <p>
-            I&rsquo;m drawn to people who are in the middle of becoming
-            something else. Brides the morning of. Dancers between takes.
-            Musicians at soundcheck. Parents three weeks in.
-          </p>
-
-          <p>
-            Most of the year I shoot weddings, editorial, brand work, and
-            music videos. The rest of the year I work on personal series
-            you haven&rsquo;t seen yet.
-          </p>
-        </div>
-
-        <hr className="my-16 border-line" />
-
-        <div className="grid gap-10 sm:grid-cols-2">
+    <>
+      <Container className="pt-14 sm:pt-20">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-start">
           <div>
-            <h2 className="font-display text-2xl mb-3">What I do</h2>
-            <ul className="space-y-1.5 text-ink-soft">
-              <li>— Editorial &amp; portrait photography</li>
-              <li>— Brand films &amp; music videos</li>
-              <li>— Weddings &amp; once-in-a-life</li>
-              <li>— Concept series &amp; visual studies</li>
-            </ul>
+            <p className="eyebrow mb-4">About</p>
+            <h1 className="display text-5xl sm:text-6xl lg:text-7xl">Danielle Nicole Hough</h1>
+            <div className="prose-basic mt-8 text-lg text-ink-soft leading-relaxed max-w-xl">
+              <p>
+                I am a photographer based in Indiana and a current member of the Indiana National Guard and the
+                United States Air Force. Most of my hours behind a camera have been spent documenting airmen,
+                aircraft, ceremonies, and the work that happens on the flight line.
+              </p>
+              <p>
+                That job teaches a particular discipline: shoot on a schedule, in whatever light the day gives you,
+                with no do-overs, and deliver on a deadline. VisionaryHaus is that discipline pointed at businesses
+                that need real content on a predictable cadence, and at families who would rather have honest
+                pictures than posed ones.
+              </p>
+              <p>
+                The name comes from the light bulb in the logo. The filament is an eye. Seeing the picture before it
+                happens is most of the work.
+              </p>
+            </div>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link href="/contact" className={buttonStyles({ variant: "primary", size: "lg" })}>
+                Work with me
+              </Link>
+              <Link href="/portfolio" className={buttonStyles({ variant: "outline", size: "lg" })}>
+                See the work
+              </Link>
+            </div>
           </div>
-          <div>
-            <h2 className="font-display text-2xl mb-3">Where</h2>
-            <ul className="space-y-1.5 text-ink-soft">
-              <li>— Based in the Midwest</li>
-              <li>— Travels for the right project</li>
-              <li>— Always one new idea ahead</li>
-            </ul>
+          <div className="outline-card p-8 sm:p-10 lg:justify-self-end w-full max-w-md">
+            <LogoMark height={120} />
+            <dl className="mt-8 grid gap-4">
+              {[
+                ["Based in", "Indiana"],
+                ["Serving", "Indiana National Guard · United States Air Force"],
+                ["Business focus", "Quarterly & monthly content retainers"],
+                ["Also", "Headshot days, events, families, proposals"],
+              ].map(([k, v]) => (
+                <div key={k} className="grid grid-cols-[110px_1fr] gap-3 border-t border-line pt-3">
+                  <dt className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-faint pt-1">{k}</dt>
+                  <dd className="text-sm">{v}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
+      </Container>
 
-        <div className="mt-16">
-          <Link
-            href="/contact"
-            className={buttonStyles({ variant: "marigold", size: "lg" })}
-          >
-            Start something with me
-          </Link>
+      {strip.length > 0 ? (
+        <div className="mt-16 px-1 sm:px-2">
+          <JustifiedGrid
+            items={strip.map((p) => ({
+              key: p.id,
+              ratio: p.cover!.width / p.cover!.height,
+              href: projectHref(p),
+              tone: p.cover!.dominant_color,
+              ariaLabel: p.title,
+              render: (sizes) => (
+                <Image
+                  src={photoUrl(p.cover!.web_path)}
+                  alt={p.cover!.alt ?? p.title}
+                  fill
+                  sizes={sizes}
+                  quality={75}
+                  placeholder={p.cover!.blur_data_url ? "blur" : "empty"}
+                  blurDataURL={p.cover!.blur_data_url ?? undefined}
+                />
+              ),
+            }))}
+          />
         </div>
+      ) : null}
+
+      <Container className="mt-20 sm:mt-28">
+        <SectionHeading eyebrow="How I work" title="Three things you can count on" />
+        <ol className="mt-10 grid gap-px bg-ink border border-ink rounded-md overflow-hidden md:grid-cols-3">
+          {PRINCIPLES.map((p, i) => (
+            <li key={p.title} className="bg-paper p-7">
+              <span className="display text-3xl text-marigold-deep">0{i + 1}</span>
+              <h3 className="mt-3 display text-2xl">{p.title}</h3>
+              <p className="mt-2 text-sm text-ink-soft leading-relaxed">{p.body}</p>
+            </li>
+          ))}
+        </ol>
+      </Container>
+
+      <div className="mt-24">
+        <CtaBand />
       </div>
-    </article>
+    </>
   );
 }

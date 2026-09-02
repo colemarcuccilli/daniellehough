@@ -1,78 +1,66 @@
 @AGENTS.md
 
-# Project: daniellehough.com
+# Project: VisionaryHaus (visionaryhaus · Danielle Nicole Hough)
 
-Danielle Hough is a photographer/videographer. Her site has two halves:
+Photography business site + private admin. Danielle Hough is a photographer and
+a current member of the Indiana National Guard / United States Air Force. The
+business is built around **content retainers for businesses** (quarterly and
+monthly), with headshot days, event coverage, and consumer mini sessions around
+them. See `lib/content.ts` for the offers copy.
 
-1. A simple public portfolio.
-2. A private Atelier (admin) — the actual point of the project — that
-   helps her finish ideas instead of starting new ones.
+## Two halves
 
-## Design philosophy
+1. **Public site** (`app/(public)`) — `/`, `/portfolio`, `/portfolio/[category]`,
+   `/portfolio/[category]/[project]`, `/services`, `/about`, `/contact`.
+   Reads through the cookie-less client in `lib/supabase/public.ts` so pages
+   are ISR (`revalidate = 600`); admin mutations call `revalidatePath("/", "layout")`.
+2. **Admin** (`app/admin`, not linked publicly) — projects, photos (upload,
+   import from bucket, drag order, cover, hide, alt/caption), categories,
+   inquiries, account. `proxy.ts` guards `/admin/*` and `/api/admin/*`.
 
-- Editorial calm. Yellow + cream + ink. Fraunces (display) + Geist + Caveat.
-- The marigold yellow is the brand voice. Use sparingly as accent, never
-  as wallpaper.
-- Never theme the public site to compete with photographs that will live
-  on it later. Cream backgrounds and big quiet whitespace.
+## Data model (Supabase project "VisionaryHaus", ref hcirwveiubnxglzitats)
 
-## The Atelier focus mechanic — DO NOT WEAKEN IT
+`categories` → `projects` → `photos`, plus `inquiries` and `admins`.
+Schema + RLS in `supabase/migrations/0001_visionaryhaus.sql`.
 
-The whole point of the Atelier is that **only one idea can be `active` at
-a time**. This is enforced three ways:
+- Storage: originals in the **private** `PortfolioPhotos` bucket (one folder
+  per project). Web derivatives (≤2400px progressive JPEG) in the **public**
+  `portfolio-web` bucket. `photos.width/height/blur_data_url/dominant_color`
+  are stored so grids render with zero layout shift.
+- No service-role key anywhere. Everything runs as the signed-in admin through
+  RLS (`public.is_admin()` checks the `admins` table). Adding an admin is a SQL
+  step: `supabase/seed/add_admin.sql`.
+- Upload flow: browser → Supabase Storage directly (no Vercel body limit), then
+  `POST /api/admin/photos/process` downloads the original, runs `sharp`
+  (`lib/photos/derive.ts`), uploads the derivative, inserts the row.
+- Bulk import of folders already in the bucket: `npm run import:download`
+  then `npm run import:run` (see `scripts/import-storage.mjs` and
+  `scripts/import-mapping.json`), or "Import from bucket folder" in the admin.
 
-1. UI: spark → active button is disabled if there's already an active idea.
-2. Server Action `activateIdea` checks for an existing active idea before
-   the update.
-3. Postgres partial unique index `ideas_one_active_per_user` makes a
-   second active row literally fail at insert/update.
+## Design
 
-If you're tempted to add a "favorite multiple" or "second priority" feature
-— that's the antithesis. The friction is the feature. Talk to the user
-before relaxing the constraint.
-
-## Auth model
-
-- Email + password via Supabase Auth (`signInWithPassword`).
-- A single allowlist (`ATELIER_OWNER_EMAIL`) is checked in
-  `app/atelier/login/actions.ts` BEFORE calling Supabase. Non-owners get
-  the same generic "email and password don't match" error as bad
-  credentials, so we never leak who has access.
-- The owner is pre-created via SQL (see `0001_ideas.sql` siblings) — no
-  signup flow exists in the app. Adding a second owner means another
-  manual SQL insert + updating the allowlist.
-- `proxy.ts` redirects unauthenticated visitors hitting `/atelier/*` to
-  `/atelier/login`, and authed visitors hitting `/atelier/login` to
-  `/atelier`.
-- `app/auth/callback/route.ts` exists for future magic-link / OAuth
-  flows but is not wired into the password path.
+- Palette from the light-bulb logo: marigold `#f8c858`, cream, ink, slate, a
+  coral accent. Tokens in `app/globals.css` (`@theme inline`, Tailwind v4).
+- "Simple outlines": 1px ink borders, hard offset shadows on primary buttons,
+  hairline grids. Photos never cropped in galleries.
+- Galleries use the CSS justified grid (`.jg` in globals.css): every row fills
+  the width exactly and every photo keeps its native ratio. Reuse
+  `components/public/justified-grid.tsx` (server) / `photo-grid.tsx` (client
+  with lightbox) instead of inventing new grids.
+- Fonts: Fraunces (display), Geist (body), Geist Mono (labels).
 
 ## Stack notes
 
-- Next.js 16 (`middleware.ts` is now `proxy.ts`, exported function must
-  be named `proxy`)
-- Tailwind v4 — design tokens defined in `app/globals.css` via `@theme
-  inline`. Add new colors there, not a config file.
-- `lucide-react` v1.x has removed brand icons (Instagram, Twitter, etc.).
-  Use generic glyphs (AtSign, Globe, Send) for social links.
-- Supabase SSR via `@supabase/ssr` — three clients: browser, server, proxy.
-  Don't bypass the proxy client or sessions go stale.
+- Next.js 16 (`proxy.ts`, async `params`/`searchParams`, `images.qualities`
+  must list every `quality` used: currently 70, 75 and 85).
+- Server actions return `{ ok, data | error }` — never throw to the client;
+  production masks thrown messages.
+- `lucide-react` v1 has no brand icons.
+- Inquiry email notifications go through Resend REST (`lib/email.ts`) only when
+  `RESEND_API_KEY` + `INQUIRY_NOTIFY_EMAIL` are set; failures never block the form.
 
-## Folder convention
+## Deploy
 
-- `app/(public)/*` — public site under route group
-- `app/atelier/*` — admin (auth-protected by `proxy.ts`)
-- `app/auth/*` — auth callbacks
-- `components/ui/*` — neutral primitives (Button, Input, etc.)
-- `components/public/*` — public-only widgets
-- `components/atelier/*` — admin widgets
-- `lib/supabase/*` — three clients
-- `supabase/migrations/*` — schema
-
-## Adding a new field to ideas
-
-1. Migration in `supabase/migrations/`
-2. Update `Idea` type in `lib/types.ts`
-3. Update Zod schema in `app/atelier/actions.ts`
-4. Render input on `app/atelier/idea/[id]/page.tsx`
-5. Render display somewhere meaningful in dashboard or active canvas
+Vercel project `daniellehough` (team "Sweet Dreams' projects"). Env vars:
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable key),
+`NEXT_PUBLIC_SITE_URL`, `RESEND_API_KEY`, `INQUIRY_NOTIFY_EMAIL`, `INQUIRY_FROM_EMAIL`.

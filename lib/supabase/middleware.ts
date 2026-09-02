@@ -30,20 +30,22 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAtelier = pathname.startsWith("/atelier");
-  const isLogin = pathname === "/atelier/login";
-  const isAuthCallback = pathname.startsWith("/auth");
+  const isAdmin = pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
+  const isLogin = pathname === "/admin/login";
 
-  if (isAtelier && !isLogin && !isAuthCallback && !user) {
+  if (isAdmin && !isLogin && !user) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+    }
     const url = request.nextUrl.clone();
-    url.pathname = "/atelier/login";
+    url.pathname = "/admin/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
 
   if (isLogin && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/atelier";
+    url.pathname = "/admin";
     url.searchParams.delete("next");
     return NextResponse.redirect(url);
   }

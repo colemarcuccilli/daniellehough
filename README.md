@@ -1,61 +1,53 @@
-# daniellehough.com
+# VisionaryHaus
 
-Danielle Hough's portfolio + private Atelier — a focus tool for visionaries
-who keep starting things they never finish.
+Portfolio and business site for **Danielle Nicole Hough** (VisionaryHaus), plus a
+private admin for managing the portfolio and reading inquiries.
 
 ## What's here
 
-- **Public site** (`/`, `/about`, `/work`, `/contact`) — editorial portfolio,
-  yellow/cream/ink palette, Fraunces display type, ready to fill in with
-  real projects when she has them.
-- **Atelier** (`/atelier`) — secret admin. Not linked from the public site.
-  Magic-link auth, allowlisted to a single email.
-
-## The Atelier mechanic
-
-> Exactly **one** idea may be "in production" at any time.
-
-Sparks are caught and held. None of them are urgent. They sit in a soft
-constellation. To start a new one you must finish or archive the active
-one. The Postgres layer enforces this with a partial unique index — two
-active ideas at once is *literally impossible*.
-
-Statuses: `spark` → `active` → `done` (or → `archived` from anywhere)
+- **Public site** — home, portfolio by category and project, services (business
+  retainers, add-ons, one-off work, mini sessions), about, contact form.
+- **Admin** (`/admin`, not linked from the site) — create projects, upload photos
+  straight to Supabase Storage, import folders already in the bucket, drag to
+  reorder, pick covers, hide photos, edit captions, manage categories, triage
+  inquiries, change your password.
 
 ## Stack
 
-- Next.js 16 App Router · React 19 · TypeScript
-- Tailwind v4 · Fraunces / Geist / Caveat
-- Supabase (Postgres + magic-link auth, RLS)
-- Motion (animations) · Lucide (icons) · Sonner (toasts)
-- Vercel for hosting
+Next.js 16 · React 19 · TypeScript · Tailwind v4 · Supabase (Postgres, Auth,
+Storage, RLS) · sharp (server-side derivatives) · yet-another-react-lightbox ·
+dnd-kit · Resend (optional inquiry notifications) · Vercel.
 
 ## Local development
 
 ```sh
 npm install
-cp .env.local.example .env.local
-# fill NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, ATELIER_OWNER_EMAIL
+cp .env.local.example .env.local   # fill in the Supabase values
 npm run dev
 ```
 
-Apply the schema in `supabase/migrations/0001_ideas.sql` via the Supabase
-SQL editor or `supabase db push`. The owner account is pre-created via a
-direct `auth.users` SQL insert (bcrypt-hashed password, email pre-confirmed) — there's no in-app signup flow.
+Schema: `supabase/migrations/0001_visionaryhaus.sql` (already applied to the
+VisionaryHaus project). Add an admin with `supabase/seed/add_admin.sql`.
+
+## Bulk import from the bucket
+
+Photos dropped into the private `PortfolioPhotos` bucket (one folder per
+project) can be imported in two steps:
+
+```sh
+npm run import:download   # pulls originals, builds 2400px derivatives + contact sheets into .import-cache
+npm run import:run        # uploads derivatives and upserts categories/projects/photos per scripts/import-mapping.json
+```
+
+Both need `ADMIN_EMAIL` / `ADMIN_PASSWORD` for an account in `public.admins`.
+The admin UI can do the same per project with "Import from bucket folder".
 
 ## Routes
 
-| route                | who                |
-|----------------------|--------------------|
-| `/`                  | public — homepage  |
-| `/about`             | public             |
-| `/work`              | public             |
-| `/contact`           | public             |
-| `/atelier`           | authed — dashboard |
-| `/atelier/idea/[id]` | authed — detail    |
-| `/atelier/archive`   | authed             |
-| `/atelier/login`     | public — sign in   |
-| `/auth/callback`     | OAuth/OTP callback |
-
-The `proxy.ts` (Next.js 16's renamed middleware) refreshes Supabase sessions
-and bounces unauthenticated visitors away from `/atelier/*`.
+| route                                | who    |
+|--------------------------------------|--------|
+| `/`, `/portfolio`, `/services`, `/about`, `/contact` | public |
+| `/portfolio/[category]`              | public |
+| `/portfolio/[category]/[project]`    | public |
+| `/admin/...`                         | admins |
+| `/api/admin/photos/process`          | admins (derivative pipeline) |
