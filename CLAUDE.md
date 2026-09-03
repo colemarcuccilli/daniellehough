@@ -71,7 +71,9 @@ Schema + RLS in `supabase/migrations/0001_visionaryhaus.sql`.
   `RESEND_API_KEY` + `INQUIRY_NOTIFY_EMAIL` are set; failures never block the form.
 - Cloudflare Turnstile guards the inquiry form when `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
   + `TURNSTILE_SECRET_KEY` are set (`components/public/turnstile.tsx`,
-  `lib/turnstile.ts`); without them the form works with just the honeypot.
+  `lib/turnstile.ts`); without them the form works with just the honeypot. Widget
+  config errors (1102xx, e.g. hostname missing from the widget's allowlist) also
+  fall back to the honeypot instead of blocking the form.
 
 ## Deploy
 

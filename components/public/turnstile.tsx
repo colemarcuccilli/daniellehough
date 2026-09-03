@@ -37,7 +37,16 @@ function loadTurnstile(): Promise<void> {
 }
 
 /** Cloudflare Turnstile widget; reports the token (or null on expiry/error) through onToken. */
-export function Turnstile({ siteKey, onToken }: { siteKey: string; onToken: (token: string | null) => void }) {
+export function Turnstile({
+  siteKey,
+  onToken,
+  onError,
+}: {
+  siteKey: string;
+  onToken: (token: string | null) => void;
+  /** Receives Cloudflare's error code (e.g. "110200" = hostname not allowed). */
+  onError?: (code: string) => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -54,23 +63,27 @@ export function Turnstile({ siteKey, onToken }: { siteKey: string; onToken: (tok
           callback: (token: string) => onToken(token),
           "expired-callback": () => onToken(null),
           "timeout-callback": () => onToken(null),
-          "error-callback": () => {
+          "error-callback": (code?: string) => {
             onToken(null);
+            onError?.(String(code ?? "unknown"));
             setFailed(true);
           },
         });
       })
-      .catch(() => setFailed(true));
+      .catch(() => {
+        onError?.("load");
+        setFailed(true);
+      });
     return () => {
       cancelled = true;
       if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
     };
-  }, [siteKey, onToken]);
+  }, [siteKey, onToken, onError]);
 
   return (
     <div>
       <div ref={ref} />
-      {failed ? <p className="mt-2 text-xs text-coral">Verification could not load. Refresh the page and try again.</p> : null}
+      {failed && !onError ? <p className="mt-2 text-xs text-coral">Verification could not load. Refresh the page and try again.</p> : null}
     </div>
   );
 }

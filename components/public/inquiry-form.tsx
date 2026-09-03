@@ -22,9 +22,14 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
   const [done, setDone] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [widgetKey, setWidgetKey] = useState(0);
+  const [tsError, setTsError] = useState<string | null>(null);
   const onToken = useCallback((t: string | null) => setToken(t), []);
+  const onTsError = useCallback((code: string) => setTsError(code), []);
   const business = BUSINESS_KINDS.includes(kind);
-  const needsToken = !!TURNSTILE_SITE_KEY && !token;
+  // 1102xx codes are site-key / hostname configuration problems, not a bot
+  // verdict: let the form fall back to the honeypot instead of going dead.
+  const tsConfigError = !!tsError && /^1102\d{2}$/.test(tsError);
+  const needsToken = !!TURNSTILE_SITE_KEY && !token && !tsConfigError;
 
   if (done) {
     return (
@@ -129,7 +134,11 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
       {TURNSTILE_SITE_KEY ? (
         <>
           <input type="hidden" name="cf-turnstile-response" value={token ?? ""} />
-          <Turnstile key={widgetKey} siteKey={TURNSTILE_SITE_KEY} onToken={onToken} />
+          <input type="hidden" name="cf-turnstile-error" value={tsError ?? ""} />
+          <Turnstile key={widgetKey} siteKey={TURNSTILE_SITE_KEY} onToken={onToken} onError={onTsError} />
+          {tsError && !tsConfigError ? (
+            <p className="text-xs text-coral">Verification could not load. Refresh the page and try again.</p>
+          ) : null}
         </>
       ) : null}
 
