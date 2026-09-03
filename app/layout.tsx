@@ -23,15 +23,15 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://daniellehough.verce
 
 export const metadata: Metadata = {
   title: {
-    default: "Dani Cams · Danielle Nicole Hough, Photographer",
+    default: "Dani Cams · Danielle Hough, Photographer",
     template: "%s · Dani Cams",
   },
   description:
-    "Photography for businesses and families across Indiana. Quarterly and monthly business photography, headshot days, events, and sessions by Danielle Nicole Hough.",
+    "Photography for businesses and families across Indiana. Quarterly and monthly business photography, headshot days, events, and sessions by Danielle Hough.",
   metadataBase: new URL(siteUrl),
   openGraph: {
     siteName: "Dani Cams",
-    title: "Dani Cams · Danielle Nicole Hough, Photographer",
+    title: "Dani Cams · Danielle Hough, Photographer",
     description: "Photography for businesses and families across Indiana.",
     type: "website",
     images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Dani Cams photography" }],

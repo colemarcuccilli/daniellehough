@@ -2,7 +2,7 @@ import type { InquiryKind } from "@/lib/types";
 
 export const SITE = {
   name: "Dani Cams",
-  owner: "Danielle Nicole Hough",
+  owner: "Danielle Hough",
   tagline: "Photography for businesses and families across Indiana.",
   region: "Fort Wayne & Northeast Indiana · travels statewide",
   /** Set when Dani has a business inbox; the site shows the form only until then. */

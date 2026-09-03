@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (!p) return { title: "Project" };
   return {
     title: `${p.title}${p.category ? ` · ${p.category.name}` : ""}`,
-    description: p.description ?? p.subtitle ?? `${p.title}, photographed by Danielle Nicole Hough.`,
+    description: p.description ?? p.subtitle ?? `${p.title}, photographed by Danielle Hough.`,
     openGraph: p.cover ? { images: [{ url: photoUrl(p.cover.web_path), width: p.cover.width, height: p.cover.height }] } : undefined,
   };
 }

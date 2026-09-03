@@ -1,6 +1,6 @@
 # Dani Cams
 
-Portfolio and business site for **Danielle Nicole Hough** (Dani Cams; the Supabase project is still named VisionaryHaus), plus a
+Portfolio and business site for **Danielle Hough** (Dani Cams; the Supabase project is still named VisionaryHaus), plus a
 private admin for managing the portfolio and reading inquiries.
 
 ## What's here

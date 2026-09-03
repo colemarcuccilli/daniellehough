@@ -5,17 +5,19 @@ import type { CSSProperties } from "react";
 import type { CategoryWithCover } from "@/lib/types";
 import { photoUrl } from "@/lib/images";
 import { cn, pluralize } from "@/lib/utils";
+import { BandSpotlight } from "@/components/public/band-spotlight";
 
 const ACCENTS = ["var(--color-marigold)", "var(--color-teal)", "var(--color-purple)", "var(--color-green)"];
 
 /**
  * Stacked category bands: black-and-white cover with the category number and
  * counts top-left, arrow bottom-left, oversized title on the right. Hover
- * unfolds the band and brings the photo up in colour (styles: `.band*`).
+ * unfolds the band and brings the photo up in colour (styles: `.band*`). On
+ * touch screens the band nearest the viewport centre takes that state instead.
  */
 export function CategoryStack({ categories, compact, id = "portfolio" }: { categories: CategoryWithCover[]; compact?: boolean; id?: string }) {
   return (
-    <section id={id} className="flex flex-col gap-1.5 px-2 sm:px-3 scroll-mt-20">
+    <BandSpotlight id={id} className="flex flex-col gap-1.5 px-2 sm:px-3 scroll-mt-20">
       {categories.map((c, i) => {
         const accent = ACCENTS[i % ACCENTS.length];
         const cover = c.cover;
@@ -57,6 +59,6 @@ export function CategoryStack({ categories, compact, id = "portfolio" }: { categ
           </Link>
         );
       })}
-    </section>
+    </BandSpotlight>
   );
 }

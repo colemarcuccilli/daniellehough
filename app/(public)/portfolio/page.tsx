@@ -12,7 +12,7 @@ export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Portfolio",
-  description: "Military and aviation, events, families and couples, portraits, and nature by Danielle Nicole Hough.",
+  description: "Military and aviation, events, families and couples, portraits, and nature by Danielle Hough.",
 };
 
 export default async function PortfolioPage() {

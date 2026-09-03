@@ -92,7 +92,7 @@ export default async function HomePage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="eyebrow mb-3 [&::before]:bg-green">Behind the camera</p>
-                  <h2 className="display text-4xl">Danielle Nicole Hough</h2>
+                  <h2 className="display text-4xl">Danielle Hough</h2>
                 </div>
                 <LogoMark height={64} className="hidden sm:block" />
               </div>

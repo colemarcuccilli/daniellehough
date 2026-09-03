@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Project: Dani Cams (Danielle Nicole Hough)
+# Project: Dani Cams (Danielle Hough)
 
 Photography business site + private admin. Danielle Hough is a photographer and
 a current member of the Indiana National Guard / United States Air Force. The

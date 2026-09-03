@@ -63,7 +63,7 @@ export function MobileMenu({ links }: { links: { href: string; label: string; ac
             </ul>
             <div className="px-5 pb-8" onClick={() => setOpen(false)}>
               <InquiryButton variant="pill" size="lg" className="w-full">Start a project</InquiryButton>
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] text-cream/60">Danielle Nicole Hough · Indiana</p>
+              <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] text-cream/60">Danielle Hough · Indiana</p>
             </div>
           </div>,
           document.body,

@@ -16,7 +16,7 @@ export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Danielle Nicole Hough is an Indiana photographer and a current member of the Indiana National Guard and the United States Air Force.",
+  description: "Danielle Hough is an Indiana photographer and a current member of the Indiana National Guard and the United States Air Force.",
 };
 
 const PRINCIPLES = [
@@ -33,7 +33,7 @@ export default async function AboutPage() {
     <>
       <PageHeader
         eyebrow="Dani Cams"
-        title="Danielle Nicole Hough"
+        title="Danielle Hough"
         body="Photographer, based in Indiana. Current member of the Indiana National Guard and the United States Air Force."
       />
 

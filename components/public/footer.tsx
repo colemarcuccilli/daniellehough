@@ -45,7 +45,7 @@ export function Footer() {
           <span>&copy; {year} Dani Cams</span>
           <span className="inline-flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-marigold glow-dot" aria-hidden />
-            All photographs &copy; Danielle Nicole Hough
+            All photographs &copy; Danielle Hough
           </span>
         </div>
       </div>

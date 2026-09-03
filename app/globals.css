@@ -208,6 +208,21 @@ body {
   }
   @media (hover: none) {
     .band-img { filter: grayscale(1); }
+    .band.is-active { height: 430px; }
+    .band-compact.is-active { height: 380px; }
+  }
+  .band.is-active .band-img {
+    filter: grayscale(0) contrast(1);
+    transform: scale(1.06);
+  }
+  .band.is-active .band-arrow {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--color-ink);
+    transform: translate(2px, -2px);
+  }
+  .band.is-active .band-title {
+    transform: translateX(-0.15em);
   }
   .band-shade {
     position: absolute;
