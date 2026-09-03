@@ -1,12 +1,11 @@
-# VisionaryHaus
+# Dani Cams
 
-Portfolio and business site for **Danielle Nicole Hough** (VisionaryHaus), plus a
+Portfolio and business site for **Danielle Nicole Hough** (Dani Cams; the Supabase project is still named VisionaryHaus), plus a
 private admin for managing the portfolio and reading inquiries.
 
 ## What's here
 
-- **Public site** — home, portfolio by category and project, services (business
-  retainers, add-ons, one-off work, mini sessions), about, contact form.
+- **Public site** — home with stacked category covers, portfolio by category and project, services (content plans, add-ons, one-off work, mini sessions), about, and a pop-up inquiry form (`/contact` redirects into it).
 - **Admin** (`/admin`, not linked from the site) — create projects, upload photos
   straight to Supabase Storage, import folders already in the bucket, drag to
   reorder, pick covers, hide photos, edit captions, manage categories, triage
@@ -46,7 +45,8 @@ The admin UI can do the same per project with "Import from bucket folder".
 
 | route                                | who    |
 |--------------------------------------|--------|
-| `/`, `/portfolio`, `/services`, `/about`, `/contact` | public |
+| `/`, `/portfolio`, `/services`, `/about` | public |
+| `/contact` → opens the inquiry pop-up on `/` | public |
 | `/portfolio/[category]`              | public |
 | `/portfolio/[category]/[project]`    | public |
 | `/admin/...`                         | admins |

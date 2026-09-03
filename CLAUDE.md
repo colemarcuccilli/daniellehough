@@ -1,17 +1,25 @@
 @AGENTS.md
 
-# Project: VisionaryHaus (visionaryhaus · Danielle Nicole Hough)
+# Project: Dani Cams (Danielle Nicole Hough)
 
 Photography business site + private admin. Danielle Hough is a photographer and
 a current member of the Indiana National Guard / United States Air Force. The
-business is built around **content retainers for businesses** (quarterly and
+business is built around ongoing **content plans for businesses** (quarterly and
 monthly), with headshot days, event coverage, and consumer mini sessions around
 them. See `lib/content.ts` for the offers copy.
+
+Brand rules from the owner (2026-09-03): the name is **Dani Cams** (the Supabase
+project is still called VisionaryHaus); never use the words "retainer" or
+"seniors" in public copy; keep copy short and plain, no piled-up adjectives; do
+not name families or clients anywhere public (titles, URLs, image paths, alt
+text); the inquiry form is a pop-up (`components/public/inquiry-modal.tsx`), not
+a page.
 
 ## Two halves
 
 1. **Public site** (`app/(public)`) — `/`, `/portfolio`, `/portfolio/[category]`,
-   `/portfolio/[category]/[project]`, `/services`, `/about`, `/contact`.
+   `/portfolio/[category]/[project]`, `/services`, `/about`. `/contact` only
+   redirects to `/?inquire=<kind>`, which opens the pop-up form.
    Reads through the cookie-less client in `lib/supabase/public.ts` so pages
    are ISR (`revalidate = 600`); admin mutations call `revalidatePath("/", "layout")`.
 2. **Admin** (`app/admin`, not linked publicly) — projects, photos (upload,
@@ -39,14 +47,17 @@ Schema + RLS in `supabase/migrations/0001_visionaryhaus.sql`.
 
 ## Design
 
-- Palette from the light-bulb logo: marigold `#f8c858`, cream, ink, slate, a
-  coral accent. Tokens in `app/globals.css` (`@theme inline`, Tailwind v4).
+- Palette from the light-bulb logo: marigold `#f8c858`, cream, ink, plus teal,
+  purple, and green accents (category bands rotate through them; business
+  sections are teal, mini sessions purple, process steps green). Tokens in
+  `app/globals.css` (`@theme inline`, Tailwind v4).
 - "Simple outlines": 1px ink borders, hard offset shadows on primary buttons,
   hairline grids. Photos never cropped in galleries.
 - Galleries use the CSS justified grid (`.jg` in globals.css): every row fills
   the width exactly and every photo keeps its native ratio. Reuse
   `components/public/justified-grid.tsx` (server) / `photo-grid.tsx` (client
-  with lightbox) instead of inventing new grids.
+  with lightbox) instead of inventing new grids. Category browsing uses
+  `components/public/category-stack.tsx` (full-width stacked covers).
 - Fonts: Fraunces (display), Geist (body), Geist Mono (labels).
 
 ## Stack notes

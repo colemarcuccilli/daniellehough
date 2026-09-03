@@ -11,7 +11,7 @@ const esc = (s: string | null | undefined) =>
 export async function notifyNewInquiry(inquiry: Inquiry, adminUrl: string) {
   const key = process.env.RESEND_API_KEY;
   const to = process.env.INQUIRY_NOTIFY_EMAIL;
-  const from = process.env.INQUIRY_FROM_EMAIL || "VisionaryHaus <onboarding@resend.dev>";
+  const from = process.env.INQUIRY_FROM_EMAIL || "Dani Cams <onboarding@resend.dev>";
   if (!key || !to) return { skipped: true as const };
 
   const rows: Array<[string, string | null]> = [
@@ -26,7 +26,7 @@ export async function notifyNewInquiry(inquiry: Inquiry, adminUrl: string) {
   ];
   const html = `
     <div style="font-family:ui-sans-serif,system-ui,sans-serif;max-width:560px;margin:0 auto;color:#1b1d1e">
-      <p style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8a9194;margin:0 0 8px">New inquiry · VisionaryHaus</p>
+      <p style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8a9194;margin:0 0 8px">New inquiry · Dani Cams</p>
       <h1 style="font-size:22px;margin:0 0 16px">${esc(inquiry.name)} — ${esc(INQUIRY_KINDS[inquiry.kind])}</h1>
       <table style="border-collapse:collapse;width:100%;font-size:14px">
         ${rows.filter(([, v]) => v).map(([k, v]) => `<tr><td style="padding:6px 8px 6px 0;color:#8a9194;vertical-align:top;width:110px">${k}</td><td style="padding:6px 0">${esc(v)}</td></tr>`).join("")}

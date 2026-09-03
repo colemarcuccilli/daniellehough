@@ -5,7 +5,7 @@ import { signOut } from "./actions";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  title: { default: "Admin", template: "%s · Admin · VisionaryHaus" },
+  title: { default: "Admin", template: "%s · Admin · Dani Cams" },
   robots: { index: false, follow: false },
 };
 

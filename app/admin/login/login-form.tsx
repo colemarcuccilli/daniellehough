@@ -31,7 +31,7 @@ export function LoginForm({ next }: { next?: string }) {
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
       <Field label="Email" htmlFor="email">
-        <Input id="email" name="email" type="email" required autoComplete="email" autoFocus placeholder="you@visionaryhaus.co" />
+        <Input id="email" name="email" type="email" required autoComplete="email" autoFocus placeholder="you@danicams.com" />
       </Field>
       <Field label="Password" htmlFor="password">
         <Input id="password" name="password" type="password" required autoComplete="current-password" minLength={6} placeholder="••••••••••" />

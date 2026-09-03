@@ -20,14 +20,14 @@ export function LogoMark({ height = 28, className, priority }: { height?: number
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cn("display text-[1.35rem] tracking-tight", className)}>
-      Visionary<span className="text-marigold-deep">Haus</span>
+      Dani<span className="text-marigold-deep">Cams</span>
     </span>
   );
 }
 
 export function BrandLink({ className }: { className?: string }) {
   return (
-    <Link href="/" aria-label="VisionaryHaus home" className={cn("group inline-flex items-center gap-2.5", className)}>
+    <Link href="/" aria-label="Dani Cams home" className={cn("group inline-flex items-center gap-2.5", className)}>
       <LogoMark height={30} priority className="transition-transform duration-300 group-hover:-rotate-6" />
       <Wordmark />
     </Link>

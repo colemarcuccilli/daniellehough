@@ -25,11 +25,8 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-marigold border border-ink">
           <Check size={20} />
         </span>
-        <h3 className="display text-3xl mt-6">Got it. Thank you.</h3>
-        <p className="mt-3 text-ink-soft leading-relaxed">
-          I read every inquiry personally and reply within two business days. If it is time-sensitive, say so in a
-          follow-up email and I will move it up.
-        </p>
+        <h3 className="display text-3xl mt-6">Got it.</h3>
+        <p className="mt-3 text-ink-soft leading-relaxed">I reply within two business days.</p>
       </div>
     );
   }
@@ -101,7 +98,7 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
           </Select>
         </Field>
         <Field label="Timeline" htmlFor="timeline">
-          <Input id="timeline" name="timeline" maxLength={200} placeholder={business ? "e.g. starting Q4, or a date" : "Preferred dates"} />
+          <Input id="timeline" name="timeline" maxLength={200} placeholder={business ? "Starting when?" : "Preferred dates"} />
         </Field>
       </div>
 
@@ -111,14 +108,14 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
         </Field>
       ) : null}
 
-      <Field label="Tell me about it" htmlFor="message" hint="What should the photos do for you? Who will see them?">
-        <Textarea id="message" name="message" required minLength={10} maxLength={5000} rows={6} placeholder="The more specific, the faster I can quote it." />
+      <Field label="Tell me about it" htmlFor="message">
+        <Textarea id="message" name="message" required minLength={10} maxLength={5000} rows={5} placeholder="What the photographs need to do, and for whom." />
       </Field>
 
       {error ? <p className="text-sm text-coral">{error}</p> : null}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <p className="text-xs text-ink-faint max-w-xs">I reply within two business days. No newsletters, no spam.</p>
+        <p className="text-xs text-ink-faint max-w-xs">Two business days. No newsletters.</p>
         <Button type="submit" variant="primary" size="lg" disabled={pending}>
           {pending ? "Sending…" : "Send inquiry"}
         </Button>

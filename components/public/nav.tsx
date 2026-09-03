@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { BrandLink } from "@/components/public/logo";
 import { MobileMenu } from "@/components/public/mobile-menu";
-import { buttonStyles } from "@/components/ui/button";
+import { InquiryButton } from "@/components/public/inquiry-modal";
 
 export const NAV_LINKS = [
   { href: "/portfolio", label: "Portfolio" },
   { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
 ];
 
 export function Nav() {
@@ -27,9 +26,7 @@ export function Nav() {
             </li>
           ))}
           <li className="ml-3">
-            <Link href="/contact?kind=retainer" className={buttonStyles({ variant: "outline", size: "sm" })}>
-              Start a project
-            </Link>
+            <InquiryButton variant="outline" size="sm">Start a project</InquiryButton>
           </li>
         </ul>
         <MobileMenu links={NAV_LINKS} />

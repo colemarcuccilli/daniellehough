@@ -16,19 +16,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://daniellehough.verce
 
 export const metadata: Metadata = {
   title: {
-    default: "VisionaryHaus · Danielle Nicole Hough, Photographer",
-    template: "%s · VisionaryHaus",
+    default: "Dani Cams · Danielle Nicole Hough, Photographer",
+    template: "%s · Dani Cams",
   },
   description:
-    "VisionaryHaus is the photography studio of Danielle Nicole Hough: content retainers for businesses, headshot days, event coverage, and family sessions across Indiana.",
+    "Photography for businesses and families across Indiana. Ongoing content plans, headshot days, events, and sessions by Danielle Nicole Hough.",
   metadataBase: new URL(siteUrl),
   openGraph: {
-    siteName: "VisionaryHaus",
-    title: "VisionaryHaus · Danielle Nicole Hough, Photographer",
-    description:
-      "Content retainers for businesses, headshot days, event coverage, and family sessions across Indiana.",
+    siteName: "Dani Cams",
+    title: "Dani Cams · Danielle Nicole Hough, Photographer",
+    description: "Photography for businesses and families across Indiana.",
     type: "website",
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "VisionaryHaus photography" }],
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Dani Cams photography" }],
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },

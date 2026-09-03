@@ -32,7 +32,7 @@ export default async function InquiryDetailPage({ params }: { params: Promise<{ 
     ["Location", inquiry.location],
     ["Came from", inquiry.source],
   ];
-  const subject = encodeURIComponent(`Re: your ${INQUIRY_KINDS[inquiry.kind].toLowerCase()} inquiry — VisionaryHaus`);
+  const subject = encodeURIComponent(`Re: your ${INQUIRY_KINDS[inquiry.kind].toLowerCase()} inquiry — Dani Cams`);
   const body = encodeURIComponent(`Hi ${inquiry.name.split(" ")[0]},\n\nThanks for reaching out about ${INQUIRY_KINDS[inquiry.kind].toLowerCase()}.\n\n`);
 
   return (

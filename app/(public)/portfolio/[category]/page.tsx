@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getCategories, getCategoryBySlug, getPhotosInCategory, getProjects } from "@/lib/queries";
 import { Container, SectionHeading } from "@/components/public/section";
+import { CategoryChips } from "@/components/public/category-chips";
 import { ProjectCard } from "@/components/public/project-card";
 import { PhotoGrid } from "@/components/public/photo-grid";
 import { CtaBand } from "@/components/public/cta-band";
@@ -29,11 +30,7 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
   const { category } = await params;
   const cat = await getCategoryBySlug(category);
   if (!cat) notFound();
-  const [projects, photos, all] = await Promise.all([
-    getProjects({ categoryId: cat.id }),
-    getPhotosInCategory(cat.id),
-    getCategories(),
-  ]);
+  const [projects, photos, all] = await Promise.all([getProjects({ categoryId: cat.id }), getPhotosInCategory(cat.id), getCategories()]);
 
   return (
     <>
@@ -49,25 +46,7 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
             body={cat.tagline ?? cat.description ?? undefined}
           />
         </div>
-        <nav aria-label="Categories" className="mt-8 flex flex-wrap gap-2">
-          <Link href="/portfolio" className="rounded-xs border border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] hover:bg-marigold transition-colors">
-            All
-          </Link>
-          {all.map((c) => (
-            <Link
-              key={c.id}
-              href={`/portfolio/${c.slug}`}
-              aria-current={c.id === cat.id ? "page" : undefined}
-              className={
-                c.id === cat.id
-                  ? "rounded-xs border border-ink bg-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-cream"
-                  : "rounded-xs border border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] hover:bg-marigold transition-colors"
-              }
-            >
-              {c.name}
-            </Link>
-          ))}
-        </nav>
+        <CategoryChips categories={all} activeSlug={cat.slug} className="mt-8" />
       </Container>
 
       {projects.length > 0 ? (
@@ -80,14 +59,14 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
         </Container>
       ) : (
         <Container className="mt-12">
-          <p className="outline-card-soft p-10 text-center text-ink-soft">Nothing published in this category yet.</p>
+          <p className="outline-card-soft p-10 text-center text-ink-soft">Nothing published here yet.</p>
         </Container>
       )}
 
       {photos.length > 0 ? (
         <section className="mt-20 sm:mt-28">
           <Container>
-            <SectionHeading eyebrow="Everything in this category" title={`All ${cat.name.toLowerCase()} photographs`} body="Click any photograph to view it full screen." />
+            <SectionHeading eyebrow="Everything in this category" title={`All ${cat.name.toLowerCase()} photographs`} />
           </Container>
           <div className="mt-8 px-1 sm:px-2">
             <PhotoGrid

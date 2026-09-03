@@ -132,10 +132,8 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
 
       <div className="mt-24">
         <CtaBand
-          title="Want something like this for your business or family?"
-          body="Tell me what the pictures need to do and I will put together a quote. Retainers, headshot days, events, and sessions."
-          primary={{ href: "/contact", label: "Start an inquiry" }}
-          secondary={{ href: "/services", label: "See services" }}
+          title="Something like this?"
+          body="Tell me what it needs to do. Business or family, I reply within two business days."
         />
       </div>
     </>

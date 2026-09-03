@@ -15,7 +15,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <p className="eyebrow mb-4 [&::before]:bg-marigold text-cream/70">Studio admin</p>
           <h2 className="display text-5xl leading-[1.05]">Projects, photos, and the people asking for them.</h2>
           <p className="mt-6 text-cream/75 leading-relaxed">
-            Upload a folder of originals, set the cover, drag the order, publish. Inquiries land here too.
+            Upload originals, set covers, drag the order, publish. Inquiries land here too.
           </p>
         </div>
       </div>

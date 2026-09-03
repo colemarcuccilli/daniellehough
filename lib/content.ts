@@ -1,12 +1,12 @@
 import type { InquiryKind } from "@/lib/types";
 
 export const SITE = {
-  name: "VisionaryHaus",
+  name: "Dani Cams",
   owner: "Danielle Nicole Hough",
-  tagline: "Photography for businesses that need real content, and for families who want real pictures.",
+  tagline: "Photography for businesses and families across Indiana.",
   region: "Fort Wayne & Northeast Indiana · travels statewide",
-  email: "hello@visionaryhaus.co",
-  instagram: "https://www.instagram.com/",
+  /** Set when Dani has a business inbox; the site shows the form only until then. */
+  email: "" as string,
 };
 
 export type Offer = {
@@ -17,91 +17,67 @@ export type Offer = {
   summary: string;
   includes: string[];
   terms?: string[];
-  audience?: string;
   kind: InquiryKind;
 };
 
-export const RETAINERS: Offer[] = [
+export const PLANS: Offer[] = [
   {
     slug: "quarterly",
-    name: "Quarterly Content Retainer",
-    tag: "The core offer",
-    price: "One flat rate, every quarter",
+    name: "Quarterly Content Plan",
+    tag: "Most businesses",
+    price: "Flat rate per quarter",
     kind: "retainer",
-    summary:
-      "One capture day every quarter, edited and delivered into an organized library your team can pull from all season.",
+    summary: "One capture day every quarter. You pick what it points at.",
     includes: [
-      "One full capture day per quarter",
-      "You choose the target each quarter: facility, event, headshots, product, or process",
-      "Culled, edited, captioned, and dropped into a shared folder, ready to post",
-      "Annual company headshot day folded in",
-      "Same price every quarter, so it lives as a budget line instead of a project",
+      "Facility, event, headshots, product, or process",
+      "Edited, captioned, delivered to a shared folder",
+      "Annual headshot day included",
+      "Same price every quarter",
     ],
-    terms: [
-      "Use it or lose it within the quarter",
-      "Two weeks notice on event dates; anything inside two weeks is rush and billed separately",
-    ],
-    audience:
-      "Built for manufacturing and industrial, healthcare groups, multi-location franchises, and developers. Recruiting content is the usual starting point, because that budget sits in HR.",
+    terms: ["Use it within the quarter", "Two weeks notice on event dates; inside that is rush"],
   },
   {
     slug: "monthly",
-    name: "Monthly Content Retainer",
-    tag: "Higher frequency",
+    name: "Monthly Content Plan",
+    tag: "Weekly posters",
     price: "Per location, per month",
     kind: "retainer",
-    summary:
-      "For businesses with a real content cycle. Restaurants and hospitality groups are the obvious fit, but so is any brand that posts every week.",
-    includes: [
-      "One session per month, plus the edit",
-      "A capped image count so every gallery stays sharp",
-      "Multi-location groups priced per location, per month",
-      "Captioned and delivered to a shared folder, ready to post",
-    ],
-    terms: ["Delivered ready to post. Managed posting is not included, so your calendar and comments stay yours."],
+    summary: "One session a month for businesses that post every week.",
+    includes: ["Restaurants, hospitality, multi-location groups", "Capped image count", "Delivered ready to post"],
+    terms: ["Managed posting not included"],
   },
 ];
 
 export const ADD_ONS = [
-  {
-    name: "Drone",
-    body: "Facility aerials once a year, or monthly progress documentation for construction and development sites where the change is the story.",
-  },
-  {
-    name: "Vertical video clips",
-    body: "Short vertical clips pulled from the same session, cut for Reels, TikTok, and Shorts.",
-  },
-  {
-    name: "Extra capture days",
-    body: "Additional days at the preferred retainer rate when a launch, opening, or event needs more coverage.",
-  },
+  { name: "Drone", body: "Facility aerials yearly, or monthly progress on construction sites." },
+  { name: "Vertical video", body: "Short vertical clips from the same session." },
+  { name: "Extra capture days", body: "At the plan rate." },
 ];
 
 export const ONE_OFFS: Offer[] = [
   {
     slug: "headshots",
-    name: "Company headshot days",
-    price: "Priced per day, not per person",
+    name: "Headshot days",
+    price: "Per day, not per person",
     kind: "headshots",
-    summary:
-      "Consistent, on-brand headshots for the whole team in a single visit. It is also the cheapest way to find out what working together is like before committing to a retainer.",
-    includes: ["Portable setup at your location", "Every person edited to the same look", "Delivered in web and print sizes"],
+    summary: "The whole team, one visit, one look.",
+    includes: ["Setup at your location", "Web and print sizes"],
   },
   {
     slug: "product",
-    name: "Product, menu & facility shoots",
+    name: "Product, menu & facility",
     price: "Quoted per shoot",
     kind: "product",
-    summary: "Menus, product lines, showrooms, and facilities photographed cleanly enough to sell from and consistently enough to reuse.",
-    includes: ["Shot list built with you ahead of time", "Edited to match your existing brand assets", "Fast turnaround for launches"],
+    summary: "Menus, product lines, showrooms, facilities.",
+    includes: ["Shot list agreed ahead", "Matches your existing brand"],
   },
   {
     slug: "events",
-    name: "Event coverage",
-    price: "Hourly or by the event",
+    name: "Events",
+    price: "Hourly or per event",
     kind: "event",
-    summary: "Fundraisers, openings, race days, and company events covered from setup to the last speech.",
-    includes: ["Candid and posed coverage", "Same-week highlight delivery", "Full gallery ready for sponsors and press"],
+    summary: "Fundraisers, openings, race days, company events.",
+    includes: ["Candid and posed", "Highlights within the week"],
   },
 ];
 
@@ -109,16 +85,15 @@ export const MINI_SESSIONS = {
   name: "Mini sessions",
   price: "$50 – $75",
   duration: "15 minutes",
-  summary:
-    "Quick, low-pressure sessions for families and individuals, announced a few times a year. The base package stands on its own: no watermarks, no downgrades.",
-  includes: ["Three printed photos", "A small set of edited digitals", "Locations announced per date"],
-  upsell: "Love the whole gallery? Add it after you have seen the images, for $75 – $150.",
+  summary: "Quick sessions for families and individuals, a few dates a year.",
+  includes: ["Three prints", "A small set of digitals", "No watermarks"],
+  upsell: "Full gallery available after: $75 – $150.",
   kind: "mini_session" as InquiryKind,
 };
 
 export const PROCESS = [
-  { step: "01", title: "Tell me what it points at", body: "A short call to pick the target for the quarter (or the date for the session) and what the images need to do." },
-  { step: "02", title: "Capture day", body: "I show up ready, work the shot list, and stay flexible for what the day actually gives us." },
-  { step: "03", title: "Edit & caption", body: "Culled, edited to a consistent look, and captioned so nobody on your team has to guess what they are looking at." },
-  { step: "04", title: "Delivered to your folder", body: "Everything lands in an organized shared library, sized for web and print, ready to post." },
+  { step: "01", title: "Pick the target", body: "A short call to decide what the photographs need to do." },
+  { step: "02", title: "Capture day", body: "I show up ready and work the shot list." },
+  { step: "03", title: "Edit and caption", body: "One consistent look, captioned." },
+  { step: "04", title: "Delivered to your folder", body: "Sized for web and print, ready to post." },
 ];
