@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Calendar, MapPin, User } from "lucide-react";
 import { getProjectBySlug, getProjectNeighbours, getProjects } from "@/lib/queries";
 import { photoUrl } from "@/lib/images";
 import { Container } from "@/components/public/section";
+import { PageHeader } from "@/components/public/page-header";
 import { PhotoGrid } from "@/components/public/photo-grid";
 import { CtaBand } from "@/components/public/cta-band";
 import { projectHref } from "@/components/public/project-card";
@@ -48,35 +49,32 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
 
   return (
     <>
-      <Container className="pt-4 sm:pt-8">
-        <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
-          <ArrowLeft size={14} /> {project.category?.name ?? "Portfolio"}
-        </Link>
-        <div className="mt-6 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-          <div>
-            <p className="eyebrow mb-3">{pluralize(project.photos.length, "photograph")}</p>
-            <h1 className="display text-5xl sm:text-6xl lg:text-7xl">{project.title}</h1>
-            {project.subtitle ? <p className="mt-4 text-xl text-ink-soft">{project.subtitle}</p> : null}
-          </div>
-          <div className="lg:justify-self-end lg:text-right">
+      <PageHeader
+        eyebrow={
+          <Link href={backHref} className="inline-flex items-center gap-1.5 hover:text-marigold">
+            <ArrowLeft size={12} /> {project.category?.name ?? "Portfolio"} · {pluralize(project.photos.length, "photograph")}
+          </Link>
+        }
+        title={project.title}
+        body={project.subtitle ?? undefined}
+        aside={
+          <div className="space-y-4">
             {meta.length > 0 ? (
-              <ul className="flex flex-wrap gap-x-5 gap-y-2 lg:justify-end font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft">
+              <ul className="flex flex-wrap gap-x-5 gap-y-2 lg:justify-end font-mono text-[11px] uppercase tracking-[0.14em] text-cream/80">
                 {meta.map((m) => (
                   <li key={m.text} className="inline-flex items-center gap-1.5">
-                    <span className="text-marigold-deep">{m.icon}</span>
+                    <span className="text-marigold">{m.icon}</span>
                     {m.text}
                   </li>
                 ))}
               </ul>
             ) : null}
-            {project.description ? (
-              <p className="mt-4 text-ink-soft leading-relaxed max-w-md lg:ml-auto">{project.description}</p>
-            ) : null}
+            {project.description ? <p className="text-cream/80 leading-relaxed max-w-md lg:ml-auto">{project.description}</p> : null}
           </div>
-        </div>
-      </Container>
+        }
+      />
 
-      <div className="mt-10 sm:mt-14 px-1 sm:px-2">
+      <div className="mt-2 sm:mt-3 px-1 sm:px-2">
         {project.photos.length > 0 ? (
           <PhotoGrid
             photos={project.photos.map((p) => ({

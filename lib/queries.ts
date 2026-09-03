@@ -136,3 +136,18 @@ export async function getProjectNeighbours(project: Project): Promise<{ prev: Pr
   const i = list.findIndex((p) => p.id === project.id);
   return { prev: i > 0 ? list[i - 1] : null, next: i >= 0 && i < list.length - 1 ? list[i + 1] : null };
 }
+
+/** Hero photograph for the home masthead: first candidate that exists, else the newest photo. */
+const HERO_CANDIDATES = ["GrissomAirShow2026/260828-VB772-1751.jpg", "AirForceTucson/260215-Z-VB772-1048.jpg"];
+
+export async function getHeroPhoto(): Promise<Photo | null> {
+  const supabase = createPublicClient();
+  const { data } = await supabase.from("photos").select("*").in("original_path", HERO_CANDIDATES).eq("is_published", true);
+  const list = (data ?? []) as Photo[];
+  for (const path of HERO_CANDIDATES) {
+    const hit = list.find((p) => p.original_path === path);
+    if (hit) return hit;
+  }
+  const { data: fallback } = await supabase.from("photos").select("*").eq("is_published", true).order("created_at", { ascending: false }).limit(1);
+  return ((fallback ?? [])[0] as Photo | undefined) ?? null;
+}

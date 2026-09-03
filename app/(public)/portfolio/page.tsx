@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { getPortfolioIndex } from "@/lib/queries";
 import { Container, SectionHeading } from "@/components/public/section";
+import { PageHeader } from "@/components/public/page-header";
 import { CategoryStack } from "@/components/public/category-stack";
 import { CategoryChips } from "@/components/public/category-chips";
 import { ProjectCard } from "@/components/public/project-card";
 import { CtaBand } from "@/components/public/cta-band";
+import { pluralize } from "@/lib/utils";
 
 export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Portfolio",
-  description: "Military and aviation, events, families, couples, portraits, nature, and creative work by Danielle Nicole Hough.",
+  description: "Military and aviation, events, families and couples, portraits, and nature by Danielle Nicole Hough.",
 };
 
 export default async function PortfolioPage() {
@@ -19,12 +21,17 @@ export default async function PortfolioPage() {
 
   return (
     <>
-      <Container className="pt-4 sm:pt-8 pb-8">
-        <SectionHeading size="lg" eyebrow="Portfolio" title="Every category." body={`${projects.length} projects · ${totalPhotos} photographs`} />
-        <CategoryChips categories={categories} className="mt-8" />
-      </Container>
+      <PageHeader
+        eyebrow="Portfolio"
+        title="Past projects"
+        body={`${pluralize(projects.length, "project")} · ${pluralize(totalPhotos, "photograph")}`}
+      >
+        <CategoryChips categories={categories} tone="dark" />
+      </PageHeader>
 
-      <CategoryStack categories={categories} compact id="categories" />
+      <div className="mt-2 sm:mt-3">
+        <CategoryStack categories={categories} compact id="categories" />
+      </div>
 
       <Container className="mt-20 sm:mt-28">
         <SectionHeading eyebrow="All projects" title="Latest first" />

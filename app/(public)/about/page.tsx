@@ -5,6 +5,7 @@ import { getProjects } from "@/lib/queries";
 import { photoUrl } from "@/lib/images";
 import { buttonStyles } from "@/components/ui/button";
 import { Container, SectionHeading } from "@/components/public/section";
+import { PageHeader } from "@/components/public/page-header";
 import { JustifiedGrid } from "@/components/public/justified-grid";
 import { projectHref } from "@/components/public/project-card";
 import { LogoMark } from "@/components/public/logo";
@@ -30,20 +31,23 @@ export default async function AboutPage() {
 
   return (
     <>
-      <Container className="pt-4 sm:pt-8">
+      <PageHeader
+        eyebrow="Dani Cams"
+        title="Danielle Nicole Hough"
+        body="Photographer, based in Indiana. Current member of the Indiana National Guard and the United States Air Force."
+      />
+
+      <Container className="mt-12 sm:mt-16">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-start">
           <div>
-            <p className="eyebrow mb-4">Dani Cams</p>
-            <h1 className="display text-5xl sm:text-6xl lg:text-7xl">Danielle Nicole Hough</h1>
-            <div className="prose-basic mt-8 text-lg text-ink-soft leading-relaxed max-w-xl">
-              <p>Photographer, based in Indiana. Current member of the Indiana National Guard and the United States Air Force.</p>
+            <div className="prose-basic text-lg text-ink-soft leading-relaxed max-w-xl">
               <p>
                 Most of my hours behind a camera have been on the flight line: airmen, aircraft, ceremonies. That work runs on
                 a schedule, in whatever light there is, with no do-overs. Dani Cams runs the same way, for businesses and for
                 families.
               </p>
             </div>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <InquiryButton variant="primary" size="lg">Start a project</InquiryButton>
               <Link href="/portfolio" className={buttonStyles({ variant: "outline", size: "lg" })}>
                 Portfolio

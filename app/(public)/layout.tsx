@@ -6,7 +6,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <InquiryProvider>
       <Nav />
-      <main className="flex-1 pt-20 sm:pt-24">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
       <InquiryFromUrl />
     </InquiryProvider>

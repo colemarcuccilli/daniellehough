@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getCategories, getCategoryBySlug, getPhotosInCategory, getProjects } from "@/lib/queries";
 import { Container, SectionHeading } from "@/components/public/section";
+import { PageHeader } from "@/components/public/page-header";
 import { CategoryChips } from "@/components/public/category-chips";
 import { ProjectCard } from "@/components/public/project-card";
 import { PhotoGrid } from "@/components/public/photo-grid";
@@ -34,20 +33,13 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
 
   return (
     <>
-      <Container className="pt-4 sm:pt-8">
-        <Link href="/portfolio" className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
-          <ArrowLeft size={14} /> Portfolio
-        </Link>
-        <div className="mt-6">
-          <SectionHeading
-            size="lg"
-            eyebrow={`${pluralize(projects.length, "project")} · ${pluralize(photos.length, "photograph")}`}
-            title={cat.name}
-            body={cat.tagline ?? cat.description ?? undefined}
-          />
-        </div>
-        <CategoryChips categories={all} activeSlug={cat.slug} className="mt-8" />
-      </Container>
+      <PageHeader
+        eyebrow={`${pluralize(projects.length, "project")} · ${pluralize(photos.length, "photograph")}`}
+        title={cat.name}
+        body={cat.tagline ?? cat.description ?? undefined}
+      >
+        <CategoryChips categories={all} activeSlug={cat.slug} tone="dark" />
+      </PageHeader>
 
       {projects.length > 0 ? (
         <Container className="mt-12">

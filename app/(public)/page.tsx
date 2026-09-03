@@ -1,42 +1,40 @@
 import Link from "next/link";
-import { ArrowDown, ArrowRight } from "lucide-react";
-import { getPortfolioIndex } from "@/lib/queries";
+import { ArrowRight } from "lucide-react";
+import { getHeroPhoto, getPortfolioIndex } from "@/lib/queries";
 import { buttonStyles } from "@/components/ui/button";
 import { Container } from "@/components/public/section";
+import { Hero } from "@/components/public/hero";
 import { CategoryStack } from "@/components/public/category-stack";
 import { CtaBand } from "@/components/public/cta-band";
 import { InquiryButton } from "@/components/public/inquiry-modal";
 import { LogoMark } from "@/components/public/logo";
 import { MINI_SESSIONS, PLANS } from "@/lib/content";
+import { pluralize } from "@/lib/utils";
 
 export const revalidate = 600;
 
 export default async function HomePage() {
-  const { categories } = await getPortfolioIndex();
+  const [{ categories, projects }, hero] = await Promise.all([getPortfolioIndex(), getHeroPhoto()]);
+  const totalPhotos = projects.reduce((n, p) => n + p.photo_count, 0);
 
   return (
     <>
-      <section>
-        <Container className="pt-6 pb-8 sm:pt-10 sm:pb-10">
-          <p className="eyebrow mb-5">Danielle Nicole Hough · Photographer · Indiana</p>
-          <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
-            <h1 className="display text-[3.6rem] sm:text-[5.5rem] lg:text-[7.5rem] max-w-5xl rise">
-              Pictures that <em className="serif-accent text-marigold-deep">do the work.</em>
-            </h1>
-            <div className="rise rise-2 lg:pb-3">
-              <p className="text-lg text-ink-soft leading-relaxed">Photography for businesses and families across Indiana.</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a href="#portfolio" className={buttonStyles({ variant: "primary", size: "lg" })}>
-                  See the portfolio <ArrowDown size={16} />
-                </a>
-                <InquiryButton variant="outline" size="lg">Start a project</InquiryButton>
-              </div>
+      <Hero photo={hero} caption="Grissom Air Show 2026" />
+
+      <section className="pt-16 sm:pt-24">
+        <Container className="mb-8 sm:mb-10">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow mb-4">Portfolio</p>
+              <h2 className="display text-6xl sm:text-7xl lg:text-8xl">Past projects</h2>
             </div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
+              {pluralize(categories.length, "category", "categories")} · {pluralize(projects.length, "project")} · {pluralize(totalPhotos, "photograph")}
+            </p>
           </div>
         </Container>
+        <CategoryStack categories={categories} />
       </section>
-
-      <CategoryStack categories={categories} />
 
       <section className="mt-20 sm:mt-28 bg-teal-deep text-cream border-y border-ink py-16 sm:py-24">
         <Container>
@@ -51,10 +49,7 @@ export default async function HomePage() {
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <InquiryButton variant="primary" size="lg">Start a project</InquiryButton>
-                <Link
-                  href="/services"
-                  className={buttonStyles({ variant: "outline", size: "lg" }) + " border-cream text-cream hover:bg-cream/10 hover:text-cream"}
-                >
+                <Link href="/services" className={buttonStyles({ variant: "cream", size: "lg" })}>
                   Services
                 </Link>
               </div>

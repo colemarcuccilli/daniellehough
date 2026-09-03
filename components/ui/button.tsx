@@ -17,6 +17,7 @@ export const buttonStyles = cva(
         danger: "bg-transparent text-coral border border-coral hover:bg-coral hover:text-paper",
         link: "text-ink underline underline-offset-4 decoration-marigold-deep hover:decoration-ink px-0 h-auto",
         pill: "rounded-full bg-marigold text-ink border border-marigold font-semibold hover:bg-marigold-bright active:scale-[0.98]",
+        cream: "rounded-full border border-cream/70 text-cream font-medium hover:bg-marigold hover:border-marigold hover:text-ink",
       },
       size: {
         xs: "h-7 px-2.5 text-xs rounded-xs",

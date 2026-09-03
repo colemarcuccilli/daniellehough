@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Check, Plane, Smartphone, CalendarPlus } from "lucide-react";
 import { ADD_ONS, MINI_SESSIONS, ONE_OFFS, PLANS, PROCESS } from "@/lib/content";
 import { Container, SectionHeading } from "@/components/public/section";
+import { PageHeader } from "@/components/public/page-header";
 import { CtaBand } from "@/components/public/cta-band";
 import { InquiryButton } from "@/components/public/inquiry-modal";
 
@@ -15,17 +16,14 @@ const ADD_ON_ICONS = [Plane, Smartphone, CalendarPlus];
 export default function ServicesPage() {
   return (
     <>
-      <Container className="pt-4 sm:pt-8">
-        <SectionHeading
-          size="lg"
-          eyebrow="Services"
-          title={<>Businesses on a schedule. <em className="serif-accent text-marigold-deep">Sessions</em> for everyone else.</>}
-          body="Quarterly or monthly, a one-off shoot, or a mini session. Every inquiry goes through the same form."
-        />
-      </Container>
+      <PageHeader
+        eyebrow="Services"
+        title={<>Businesses on a schedule. <em className="serif-accent text-marigold">Sessions</em> for everyone else.</>}
+        body="Quarterly or monthly, a one-off shoot, or a mini session. Every inquiry goes through the same form."
+      />
 
       {/* plans */}
-      <Container className="mt-12">
+      <Container className="mt-12 sm:mt-16">
         <div className="grid gap-5 lg:grid-cols-2">
           {PLANS.map((p) => (
             <article key={p.slug} id={p.slug} className="outline-card p-7 sm:p-9 flex flex-col">

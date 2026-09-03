@@ -9,14 +9,13 @@ import { cn, pluralize } from "@/lib/utils";
 const ACCENTS = ["var(--color-marigold)", "var(--color-teal)", "var(--color-purple)", "var(--color-green)"];
 
 /**
- * Stacked category "tabs": short bands with an oversized title, each washed in
- * its accent colour. Hovering unfolds the band, lifts the wash off the photo
- * and inverts the title onto a solid accent tab. Styles live in globals.css
- * (`.band*`).
+ * Stacked category bands: black-and-white cover with the category number and
+ * counts top-left, arrow bottom-left, oversized title on the right. Hover
+ * unfolds the band and brings the photo up in colour (styles: `.band*`).
  */
 export function CategoryStack({ categories, compact, id = "portfolio" }: { categories: CategoryWithCover[]; compact?: boolean; id?: string }) {
   return (
-    <section id={id} className="flex flex-col gap-1.5 px-2 sm:px-3 scroll-mt-24">
+    <section id={id} className="flex flex-col gap-1.5 px-2 sm:px-3 scroll-mt-20">
       {categories.map((c, i) => {
         const accent = ACCENTS[i % ACCENTS.length];
         const cover = c.cover;
@@ -25,7 +24,7 @@ export function CategoryStack({ categories, compact, id = "portfolio" }: { categ
             key={c.id}
             href={`/portfolio/${c.slug}`}
             className={cn("band group", compact && "band-compact")}
-            style={{ "--accent": accent, backgroundColor: cover?.dominant_color ?? undefined } as CSSProperties}
+            style={{ "--accent": accent } as CSSProperties}
             aria-label={`${c.name}: ${pluralize(c.project_count, "project")}, ${pluralize(c.photo_count, "photo")}`}
           >
             {cover ? (
@@ -41,22 +40,20 @@ export function CategoryStack({ categories, compact, id = "portfolio" }: { categ
                 className="band-img"
               />
             ) : null}
-            <span className="band-wash" aria-hidden />
             <span className="band-shade" aria-hidden />
             <div className="band-content">
-              <h2 className="band-title">
-                <span className="band-tab">{c.name}</span>
-              </h2>
-              <p className="band-meta">
-                <span>{pluralize(c.project_count, "project")}</span>
-                <span aria-hidden>·</span>
-                <span>{pluralize(c.photo_count, "photo")}</span>
-                {c.tagline ? <span className="hidden sm:inline normal-case tracking-normal font-sans text-sm">{c.tagline}</span> : null}
-              </p>
+              <div className="band-info">
+                <span className="band-num">{String(i + 1).padStart(2, "0")}</span>
+                <span>
+                  {pluralize(c.project_count, "project")} · {pluralize(c.photo_count, "photo")}
+                </span>
+                {c.tagline ? <span className="band-tag hidden sm:block">{c.tagline}</span> : null}
+              </div>
+              <span className="band-arrow" aria-hidden>
+                <ArrowUpRight size={20} />
+              </span>
+              <h2 className="band-title">{c.name}</h2>
             </div>
-            <span className="band-arrow" aria-hidden>
-              <ArrowUpRight size={20} />
-            </span>
           </Link>
         );
       })}
