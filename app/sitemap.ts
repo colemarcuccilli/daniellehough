@@ -3,7 +3,7 @@ import { getCategories, getProjects } from "@/lib/queries";
 import { projectHref } from "@/components/public/project-card";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://daniellehough.vercel.app";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://danicams.com";
   const [categories, projects] = await Promise.all([getCategories(), getProjects()]);
   const now = new Date();
   return [

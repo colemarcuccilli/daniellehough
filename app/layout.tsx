@@ -19,7 +19,7 @@ const bricolage = Bricolage_Grotesque({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://daniellehough.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://danicams.com";
 
 export const metadata: Metadata = {
   title: {

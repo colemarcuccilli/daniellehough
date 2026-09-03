@@ -97,7 +97,7 @@ export async function submitInquiry(formData: FormData): Promise<InquiryResult> 
     return { ok: false, error: "Something went wrong sending that. Please email me directly instead." };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://daniellehough.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://danicams.com";
   after(async () => {
     await notifyNewInquiry(row, `${siteUrl}/admin/inquiries/${id}`);
   });
