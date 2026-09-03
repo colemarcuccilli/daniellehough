@@ -27,8 +27,9 @@ export function Hero({ photo, caption }: { photo: Photo | null; caption?: string
         <p className="eyebrow mb-5 text-cream/75 [&::before]:bg-marigold rise">
           Danielle Hough · Indiana National Guard · U.S. Air Force
         </p>
-        <h1 className="display max-w-5xl text-[3.5rem] sm:text-[5.75rem] lg:text-[7.75rem] rise rise-2">
-          Professional photos, <em className="serif-accent text-marigold">from Dani&rsquo;s cam.</em>
+        <h1 className="display hero-title rise rise-2">
+          <span className="block whitespace-nowrap">Professional photos,</span>
+          <em className="serif-accent block whitespace-nowrap text-marigold">from Dani&rsquo;s cam.</em>
         </h1>
         <p className="mt-6 max-w-lg text-lg text-cream/80 rise rise-3">Businesses and families across Indiana.</p>
         <div className="mt-8 flex flex-wrap gap-3 rise rise-3">

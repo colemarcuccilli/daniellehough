@@ -69,9 +69,13 @@ Schema + RLS in `supabase/migrations/0001_visionaryhaus.sql`.
 - `lucide-react` v1 has no brand icons.
 - Inquiry email notifications go through Resend REST (`lib/email.ts`) only when
   `RESEND_API_KEY` + `INQUIRY_NOTIFY_EMAIL` are set; failures never block the form.
+- Cloudflare Turnstile guards the inquiry form when `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+  + `TURNSTILE_SECRET_KEY` are set (`components/public/turnstile.tsx`,
+  `lib/turnstile.ts`); without them the form works with just the honeypot.
 
 ## Deploy
 
 Vercel project `daniellehough` (team "Sweet Dreams' projects"). Env vars:
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable key),
-`NEXT_PUBLIC_SITE_URL`, `RESEND_API_KEY`, `INQUIRY_NOTIFY_EMAIL`, `INQUIRY_FROM_EMAIL`.
+`NEXT_PUBLIC_SITE_URL`, `RESEND_API_KEY`, `INQUIRY_NOTIFY_EMAIL`, `INQUIRY_FROM_EMAIL`,
+`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`.

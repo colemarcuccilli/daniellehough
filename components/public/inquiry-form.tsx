@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,9 @@ import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { INQUIRY_KINDS, BUDGET_OPTIONS, type InquiryKind } from "@/lib/types";
 import { submitInquiry } from "@/app/(public)/contact/actions";
+import { Turnstile } from "@/components/public/turnstile";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 const BUSINESS_KINDS: InquiryKind[] = ["retainer", "headshots", "event", "product"];
 
@@ -17,7 +20,11 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [widgetKey, setWidgetKey] = useState(0);
+  const onToken = useCallback((t: string | null) => setToken(t), []);
   const business = BUSINESS_KINDS.includes(kind);
+  const needsToken = !!TURNSTILE_SITE_KEY && !token;
 
   if (done) {
     return (
@@ -38,7 +45,14 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
     start(async () => {
       const res = await submitInquiry(data);
       if (res.ok) setDone(true);
-      else setError(res.error);
+      else {
+        setError(res.error);
+        // Turnstile tokens are single-use: mount a fresh widget for the retry.
+        if (TURNSTILE_SITE_KEY) {
+          setToken(null);
+          setWidgetKey((k) => k + 1);
+        }
+      }
     });
   };
 
@@ -112,11 +126,18 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
         <Textarea id="message" name="message" required minLength={10} maxLength={5000} rows={5} placeholder="What the photographs need to do, and for whom." />
       </Field>
 
+      {TURNSTILE_SITE_KEY ? (
+        <>
+          <input type="hidden" name="cf-turnstile-response" value={token ?? ""} />
+          <Turnstile key={widgetKey} siteKey={TURNSTILE_SITE_KEY} onToken={onToken} />
+        </>
+      ) : null}
+
       {error ? <p className="text-sm text-coral">{error}</p> : null}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <p className="text-xs text-ink-faint max-w-xs">Two business days. No newsletters.</p>
-        <Button type="submit" variant="primary" size="lg" disabled={pending}>
+        <Button type="submit" variant="primary" size="lg" disabled={pending || needsToken}>
           {pending ? "Sending…" : "Send inquiry"}
         </Button>
       </div>

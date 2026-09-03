@@ -1,9 +1,11 @@
 "use server";
 
 import { after } from "next/server";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { createPublicClient } from "@/lib/supabase/public";
 import { notifyNewInquiry } from "@/lib/email";
+import { verifyTurnstile } from "@/lib/turnstile";
 import type { Inquiry } from "@/lib/types";
 
 const schema = z.object({
@@ -34,6 +36,17 @@ export async function submitInquiry(formData: FormData): Promise<InquiryResult> 
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Please check the form." };
   }
   if (parsed.data.website) return { ok: true }; // bot — pretend success
+
+  // Cloudflare Turnstile, active only when the secret is configured.
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  if (turnstileSecret) {
+    const token = (formData.get("cf-turnstile-response") as string | null) ?? "";
+    if (!token) return { ok: false, error: "Please complete the verification and try again." };
+    const h = await headers();
+    const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || undefined;
+    const valid = await verifyTurnstile(turnstileSecret, token, ip);
+    if (!valid) return { ok: false, error: "Verification failed. Please try again." };
+  }
 
   const id = crypto.randomUUID();
   const row: Inquiry = {

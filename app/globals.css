@@ -113,6 +113,11 @@ body {
     letter-spacing: -0.03em;
     line-height: 0.94;
   }
+  /* Home masthead headline: two lines that never wrap, sized to the viewport. */
+  .hero-title {
+    font-size: clamp(1.9rem, 8.3vw, 7rem);
+    line-height: 0.95;
+  }
   .serif-accent {
     font-family: var(--font-serif), Georgia, serif;
     font-style: italic;
