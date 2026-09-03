@@ -23,8 +23,8 @@ export type Offer = {
 export const PLANS: Offer[] = [
   {
     slug: "quarterly",
-    name: "Quarterly Content Plan",
-    tag: "Most businesses",
+    name: "Quarterly Photography",
+    tag: "Quarterly",
     price: "Flat rate per quarter",
     kind: "retainer",
     summary: "One capture day every quarter. You pick what it points at.",
@@ -38,8 +38,8 @@ export const PLANS: Offer[] = [
   },
   {
     slug: "monthly",
-    name: "Monthly Content Plan",
-    tag: "Weekly posters",
+    name: "Monthly Photography",
+    tag: "Monthly",
     price: "Per location, per month",
     kind: "retainer",
     summary: "One session a month for businesses that post every week.",
@@ -51,7 +51,7 @@ export const PLANS: Offer[] = [
 export const ADD_ONS = [
   { name: "Drone", body: "Facility aerials yearly, or monthly progress on construction sites." },
   { name: "Vertical video", body: "Short vertical clips from the same session." },
-  { name: "Extra capture days", body: "At the plan rate." },
+  { name: "Extra capture days", body: "At the same day rate." },
 ];
 
 export const ONE_OFFS: Offer[] = [

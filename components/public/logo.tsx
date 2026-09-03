@@ -17,19 +17,26 @@ export function LogoMark({ height = 28, className, priority }: { height?: number
   );
 }
 
-export function Wordmark({ className }: { className?: string }) {
+export function Wordmark({ className, tone = "light" }: { className?: string; tone?: "light" | "dark" }) {
   return (
-    <span className={cn("display text-[1.35rem] tracking-tight", className)}>
-      Dani<span className="text-marigold-deep">Cams</span>
+    <span className={cn("display text-[1.3rem] tracking-[-0.03em]", tone === "dark" ? "text-cream" : "text-ink", className)}>
+      Dani<span className="text-marigold">Cams</span>
     </span>
   );
 }
 
-export function BrandLink({ className }: { className?: string }) {
+export function BrandLink({ className, tone = "light" }: { className?: string; tone?: "light" | "dark" }) {
   return (
-    <Link href="/" aria-label="Dani Cams home" className={cn("group inline-flex items-center gap-2.5", className)}>
-      <LogoMark height={30} priority className="transition-transform duration-300 group-hover:-rotate-6" />
-      <Wordmark />
+    <Link href="/" aria-label="Dani Cams home" className={cn("group inline-flex items-center gap-2", className)}>
+      <span
+        className={cn(
+          "grid h-9 w-9 place-items-center rounded-full transition-transform duration-300 group-hover:-rotate-6",
+          tone === "dark" ? "bg-cream" : "bg-marigold-glow",
+        )}
+      >
+        <LogoMark height={22} priority />
+      </span>
+      <Wordmark tone={tone} className="hidden sm:inline" />
     </Link>
   );
 }

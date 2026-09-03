@@ -17,11 +17,11 @@ export default async function HomePage() {
   return (
     <>
       <section>
-        <Container className="pt-12 pb-8 sm:pt-16 sm:pb-10">
-          <p className="eyebrow mb-5">Dani Cams · Danielle Nicole Hough · Indiana</p>
-          <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
-            <h1 className="display text-[3.2rem] sm:text-7xl lg:text-[6rem] max-w-4xl rise">
-              Pictures that <span className="mark-underline">do the work.</span>
+        <Container className="pt-6 pb-8 sm:pt-10 sm:pb-10">
+          <p className="eyebrow mb-5">Danielle Nicole Hough · Photographer · Indiana</p>
+          <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
+            <h1 className="display text-[3.6rem] sm:text-[5.5rem] lg:text-[7.5rem] max-w-5xl rise">
+              Pictures that <em className="serif-accent text-marigold-deep">do the work.</em>
             </h1>
             <div className="rise rise-2 lg:pb-3">
               <p className="text-lg text-ink-soft leading-relaxed">Photography for businesses and families across Indiana.</p>
@@ -43,9 +43,11 @@ export default async function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
               <p className="eyebrow mb-3 text-cream/70 [&::before]:bg-marigold">For businesses</p>
-              <h2 className="display text-4xl sm:text-5xl">Ongoing content, on a schedule.</h2>
+              <h2 className="display text-4xl sm:text-5xl">
+                Your business, <em className="serif-accent text-marigold">photographed</em> on a schedule.
+              </h2>
               <p className="mt-4 text-cream/80 text-[17px] leading-relaxed max-w-md">
-                A capture day each quarter or each month. Edited, captioned, delivered to a shared folder, ready to post.
+                A capture day each quarter or each month. Edited, captioned, in your shared folder, ready to post.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <InquiryButton variant="primary" size="lg">Start a project</InquiryButton>

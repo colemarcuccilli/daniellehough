@@ -13,7 +13,7 @@ const KINDS: InquiryKind[] = ["retainer", "headshots", "event", "product", "mini
 const isKind = (v: string | null): v is InquiryKind => !!v && (KINDS as string[]).includes(v);
 
 const HEADLINES: Record<InquiryKind, string> = {
-  retainer: "Ongoing content for your business",
+  retainer: "Photography for your business",
   headshots: "Headshot day",
   event: "Event coverage",
   product: "Product, menu, or facility",

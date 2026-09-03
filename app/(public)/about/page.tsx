@@ -30,7 +30,7 @@ export default async function AboutPage() {
 
   return (
     <>
-      <Container className="pt-12 sm:pt-16">
+      <Container className="pt-4 sm:pt-8">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-start">
           <div>
             <p className="eyebrow mb-4">Dani Cams</p>
@@ -56,7 +56,7 @@ export default async function AboutPage() {
               {[
                 ["Based in", "Indiana"],
                 ["Serving", "Indiana National Guard · United States Air Force"],
-                ["For businesses", "Quarterly and monthly content plans"],
+                ["For businesses", "Quarterly and monthly photography"],
                 ["Also", "Headshot days, events, families, proposals"],
               ].map(([k, v]) => (
                 <div key={k} className="grid grid-cols-[110px_1fr] gap-3 border-t border-line pt-3">

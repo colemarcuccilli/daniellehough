@@ -19,7 +19,7 @@ export default async function PortfolioPage() {
 
   return (
     <>
-      <Container className="pt-12 sm:pt-16 pb-8">
+      <Container className="pt-4 sm:pt-8 pb-8">
         <SectionHeading size="lg" eyebrow="Portfolio" title="Every category." body={`${projects.length} projects · ${totalPhotos} photographs`} />
         <CategoryChips categories={categories} className="mt-8" />
       </Container>

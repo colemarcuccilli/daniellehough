@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces, Bricolage_Grotesque } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -8,7 +8,14 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
+  style: ["normal", "italic"],
   axes: ["SOFT", "WONK", "opsz"],
+  display: "swap",
+});
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
+  subsets: ["latin"],
+  axes: ["opsz", "wdth"],
   display: "swap",
 });
 
@@ -20,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s · Dani Cams",
   },
   description:
-    "Photography for businesses and families across Indiana. Ongoing content plans, headshot days, events, and sessions by Danielle Nicole Hough.",
+    "Photography for businesses and families across Indiana. Quarterly and monthly business photography, headshot days, events, and sessions by Danielle Nicole Hough.",
   metadataBase: new URL(siteUrl),
   openGraph: {
     siteName: "Dani Cams",
@@ -43,7 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${bricolage.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
         {children}

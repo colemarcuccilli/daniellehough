@@ -77,7 +77,7 @@ export type Inquiry = {
 };
 
 export const INQUIRY_KINDS: Record<InquiryKind, string> = {
-  retainer: "Ongoing content (quarterly or monthly)",
+  retainer: "Business photography (quarterly or monthly)",
   headshots: "Headshot day",
   event: "Event coverage",
   product: "Product, menu, or facility shoot",
@@ -86,7 +86,7 @@ export const INQUIRY_KINDS: Record<InquiryKind, string> = {
 };
 
 export const INQUIRY_KIND_SHORT: Record<InquiryKind, string> = {
-  retainer: "Content plan",
+  retainer: "Business",
   headshots: "Headshots",
   event: "Event",
   product: "Product / facility",

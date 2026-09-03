@@ -7,7 +7,7 @@ import { InquiryButton } from "@/components/public/inquiry-modal";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: "Quarterly and monthly content plans for businesses, headshot days, product and event coverage, and mini sessions for families.",
+  description: "Quarterly and monthly photography for businesses, headshot days, product and event coverage, and mini sessions for families.",
 };
 
 const ADD_ON_ICONS = [Plane, Smartphone, CalendarPlus];
@@ -15,12 +15,12 @@ const ADD_ON_ICONS = [Plane, Smartphone, CalendarPlus];
 export default function ServicesPage() {
   return (
     <>
-      <Container className="pt-12 sm:pt-16">
+      <Container className="pt-4 sm:pt-8">
         <SectionHeading
           size="lg"
           eyebrow="Services"
-          title="Ongoing content for businesses. Sessions for everyone else."
-          body="Pick a plan, a one-off shoot, or a mini session. Every inquiry goes through the same form."
+          title={<>Businesses on a schedule. <em className="serif-accent text-marigold-deep">Sessions</em> for everyone else.</>}
+          body="Quarterly or monthly, a one-off shoot, or a mini session. Every inquiry goes through the same form."
         />
       </Container>
 
@@ -51,7 +51,7 @@ export default function ServicesPage() {
                 </ul>
               ) : null}
               <div className="mt-auto pt-8">
-                <InquiryButton kind={p.kind} variant="primary" size="md">Ask about this plan</InquiryButton>
+                <InquiryButton kind={p.kind} variant="primary" size="md">Ask about {p.tag?.toLowerCase()}</InquiryButton>
               </div>
             </article>
           ))}
@@ -60,7 +60,7 @@ export default function ServicesPage() {
 
       {/* add-ons */}
       <Container className="mt-20 sm:mt-28">
-        <SectionHeading eyebrow="Add-ons" title="Ride along on a plan" />
+        <SectionHeading eyebrow="Add-ons" title="Add-ons" />
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {ADD_ONS.map((a, i) => {
             const Icon = ADD_ON_ICONS[i] ?? Plane;

@@ -21,7 +21,7 @@ export function SectionHeading({
     <div className={cn("flex flex-wrap items-end justify-between gap-6", className)}>
       <div className="max-w-2xl">
         {eyebrow ? <p className="eyebrow mb-3">{eyebrow}</p> : null}
-        <h2 className={cn("display", size === "lg" ? "text-5xl sm:text-6xl" : "text-4xl sm:text-5xl")}>{title}</h2>
+        <h2 className={cn("display", size === "lg" ? "text-5xl sm:text-6xl lg:text-7xl" : "text-4xl sm:text-5xl")}>{title}</h2>
         {body ? <p className="mt-4 text-ink-soft leading-relaxed text-[17px]">{body}</p> : null}
       </div>
       {action ? (

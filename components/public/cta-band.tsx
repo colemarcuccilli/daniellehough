@@ -5,13 +5,13 @@ import { InquiryButton } from "@/components/public/inquiry-modal";
 import type { InquiryKind } from "@/lib/types";
 
 export function CtaBand({
-  title = "Start a project.",
+  title = <>Start a <em className="serif-accent">project.</em></>,
   body = "Tell me what the photographs need to do. I reply within two business days.",
   kind = "retainer",
   primaryLabel = "Start a project",
   secondary = { href: "/services", label: "Services" },
 }: {
-  title?: string;
+  title?: React.ReactNode;
   body?: string;
   kind?: InquiryKind;
   primaryLabel?: string;

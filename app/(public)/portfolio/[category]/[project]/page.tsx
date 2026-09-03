@@ -48,7 +48,7 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
 
   return (
     <>
-      <Container className="pt-12 sm:pt-16">
+      <Container className="pt-4 sm:pt-8">
         <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
           <ArrowLeft size={14} /> {project.category?.name ?? "Portfolio"}
         </Link>
