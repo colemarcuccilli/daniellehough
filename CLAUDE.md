@@ -4,16 +4,26 @@
 
 Photography business site + private admin. Danielle Hough is a photographer and
 a current member of the Indiana National Guard / United States Air Force. The
-business is built around ongoing **content plans for businesses** (quarterly and
-monthly), with headshot days, event coverage, and consumer mini sessions around
-them. See `lib/content.ts` for the offers copy.
+business is built around **quarterly and monthly photography for businesses**,
+with headshot days, event coverage, and consumer mini sessions around them. See
+`lib/content.ts` for the offers copy.
 
 Brand rules from the owner (2026-09-03): the name is **Dani Cams** (the Supabase
 project is still called VisionaryHaus); never use the words "retainer" or
 "seniors" in public copy; keep copy short and plain, no piled-up adjectives; do
 not name families or clients anywhere public (titles, URLs, image paths, alt
 text); the inquiry form is a pop-up (`components/public/inquiry-modal.tsx`), not
-a page.
+a page; never say "content plan" (the offers are Quarterly / Monthly Photography);
+no pricing anywhere public (2026-10-14): no dollar amounts, rates, or "per day /
+per quarter" price lines, so the `Offer` type has no price field. The only dollar
+figures left are the visitor's budget options on the inquiry form.
+
+Layout rules: every page opens on a dark masthead (home: full-bleed military
+photo via `getHeroPhoto()`; inner pages: `PageHeader`) so the transparent nav
+(`NavShell`, ink bar after scroll) always sits on ink. Category bands
+(`category-stack.tsx`, `.band*` in globals.css) are black-and-white until hover,
+number/info top-left, arrow bottom-left, title right; on touch screens
+`BandSpotlight` gives the band nearest the viewport centre the hover state.
 
 ## Two halves
 

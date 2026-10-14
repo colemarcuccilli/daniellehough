@@ -27,9 +27,8 @@ export default function ServicesPage() {
         <div className="grid gap-5 lg:grid-cols-2">
           {PLANS.map((p) => (
             <article key={p.slug} id={p.slug} className="outline-card p-7 sm:p-9 flex flex-col">
-              <div className="flex items-center justify-between gap-3">
+              <div>
                 <span className="rounded-xs border border-teal bg-teal-soft px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.16em] text-teal-deep">{p.tag}</span>
-                <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-faint">{p.price}</span>
               </div>
               <h2 className="display text-3xl sm:text-4xl mt-5">{p.name}</h2>
               <p className="mt-3 text-ink-soft leading-relaxed">{p.summary}</p>
@@ -81,8 +80,7 @@ export default function ServicesPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {ONE_OFFS.map((o) => (
             <article key={o.slug} className="outline-card p-6 flex flex-col">
-              <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-faint">{o.price}</p>
-              <h3 className="display text-2xl mt-3">{o.name}</h3>
+              <h3 className="display text-2xl">{o.name}</h3>
               <p className="mt-2 text-sm text-ink-soft leading-relaxed">{o.summary}</p>
               <ul className="mt-4 grid gap-1.5 text-sm">
                 {o.includes.map((x) => (
@@ -120,10 +118,7 @@ export default function ServicesPage() {
             <p className="eyebrow mb-3 [&::before]:bg-purple text-purple-deep">For families & individuals</p>
             <h2 className="display text-4xl sm:text-5xl">{MINI_SESSIONS.name}</h2>
             <p className="mt-4 text-ink-soft leading-relaxed">{MINI_SESSIONS.summary}</p>
-            <div className="mt-8 flex items-baseline gap-3">
-              <span className="display text-5xl">{MINI_SESSIONS.price}</span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-soft">{MINI_SESSIONS.duration}</span>
-            </div>
+            <p className="mt-8 display text-5xl">{MINI_SESSIONS.duration}</p>
           </div>
           <div className="bg-paper p-8 sm:p-10 flex flex-col border-t border-ink lg:border-t-0 lg:border-l">
             <ul className="grid gap-3">

@@ -57,8 +57,7 @@ export default async function HomePage() {
             <div className="grid gap-3 sm:grid-cols-2">
               {PLANS.map((p) => (
                 <div key={p.slug} className="rounded-md border border-cream/30 bg-teal/40 p-6">
-                  <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-marigold">{p.price}</p>
-                  <h3 className="display text-2xl mt-3">{p.name}</h3>
+                  <h3 className="display text-2xl">{p.name}</h3>
                   <p className="mt-2 text-sm text-cream/80 leading-relaxed">{p.summary}</p>
                 </div>
               ))}
@@ -82,8 +81,7 @@ export default async function HomePage() {
               <p className="mt-3 text-ink-soft leading-relaxed">
                 {MINI_SESSIONS.duration}. {MINI_SESSIONS.includes.join(". ")}. A few dates a year.
               </p>
-              <div className="mt-8 flex items-center justify-between gap-4 flex-wrap">
-                <span className="display text-3xl">{MINI_SESSIONS.price}</span>
+              <div className="mt-8">
                 <InquiryButton kind="mini_session" variant="ink" size="md">Get the next dates</InquiryButton>
               </div>
             </div>
