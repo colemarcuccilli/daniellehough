@@ -36,17 +36,22 @@ number/info top-left, arrow bottom-left, title right; on touch screens
    import from bucket, drag order, cover, hide, alt/caption), categories,
    inquiries, account. `proxy.ts` guards `/admin/*` and `/api/admin/*`.
 
-## Data model (Supabase project "VisionaryHaus", ref hcirwveiubnxglzitats)
+## Data model (shared Supabase project "FreeWebsites", ref nxhwqtqroyerbbklywyn, schema `vh`)
 
-`categories` → `projects` → `photos`, plus `inquiries` and `admins`.
-Schema + RLS in `supabase/migrations/0001_visionaryhaus.sql`.
+`categories` → `projects` → `photos`, plus `inquiries` and `admins`, all in the
+`vh` schema (moved from the standalone "VisionaryHaus" project, ref
+hcirwveiubnxglzitats, on 2026-10-17). Schema + RLS in
+`supabase/freewebsites/0001_vh_schema.sql`; `supabase/migrations/` is the
+original project's history. Schema and bucket names come from env
+(`NEXT_PUBLIC_SUPABASE_DB_SCHEMA`, `..._WEB_BUCKET`, `..._ORIGINALS_BUCKET`).
 
-- Storage: originals in the **private** `PortfolioPhotos` bucket (one folder
+- Storage: originals in the **private** `vh-originals` bucket (one folder
   per project). Web derivatives (≤2400px progressive JPEG) in the **public**
-  `portfolio-web` bucket. `photos.width/height/blur_data_url/dominant_color`
+  `vh-web` bucket. `photos.width/height/blur_data_url/dominant_color`
   are stored so grids render with zero layout shift.
 - No service-role key anywhere. Everything runs as the signed-in admin through
-  RLS (`public.is_admin()` checks the `admins` table). Adding an admin is a SQL
+  RLS (`vh.is_admin()` checks the `admins` table). Other sites share this
+  Supabase project, so never add policies that trust any signed-in user. Adding an admin is a SQL
   step: `supabase/seed/add_admin.sql`.
 - Upload flow: browser → Supabase Storage directly (no Vercel body limit), then
   `POST /api/admin/photos/process` downloads the original, runs `sharp`
@@ -89,5 +94,7 @@ Schema + RLS in `supabase/migrations/0001_visionaryhaus.sql`.
 
 Vercel project `daniellehough` (team "Sweet Dreams' projects"). Env vars:
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable key),
+`NEXT_PUBLIC_SUPABASE_DB_SCHEMA` (`vh`), `NEXT_PUBLIC_SUPABASE_WEB_BUCKET` (`vh-web`),
+`NEXT_PUBLIC_SUPABASE_ORIGINALS_BUCKET` (`vh-originals`),
 `NEXT_PUBLIC_SITE_URL`, `RESEND_API_KEY`, `INQUIRY_NOTIFY_EMAIL`, `INQUIRY_FROM_EMAIL`,
 `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`.

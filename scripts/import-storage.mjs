@@ -21,8 +21,9 @@ const KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const EMAIL = process.env.ADMIN_EMAIL;
 const PASSWORD = process.env.ADMIN_PASSWORD;
 const CACHE = process.env.CACHE_DIR || path.join(process.cwd(), ".import-cache");
-const ORIGINALS = "PortfolioPhotos";
-const WEB = "portfolio-web";
+const ORIGINALS = process.env.NEXT_PUBLIC_SUPABASE_ORIGINALS_BUCKET || "PortfolioPhotos";
+const WEB = process.env.NEXT_PUBLIC_SUPABASE_WEB_BUCKET || "portfolio-web";
+const SCHEMA = process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || "public";
 const CONCURRENCY = Number(process.env.CONCURRENCY || 4);
 const cmd = process.argv[2];
 
@@ -31,7 +32,7 @@ if (!URL || !KEY || !EMAIL || !PASSWORD) {
   process.exit(1);
 }
 
-const supabase = createClient(URL, KEY, { auth: { persistSession: false, autoRefreshToken: true } });
+const supabase = createClient(URL, KEY, { db: { schema: SCHEMA }, auth: { persistSession: false, autoRefreshToken: true } });
 const { error: authErr } = await supabase.auth.signInWithPassword({ email: EMAIL, password: PASSWORD });
 if (authErr) { console.error("auth failed:", authErr.message); process.exit(1); }
 

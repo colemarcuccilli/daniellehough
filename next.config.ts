@@ -8,12 +8,21 @@ const supabaseHost = (() => {
   }
 })();
 
+const webBucket = process.env.NEXT_PUBLIC_SUPABASE_WEB_BUCKET || "portfolio-web";
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: supabaseHost,
+        pathname: `/storage/v1/object/public/${webBucket}/**`,
+      },
+      // Original standalone project, kept until it's deleted so any cached
+      // image URLs still load.
+      {
+        protocol: "https",
+        hostname: "hcirwveiubnxglzitats.supabase.co",
         pathname: "/storage/v1/object/public/portfolio-web/**",
       },
     ],

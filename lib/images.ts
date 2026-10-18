@@ -1,5 +1,7 @@
-export const WEB_BUCKET = "portfolio-web";
-export const ORIGINALS_BUCKET = "PortfolioPhotos";
+// `vh-web` / `vh-originals` on the shared FreeWebsites project; the defaults are
+// the original standalone project's bucket names.
+export const WEB_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_WEB_BUCKET || "portfolio-web";
+export const ORIGINALS_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_ORIGINALS_BUCKET || "PortfolioPhotos";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 
