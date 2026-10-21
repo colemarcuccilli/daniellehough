@@ -15,14 +15,14 @@ export function CategoryChips({
 }) {
   const chip = (active: boolean) =>
     cn(
-      "rounded-xs border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors",
+      "caps rounded-xs border px-3 py-1.5 text-[0.62rem] transition-colors",
       tone === "dark"
         ? active
           ? "border-marigold bg-marigold text-ink"
           : "border-cream/40 text-cream/85 hover:border-marigold hover:text-marigold"
         : active
-          ? "border-ink bg-ink text-cream"
-          : "border-ink hover:bg-marigold",
+          ? "border-sage-deep bg-sage-deep text-cream"
+          : "border-line-strong text-ink-soft hover:border-sage hover:text-ink",
     );
   return (
     <nav aria-label="Categories" className={cn("flex flex-wrap gap-2", className)}>

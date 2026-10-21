@@ -54,7 +54,7 @@ export default async function AboutPage() {
               </Link>
             </div>
           </div>
-          <div className="outline-card p-8 sm:p-10 lg:justify-self-end w-full max-w-md">
+          <div className="frame ribbon ribbon-marigold p-8 sm:p-10 lg:justify-self-end w-full max-w-md">
             <LogoMark height={110} />
             <dl className="mt-8 grid gap-4">
               {[
@@ -64,7 +64,7 @@ export default async function AboutPage() {
                 ["Also", "Headshot days, events, families, proposals"],
               ].map(([k, v]) => (
                 <div key={k} className="grid grid-cols-[110px_1fr] gap-3 border-t border-line pt-3">
-                  <dt className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-faint pt-1">{k}</dt>
+                  <dt className="caps text-[0.58rem] text-ink-faint pt-1">{k}</dt>
                   <dd className="text-sm">{v}</dd>
                 </div>
               ))}
@@ -100,11 +100,11 @@ export default async function AboutPage() {
 
       <Container className="mt-20 sm:mt-28">
         <SectionHeading eyebrow="How I work" title="Three things you can count on" />
-        <ol className="mt-10 grid gap-px bg-ink border border-ink rounded-md overflow-hidden md:grid-cols-3">
+        <ol className="mt-10 grid gap-px overflow-hidden rounded-xs border border-sage bg-line md:grid-cols-3">
           {PRINCIPLES.map((p, i) => (
             <li key={p.title} className="bg-paper p-7">
-              <span className="display text-3xl" style={{ color: ["var(--color-teal)", "var(--color-purple)", "var(--color-green)"][i] }}>0{i + 1}</span>
-              <h3 className="mt-3 display text-2xl">{p.title}</h3>
+              <span className="display text-4xl" style={{ color: ["var(--color-teal)", "var(--color-purple)", "var(--color-green)"][i] }}>0{i + 1}</span>
+              <h3 className="mt-3 display text-3xl">{p.title}</h3>
               <p className="mt-2 text-sm text-ink-soft leading-relaxed">{p.body}</p>
             </li>
           ))}

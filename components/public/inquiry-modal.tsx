@@ -62,7 +62,7 @@ function InquiryDialog({ kind, onClose }: { kind: InquiryKind; onClose: () => vo
     ref.current?.focus();
   }, []);
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-ink/60 p-0 sm:items-center sm:p-6" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-[rgba(35,40,35,0.62)] p-0 sm:items-center sm:p-6" onClick={onClose}>
       <div
         ref={ref}
         tabIndex={-1}
@@ -70,18 +70,18 @@ function InquiryDialog({ kind, onClose }: { kind: InquiryKind; onClose: () => vo
         aria-modal="true"
         aria-labelledby="inquiry-title"
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-h-[94vh] overflow-y-auto rounded-t-lg border border-ink bg-paper shadow-hard focus:outline-none sm:max-w-2xl sm:rounded-md"
+        className="relative w-full max-h-[94vh] overflow-y-auto rounded-t-md border border-sage bg-paper shadow-soft focus:outline-none sm:max-w-2xl sm:rounded-xs"
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-line bg-paper/95 px-5 py-4 backdrop-blur sm:px-7">
           <div>
             <p className="eyebrow mb-1">Start a project</p>
-            <h2 id="inquiry-title" className="display text-2xl sm:text-3xl">{HEADLINES[kind]}</h2>
+            <h2 id="inquiry-title" className="display text-3xl sm:text-4xl">{HEADLINES[kind]}</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-ink transition-colors hover:bg-marigold"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xs border border-line-strong transition-colors hover:border-sage hover:bg-cream"
           >
             <X size={16} />
           </button>

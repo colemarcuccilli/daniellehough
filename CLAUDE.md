@@ -19,8 +19,8 @@ per quarter" price lines, so the `Offer` type has no price field. The only dolla
 figures left are the visitor's budget options on the inquiry form.
 
 Layout rules: every page opens on a dark masthead (home: full-bleed military
-photo via `getHeroPhoto()`; inner pages: `PageHeader`) so the transparent nav
-(`NavShell`, ink bar after scroll) always sits on ink. Category bands
+photo via `getHeroPhoto()`; inner pages: sage `PageHeader`) so the transparent
+nav (`NavShell`, sage bar after scroll) always sits on a dark ground. Category bands
 (`category-stack.tsx`, `.band*` in globals.css) are black-and-white until hover,
 number/info top-left, arrow bottom-left, title right; on touch screens
 `BandSpotlight` gives the band nearest the viewport centre the hover state.
@@ -62,18 +62,29 @@ original project's history. Schema and bucket names come from env
 
 ## Design
 
-- Palette from the light-bulb logo: marigold `#f8c858`, cream, ink, plus teal,
-  purple, and green accents (category bands rotate through them; business
-  sections are teal, mini sessions purple, process steps green). Tokens in
-  `app/globals.css` (`@theme inline`, Tailwind v4).
-- "Simple outlines": 1px ink borders, hard offset shadows on primary buttons,
-  hairline grids. Photos never cropped in galleries.
-- Galleries use the CSS justified grid (`.jg` in globals.css): every row fills
-  the width exactly and every photo keeps its native ratio. Reuse
-  `components/public/justified-grid.tsx` (server) / `photo-grid.tsx` (client
-  with lightbox) instead of inventing new grids. Category browsing uses
-  `components/public/category-stack.tsx` (full-width stacked covers).
-- Fonts: Fraunces (display), Geist (body), Geist Mono (labels).
+- Direction (2026-10-21, from Dani's wedding-quote stationery): elegant and
+  quiet. Cream paper (`bg`, `paper`, `cream`), a charcoal-green ink, and
+  **sage green** (`sage`, `sage-deep`) as the structural colour. Hairline
+  rules, square corners (radius tokens are 2–4px), and the double-line frame
+  (`.frame`, `.frame-inset`) from the quote's "Total" band. Botanical line-art
+  sprigs (`components/public/sprig.tsx`) sit in the corners of mastheads, the
+  CTA band, the footer, and the mobile menu.
+- The bright four stay, as accents only, so the site remains memorable:
+  marigold (bulb, primary buttons, hero italic, band 01), teal (business
+  cards, checks), purple (mini sessions), green (process steps). Framed cards
+  take a 3px coloured top rule via `.ribbon` + `.ribbon-<colour>`. Category
+  bands rotate accents for the number and the hover arrow.
+- Type: Cormorant Garamond for every heading (`.display`, weight 500) and for
+  italic emphasis (`.serif-accent`); the wordmark is letter-spaced serif caps
+  (`.wordmark`, "DANI CAMS"); Jost for body and for tracked small caps
+  (`.eyebrow`, `.caps`, buttons, chips, metadata). Geist Mono is only for
+  genuinely monospace admin text. Never reintroduce `font-mono` labels on the
+  public site.
+- Buttons are square, uppercase, tracked; no hard offset shadows anywhere.
+- Galleries use the CSS justified grid: every row fills the width exactly and
+  every photo keeps its native ratio. Reuse `justified-grid.tsx` (server) /
+  `photo-grid.tsx` (client with lightbox) instead of inventing new grids.
+  Category browsing uses `category-stack.tsx` (full-width stacked bands).
 
 ## Stack notes
 

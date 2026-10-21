@@ -80,11 +80,11 @@ export function PhotoGrid({
         plugins={[Zoom, Captions, Counter]}
         zoom={{ maxZoomPixelRatio: 2, scrollToZoom: true }}
         captions={{ descriptionTextAlign: "center" }}
-        counter={{ container: { style: { top: "unset", bottom: 0, fontFamily: "var(--font-mono)", fontSize: 12 } } }}
+        counter={{ container: { style: { top: "unset", bottom: 0, fontFamily: "var(--font-sans)", fontSize: 12, letterSpacing: "0.16em" } } }}
         carousel={{ finite: false, preload: 2, padding: "24px" }}
         controller={{ closeOnBackdropClick: true }}
         animation={{ fade: 200, swipe: 300 }}
-        styles={{ container: { backgroundColor: "rgba(27,29,30,0.96)" } }}
+        styles={{ container: { backgroundColor: "rgba(35,40,35,0.96)" } }}
       />
     </>
   );
@@ -139,7 +139,7 @@ function Rows({
                     priority={index < priorityCount}
                   />
                   {p.label ? (
-                    <span className="pointer-events-none absolute left-2 bottom-2 rounded-xs bg-ink/80 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-cream opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="caps pointer-events-none absolute left-2 bottom-2 rounded-xs bg-ink/80 px-2 py-1 text-[0.58rem] text-cream opacity-0 transition-opacity group-hover:opacity-100">
                       {p.label}
                     </span>
                   ) : null}

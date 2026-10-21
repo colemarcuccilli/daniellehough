@@ -1,23 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Fraunces, Bricolage_Grotesque } from "next/font/google";
+import { Cormorant_Garamond, Jost, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], display: "swap" });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" });
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
-  axes: ["SOFT", "WONK", "opsz"],
   display: "swap",
 });
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
-  axes: ["opsz", "wdth"],
-  display: "swap",
-});
+const jost = Jost({ variable: "--font-jost", subsets: ["latin"], display: "swap" });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://danicams.com";
 
@@ -41,17 +35,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f8c858",
+  themeColor: "#3d4a3a",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${bricolage.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${cormorant.variable} ${jost.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-bg text-ink">
         {children}
         <Toaster
@@ -60,9 +51,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             style: {
               background: "var(--color-paper)",
               color: "var(--color-ink)",
-              border: "1px solid var(--color-ink)",
-              borderRadius: "6px",
-              boxShadow: "3px 3px 0 0 var(--color-ink)",
+              border: "1px solid var(--color-sage)",
+              borderRadius: "2px",
+              boxShadow: "0 12px 32px -18px rgba(35, 40, 35, 0.35)",
               fontFamily: "var(--font-sans)",
             },
           }}

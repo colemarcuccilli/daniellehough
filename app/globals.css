@@ -2,34 +2,29 @@
 @import "yet-another-react-lightbox/styles.css";
 
 @theme inline {
-  /* surfaces */
-  --color-bg: #fffdf8;
-  --color-cream: #faf5ea;
-  --color-cream-deep: #f1e8d4;
-  --color-paper: #ffffff;
+  /* paper, like the stationery */
+  --color-bg: #fbfaf6;
+  --color-paper: #fdfcf9;
+  --color-cream: #f3f1ea;
+  --color-cream-deep: #e8e5db;
 
-  /* ink */
-  --color-ink: #1b1d1e;
-  --color-ink-soft: #4a5052;
-  --color-ink-faint: #8a9194;
-  --color-line: #e4dcc9;
-  --color-line-strong: #c9bfa6;
+  /* ink: charcoal with a green cast */
+  --color-ink: #232823;
+  --color-ink-soft: #4d534c;
+  --color-ink-faint: #8b918a;
+  --color-line: #d9dbd3;
+  --color-line-strong: #a9b0a5;
 
-  /* brand yellow from the bulb */
+  /* sage: the structural brand green */
+  --color-sage: #53614f;
+  --color-sage-deep: #3d4a3a;
+  --color-sage-soft: #e3e7de;
+
+  /* the bright four, kept for memorability */
   --color-marigold: #f8c858;
   --color-marigold-bright: #ffd966;
   --color-marigold-deep: #d9a32e;
   --color-marigold-glow: #fff0c2;
-
-  /* supporting colour */
-  --color-slate: #3f5459;
-  --color-slate-deep: #2b3b40;
-  --color-slate-soft: #dce6e8;
-  --color-coral: #e2603e;
-  --color-coral-soft: #fbe1d6;
-  --color-sky: #c7dde6;
-  --color-moss: #6b7e4e;
-  --color-moss-soft: #e3e9d6;
   --color-teal: #1f8a8a;
   --color-teal-deep: #14605f;
   --color-teal-soft: #d7efee;
@@ -39,28 +34,39 @@
   --color-green: #3f9142;
   --color-green-deep: #2d6b30;
   --color-green-soft: #dff0dc;
+  --color-coral: #e2603e;
+  --color-coral-soft: #fbe1d6;
 
-  --font-display: var(--font-bricolage);
-  --font-serif: var(--font-fraunces);
-  --font-sans: var(--font-geist-sans);
+  /* legacy names the admin still references */
+  --color-slate: #3f5459;
+  --color-slate-deep: #2b3b40;
+  --color-slate-soft: #dce6e8;
+  --color-sky: #c7dde6;
+  --color-moss: #6b7e4e;
+  --color-moss-soft: #e3e9d6;
+
+  --font-display: var(--font-cormorant);
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-jost);
   --font-mono: var(--font-geist-mono);
 
-  --radius-xs: 0.25rem;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
 
-  --shadow-hard: 3px 3px 0 0 var(--color-ink);
-  --shadow-hard-sm: 2px 2px 0 0 var(--color-ink);
+  --shadow-hard: 0 1px 0 0 var(--color-line-strong);
+  --shadow-hard-sm: 0 1px 0 0 var(--color-line-strong);
+  --shadow-soft: 0 14px 36px -22px rgba(35, 40, 35, 0.4);
 }
 
 :root {
   --background: var(--color-bg);
   --foreground: var(--color-ink);
-  --yarl__color_backdrop: rgba(27, 29, 30, 0.96);
-  --yarl__color_button: #faf5ea;
+  --yarl__color_backdrop: rgba(35, 40, 35, 0.96);
+  --yarl__color_button: #f3f1ea;
   --yarl__color_button_active: #f8c858;
-  --yarl__slide_captions_container_background: rgba(27, 29, 30, 0.6);
+  --yarl__slide_captions_container_background: rgba(35, 40, 35, 0.6);
 }
 
 * {
@@ -75,7 +81,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
 }
 
@@ -87,60 +92,97 @@ body {
 @layer components {
   /* ---------- typographic helpers ---------- */
   .eyebrow {
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 0.6875rem;
-    letter-spacing: 0.18em;
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.26em;
     text-transform: uppercase;
-    color: var(--color-ink-soft);
+    color: var(--color-sage);
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.7rem;
   }
   .eyebrow::before {
     content: "";
     width: 1.5rem;
     height: 1px;
-    background: var(--color-marigold-deep);
+    background: var(--color-sage);
+    flex: none;
   }
   .eyebrow.no-rule::before {
     display: none;
   }
+  /* tracked small caps for metadata */
+  .caps {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
 
   .display {
-    font-family: var(--font-display), system-ui, sans-serif;
-    font-weight: 800;
-    font-variation-settings: "opsz" 96, "wdth" 100;
-    letter-spacing: -0.03em;
-    line-height: 0.94;
+    font-family: var(--font-display), Georgia, "Times New Roman", serif;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  .wordmark {
+    font-family: var(--font-display), Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    line-height: 1;
   }
   /* Home masthead headline: two lines that never wrap, sized to the viewport. */
   .hero-title {
-    font-size: clamp(1.9rem, 8.3vw, 7rem);
-    line-height: 0.95;
+    font-size: clamp(2.1rem, 9.3vw, 8rem);
+    line-height: 0.98;
   }
   .serif-accent {
-    font-family: var(--font-serif), Georgia, serif;
+    font-family: var(--font-serif), Georgia, "Times New Roman", serif;
     font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+    font-weight: 500;
+    letter-spacing: 0;
   }
 
   .prose-basic p + p {
     margin-top: 1em;
   }
 
-  /* ---------- outline system ---------- */
+  /* ---------- frames: hairlines and the double-line box from the stationery ---------- */
   .outline-card {
     background: var(--color-paper);
-    border: 1px solid var(--color-ink);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--color-sage);
+    border-radius: 2px;
   }
   .outline-card-soft {
     background: var(--color-paper);
     border: 1px solid var(--color-line-strong);
-    border-radius: var(--radius-md);
+    border-radius: 2px;
   }
+  .frame {
+    position: relative;
+    background: var(--color-paper);
+    border: 1px solid var(--color-sage);
+    border-radius: 2px;
+  }
+  .frame-inset::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid currentColor;
+    opacity: 0.45;
+    border-radius: 1px;
+    pointer-events: none;
+  }
+  /* a thin coloured rule across the top of a framed card */
+  .ribbon { border-top-width: 3px; border-top-color: var(--color-marigold); }
+  .ribbon-marigold { border-top-color: var(--color-marigold); }
+  .ribbon-teal { border-top-color: var(--color-teal); }
+  .ribbon-purple { border-top-color: var(--color-purple); }
+  .ribbon-green { border-top-color: var(--color-green); }
   .hairline {
     border-top: 1px solid var(--color-line);
   }
@@ -182,9 +224,9 @@ body {
     display: block;
     overflow: hidden;
     isolation: isolate;
-    border-radius: 6px;
+    border-radius: 2px;
     height: 232px;
-    background: var(--color-ink);
+    background: var(--color-sage-deep);
     color: var(--color-cream);
     transition: height 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
@@ -233,8 +275,8 @@ body {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(27, 29, 30, 0.72), rgba(27, 29, 30, 0.2) 45%, rgba(27, 29, 30, 0.55)),
-      linear-gradient(to top, rgba(27, 29, 30, 0.45), transparent 50%);
+      linear-gradient(90deg, rgba(35, 40, 35, 0.72), rgba(35, 40, 35, 0.18) 45%, rgba(35, 40, 35, 0.55)),
+      linear-gradient(to top, rgba(35, 40, 35, 0.45), transparent 50%);
   }
   .band-content {
     position: absolute;
@@ -253,30 +295,42 @@ body {
     grid-row: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 11px;
-    letter-spacing: 0.16em;
+    gap: 0.4rem;
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: rgba(250, 245, 234, 0.85);
+    color: rgba(251, 250, 246, 0.82);
+  }
+  .band-count {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .band-count > span { white-space: nowrap; }
+  @media (min-width: 768px) {
+    .band-count { flex-direction: row; gap: 0; }
+    .band-count > span + span::before { content: "\00b7"; margin: 0 0.55em; }
   }
   .band-num {
-    font-family: var(--font-display), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 1.5rem;
-    letter-spacing: -0.02em;
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 500;
+    font-size: 1.9rem;
+    letter-spacing: 0.02em;
     line-height: 1;
     color: var(--accent);
   }
   @media (min-width: 640px) {
-    .band-num { font-size: 2rem; }
+    .band-num { font-size: 2.4rem; }
   }
   .band-tag {
     font-family: var(--font-sans), system-ui, sans-serif;
+    font-weight: 400;
     font-size: 0.875rem;
     letter-spacing: 0;
     text-transform: none;
-    color: rgba(250, 245, 234, 0.8);
+    color: rgba(251, 250, 246, 0.78);
   }
   .band-arrow {
     grid-column: 1;
@@ -287,8 +341,8 @@ body {
     height: 3rem;
     width: 3rem;
     border-radius: 999px;
-    border: 1px solid rgba(250, 245, 234, 0.6);
-    background: rgba(27, 29, 30, 0.35);
+    border: 1px solid rgba(251, 250, 246, 0.55);
+    background: rgba(35, 40, 35, 0.3);
     color: var(--color-cream);
     backdrop-filter: blur(6px);
     transition: background-color 400ms ease, color 400ms ease, border-color 400ms ease, transform 400ms ease;
@@ -306,12 +360,11 @@ body {
     align-self: center;
     justify-self: end;
     text-align: right;
-    font-family: var(--font-display), system-ui, sans-serif;
-    font-weight: 800;
-    font-variation-settings: "opsz" 96, "wdth" 100;
-    font-size: clamp(2.9rem, 8.6vw, 8.25rem);
-    line-height: 0.9;
-    letter-spacing: -0.045em;
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(3rem, 9.6vw, 9rem);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
     color: var(--color-cream);
     text-wrap: balance;
     transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);

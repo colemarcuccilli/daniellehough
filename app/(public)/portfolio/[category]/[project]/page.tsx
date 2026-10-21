@@ -60,7 +60,7 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
         aside={
           <div className="space-y-4">
             {meta.length > 0 ? (
-              <ul className="flex flex-wrap gap-x-5 gap-y-2 lg:justify-end font-mono text-[11px] uppercase tracking-[0.14em] text-cream/80">
+              <ul className="caps flex flex-wrap gap-x-5 gap-y-2 text-[0.62rem] text-cream/80 lg:justify-end">
                 {meta.map((m) => (
                   <li key={m.text} className="inline-flex items-center gap-1.5">
                     <span className="text-marigold">{m.icon}</span>
@@ -97,14 +97,14 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
 
       {prev || next ? (
         <Container className="mt-14">
-          <nav className="grid gap-px border border-ink rounded-md overflow-hidden bg-ink sm:grid-cols-2" aria-label="Neighbouring projects">
+          <nav className="grid gap-px overflow-hidden rounded-xs border border-sage bg-line sm:grid-cols-2" aria-label="Neighbouring projects">
             <div className="bg-paper p-5">
               {prev ? (
                 <Link href={projectHref({ slug: prev.slug, category: project.category })} className="group flex items-center gap-3">
                   <ArrowLeft size={16} className="text-marigold-deep transition-transform group-hover:-translate-x-0.5" />
                   <span>
-                    <span className="block font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-faint">Previous</span>
-                    <span className="display text-xl">{prev.title}</span>
+                    <span className="caps block text-[0.58rem] text-ink-faint">Previous</span>
+                    <span className="display text-2xl">{prev.title}</span>
                   </span>
                 </Link>
               ) : (
@@ -116,8 +116,8 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
                 <Link href={projectHref({ slug: next.slug, category: project.category })} className="group flex items-center gap-3 sm:flex-row-reverse">
                   <ArrowRight size={16} className="text-marigold-deep transition-transform group-hover:translate-x-0.5" />
                   <span>
-                    <span className="block font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-faint">Next</span>
-                    <span className="display text-xl">{next.title}</span>
+                    <span className="caps block text-[0.58rem] text-ink-faint">Next</span>
+                    <span className="display text-2xl">{next.title}</span>
                   </span>
                 </Link>
               ) : (

@@ -20,17 +20,17 @@ export function SectionHeading({
   return (
     <div className={cn("flex flex-wrap items-end justify-between gap-6", className)}>
       <div className="max-w-2xl">
-        {eyebrow ? <p className="eyebrow mb-3">{eyebrow}</p> : null}
-        <h2 className={cn("display", size === "lg" ? "text-5xl sm:text-6xl lg:text-7xl" : "text-4xl sm:text-5xl")}>{title}</h2>
+        {eyebrow ? <p className="eyebrow mb-4">{eyebrow}</p> : null}
+        <h2 className={cn("display", size === "lg" ? "text-6xl sm:text-7xl lg:text-8xl" : "text-5xl sm:text-6xl")}>{title}</h2>
         {body ? <p className="mt-4 text-ink-soft leading-relaxed text-[17px]">{body}</p> : null}
       </div>
       {action ? (
         <Link
           href={action.href}
-          className="group inline-flex items-center gap-1.5 text-sm font-medium border-b border-ink pb-0.5 hover:text-marigold-deep hover:border-marigold-deep transition-colors"
+          className="caps group inline-flex items-center gap-2 border-b border-sage pb-1 text-[0.64rem] text-ink transition-colors hover:border-marigold-deep hover:text-marigold-deep"
         >
           {action.label}
-          <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
         </Link>
       ) : null}
     </div>

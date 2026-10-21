@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { InquiryButton } from "@/components/public/inquiry-modal";
 import { BrandLink } from "@/components/public/logo";
+import { Sprig } from "@/components/public/sprig";
 
 export function MobileMenu({ links }: { links: { href: string; label: string; accent: string }[] }) {
   const [open, setOpen] = useState(false);
@@ -33,37 +34,38 @@ export function MobileMenu({ links }: { links: { href: string; label: string; ac
   const panel =
     open && mounted
       ? createPortal(
-          <div id="mobile-menu" className="fixed inset-0 z-50 flex flex-col bg-ink text-cream">
+          <div id="mobile-menu" className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-sage-deep text-cream">
+            <Sprig className="pointer-events-none absolute -right-10 -bottom-6 h-72 w-auto text-cream opacity-20" />
             <div className="flex h-[4.25rem] items-center justify-between px-4">
               <span onClick={() => setOpen(false)}>
-                <BrandLink tone="dark" />
+                <BrandLink tone="dark" subtitle={false} />
               </span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cream text-ink"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-cream/50 text-cream"
               >
                 <X size={18} />
               </button>
             </div>
-            <ul className="flex-1 px-5 pt-6 grid content-start gap-2">
+            <ul className="relative flex-1 px-5 pt-8 grid content-start gap-1">
               {links.map((l) => (
                 <li key={l.href}>
                   <Link
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="display flex items-center gap-4 py-3 text-[2.75rem] leading-none"
+                    className="display flex items-center gap-4 border-b border-cream/15 py-4 text-[2.9rem] leading-none"
                   >
-                    <span className="h-3 w-3 rounded-full" style={{ background: l.accent }} aria-hidden />
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.accent }} aria-hidden />
                     {l.label}
                   </Link>
                 </li>
               ))}
             </ul>
-            <div className="px-5 pb-8" onClick={() => setOpen(false)}>
-              <InquiryButton variant="pill" size="lg" className="w-full">Start a project</InquiryButton>
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] text-cream/60">Danielle Hough · Indiana</p>
+            <div className="relative px-5 pb-8" onClick={() => setOpen(false)}>
+              <InquiryButton variant="primary" size="lg" className="w-full">Start a project</InquiryButton>
+              <p className="caps mt-4 text-[0.6rem] text-cream/60">Danielle Hough · Photographer · Indiana</p>
             </div>
           </div>,
           document.body,
@@ -78,7 +80,7 @@ export function MobileMenu({ links }: { links: { href: string; label: string; ac
         aria-expanded={open}
         aria-controls="mobile-menu"
         aria-label={open ? "Close menu" : "Open menu"}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-cream text-ink"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cream/60 bg-cream text-ink"
       >
         {open ? <X size={16} /> : <Menu size={16} />}
       </button>

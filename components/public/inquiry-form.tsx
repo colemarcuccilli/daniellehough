@@ -34,10 +34,10 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
   if (done) {
     return (
       <div className="outline-card p-8 sm:p-10">
-        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-marigold border border-ink">
+        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-marigold-deep/60 bg-marigold">
           <Check size={20} />
         </span>
-        <h3 className="display text-3xl mt-6">Got it.</h3>
+        <h3 className="display mt-6 text-4xl">Got it.</h3>
         <p className="mt-3 text-ink-soft leading-relaxed">I reply within two business days.</p>
       </div>
     );

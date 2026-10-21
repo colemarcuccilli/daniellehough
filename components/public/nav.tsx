@@ -15,7 +15,7 @@ export function Nav() {
     <NavShell>
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5 sm:h-[4.5rem] sm:px-8">
         <BrandLink tone="dark" />
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-9 md:flex">
           {NAV_LINKS.map((l) => (
             <li key={l.href}>
               <NavItem {...l} />

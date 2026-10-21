@@ -17,7 +17,7 @@ const ACCENTS = ["var(--color-marigold)", "var(--color-teal)", "var(--color-purp
  */
 export function CategoryStack({ categories, compact, id = "portfolio" }: { categories: CategoryWithCover[]; compact?: boolean; id?: string }) {
   return (
-    <BandSpotlight id={id} className="flex flex-col gap-1.5 px-2 sm:px-3 scroll-mt-20">
+    <BandSpotlight id={id} className="flex flex-col gap-1 px-2 sm:px-3 scroll-mt-20">
       {categories.map((c, i) => {
         const accent = ACCENTS[i % ACCENTS.length];
         const cover = c.cover;
@@ -46,8 +46,9 @@ export function CategoryStack({ categories, compact, id = "portfolio" }: { categ
             <div className="band-content">
               <div className="band-info">
                 <span className="band-num">{String(i + 1).padStart(2, "0")}</span>
-                <span>
-                  {pluralize(c.project_count, "project")} · {pluralize(c.photo_count, "photo")}
+                <span className="band-count">
+                  <span>{pluralize(c.project_count, "project")}</span>
+                  <span>{pluralize(c.photo_count, "photo")}</span>
                 </span>
                 {c.tagline ? <span className="band-tag hidden sm:block">{c.tagline}</span> : null}
               </div>

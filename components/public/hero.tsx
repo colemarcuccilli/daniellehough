@@ -8,7 +8,7 @@ import { InquiryButton } from "@/components/public/inquiry-modal";
 
 export function Hero({ photo, caption }: { photo: Photo | null; caption?: string | null }) {
   return (
-    <section className="relative flex min-h-[88svh] items-end overflow-hidden bg-ink text-cream sm:min-h-[92svh]">
+    <section className="relative flex min-h-[88svh] items-end overflow-hidden bg-sage-deep text-cream sm:min-h-[92svh]">
       {photo ? (
         <Image
           src={photoUrl(photo.web_path)}
@@ -22,9 +22,9 @@ export function Hero({ photo, caption }: { photo: Photo | null; caption?: string
           className="object-cover object-[center_38%]"
         />
       ) : null}
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-ink/35" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-t from-[rgba(35,40,35,0.86)] via-[rgba(35,40,35,0.18)] to-[rgba(35,40,35,0.36)]" aria-hidden />
       <Container className="relative w-full pb-14 pt-40 sm:pb-20">
-        <p className="eyebrow mb-5 text-cream/75 [&::before]:bg-marigold rise">
+        <p className="eyebrow mb-6 text-cream/75 [&::before]:bg-marigold rise">
           Danielle Hough · Indiana National Guard · U.S. Air Force
         </p>
         <h1 className="display hero-title rise rise-2">
@@ -34,14 +34,12 @@ export function Hero({ photo, caption }: { photo: Photo | null; caption?: string
         <p className="mt-6 max-w-lg text-lg text-cream/80 rise rise-3">Businesses and families across Indiana.</p>
         <div className="mt-8 flex flex-wrap gap-3 rise rise-3">
           <a href="#portfolio" className={buttonStyles({ variant: "primary", size: "lg" })}>
-            Past projects <ArrowDown size={16} />
+            Past projects <ArrowDown size={15} />
           </a>
           <InquiryButton variant="cream" size="lg">Start a project</InquiryButton>
         </div>
       </Container>
-      {caption ? (
-        <p className="absolute bottom-5 right-5 hidden font-mono text-[10px] uppercase tracking-[0.18em] text-cream/55 sm:block">{caption}</p>
-      ) : null}
+      {caption ? <p className="caps absolute bottom-5 right-5 hidden text-[0.58rem] text-cream/55 sm:block">{caption}</p> : null}
     </section>
   );
 }
