@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import Image from "next/image";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Counter from "yet-another-react-lightbox/plugins/counter";
 import "yet-another-react-lightbox/plugins/counter.css";
-import { Check, CheckSquare, Download, Loader2, Square, X } from "lucide-react";
+import { Check, CheckSquare, Download, Loader2, Share, Square, X } from "lucide-react";
 import { toast } from "sonner";
 import { downloadZip } from "client-zip";
 import { optimizedUrl, photoUrl, slugify } from "@/lib/images";
@@ -41,6 +41,55 @@ declare global {
 }
 
 type Zip = { done: number; total: number };
+/** A full-size original fetched on a phone, ready to hand to the share sheet ("Save Image" puts it in Photos). */
+type Share = { id: string; state: "fetching" | "ready"; pct: number; file?: File };
+
+let canShareCache: boolean | null = null;
+function canShareFilesNow() {
+  if (canShareCache !== null) return canShareCache;
+  try {
+    const probe = new File([new Uint8Array(1)], "probe.jpg", { type: "image/jpeg" });
+    canShareCache = !!navigator.canShare && navigator.canShare({ files: [probe] }) && window.matchMedia("(hover: none)").matches;
+  } catch {
+    canShareCache = false;
+  }
+  return canShareCache;
+}
+const noSubscribe = () => () => {};
+/** True on touch devices whose share sheet accepts files (iOS Safari, Android Chrome). */
+function useCanShareFiles() {
+  return useSyncExternalStore(noSubscribe, canShareFilesNow, () => false);
+}
+
+/** Which section is under the sticky bar right now. */
+function useActiveSection(slugs: string[]) {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const line = 96; // just under the sticky bar
+      let current: string | null = null;
+      for (const slug of slugs) {
+        const el = document.getElementById(`s-${slug}`);
+        if (el && el.getBoundingClientRect().top <= line) current = slug;
+      }
+      setActive(current);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
+    };
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [slugs]);
+  return active;
+}
 
 export function GalleryView({
   slug,
@@ -68,6 +117,72 @@ export function GalleryView({
   const [selecting, setSelecting] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [zip, setZip] = useState<Zip | null>(null);
+  const [share, setShare] = useState<Share | null>(null);
+  const canShareFiles = useCanShareFiles();
+  const slugs = useMemo(() => sections.map((s) => s.slug), [sections]);
+  const active = useActiveSection(slugs);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Keep the highlighted chip in view as the page scrolls through sections.
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav || !active) return;
+    const chip = nav.querySelector<HTMLElement>(`[data-chip="${active}"]`);
+    if (!chip) return;
+    const left = chip.offsetLeft - 12;
+    if (left < nav.scrollLeft || chip.offsetLeft + chip.offsetWidth > nav.scrollLeft + nav.clientWidth) nav.scrollTo({ left, behavior: "smooth" });
+  }, [active]);
+
+  /**
+   * Phones: fetch the original, then hand it to the share sheet, where
+   * "Save Image" drops it straight into Photos. If the browser has lost the
+   * tap by the time the file arrives, the button turns into a one-tap "Save".
+   */
+  const saveToPhotos = async (p: GalleryPhoto) => {
+    if (share?.id === p.id && share.state === "ready" && share.file) {
+      await presentShare(share.file);
+      return;
+    }
+    if (share?.state === "fetching") return;
+    setShare({ id: p.id, state: "fetching", pct: 0 });
+    try {
+      const meta = (await fetch(`${downloadPath(slug, p.id)}?format=json`).then((r) => (r.ok ? r.json() : null))) as { url: string; filename: string } | null;
+      if (!meta) throw new Error("Could not prepare the photo.");
+      const res = await fetch(meta.url);
+      if (!res.ok || !res.body) throw new Error("Could not fetch the photo.");
+      const total = Number(res.headers.get("content-length") || 0);
+      const reader = res.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let got = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        got += value.byteLength;
+        if (total) setShare({ id: p.id, state: "fetching", pct: Math.min(99, Math.round((got / total) * 100)) });
+      }
+      const file = new File(chunks as BlobPart[], meta.filename, { type: "image/jpeg" });
+      setShare({ id: p.id, state: "ready", pct: 100, file });
+      await presentShare(file);
+    } catch (e) {
+      setShare(null);
+      toast.error(e instanceof Error ? e.message : "Could not save the photo.");
+    }
+  };
+
+  const presentShare = async (file: File) => {
+    try {
+      await navigator.share({ files: [file] });
+      setShare(null);
+    } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return; // sheet dismissed; keep the file ready
+      if (e instanceof DOMException && e.name === "NotAllowedError") {
+        toast.message("Ready — tap Save to add it to Photos.");
+        return;
+      }
+      toast.error("Could not open the share sheet.");
+    }
+  };
 
   const slides = useMemo(
     () =>
@@ -173,17 +288,25 @@ export function GalleryView({
     <>
       <div className="sticky top-0 z-30 border-b border-line bg-bg/92 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 sm:px-6">
-          <nav aria-label="Sections" className="-mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {sections.map((s) => (
-              <a
-                key={s.id}
-                href={`#s-${s.slug}`}
-                className="caps shrink-0 whitespace-nowrap rounded-xs border border-transparent px-3 py-1.5 text-[0.62rem] text-ink-soft transition-colors hover:border-sage hover:text-ink"
-              >
-                {s.name}
-                <span className="ml-1.5 text-ink-faint">{s.photos.length}</span>
-              </a>
-            ))}
+          <nav ref={navRef} aria-label="Sections" className="-mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {sections.map((s) => {
+              const on = active === s.slug;
+              return (
+                <a
+                  key={s.id}
+                  href={`#s-${s.slug}`}
+                  data-chip={s.slug}
+                  aria-current={on ? "location" : undefined}
+                  className={cn(
+                    "caps shrink-0 whitespace-nowrap rounded-xs border px-3 py-1.5 text-[0.62rem] transition-colors",
+                    on ? "border-sage-deep bg-sage-deep text-cream" : "border-transparent text-ink-soft hover:border-sage hover:text-ink",
+                  )}
+                >
+                  {s.name}
+                  <span className={cn("ml-1.5", on ? "text-cream/70" : "text-ink-faint")}>{s.photos.length}</span>
+                </a>
+              );
+            })}
           </nav>
 
           {downloads ? (
@@ -293,7 +416,32 @@ export function GalleryView({
         animation={{ fade: 200, swipe: 300 }}
         toolbar={{
           buttons: [
-            downloads && current ? (
+            downloads && current && canShareFiles ? (
+              <button
+                key="save"
+                type="button"
+                className="yarl__button"
+                onClick={() => void saveToPhotos(current)}
+                disabled={share?.state === "fetching"}
+                title="Save to Photos"
+                aria-label="Save to Photos"
+                style={{ width: "auto", padding: "0 10px", gap: 6, fontFamily: "var(--font-sans)", fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase" }}
+              >
+                {share?.id === current.id && share.state === "fetching" ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> {share.pct}%
+                  </>
+                ) : share?.id === current.id && share.state === "ready" ? (
+                  <>
+                    <Share size={18} /> Save
+                  </>
+                ) : (
+                  <>
+                    <Download size={20} /> Save
+                  </>
+                )}
+              </button>
+            ) : downloads && current ? (
               <a
                 key="download"
                 className="yarl__button"
