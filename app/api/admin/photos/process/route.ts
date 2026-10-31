@@ -6,7 +6,7 @@ import { derive } from "@/lib/photos/derive";
 import { ORIGINALS_BUCKET, WEB_BUCKET, slugify } from "@/lib/images";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 180;
 
 const bodySchema = z.object({
   projectId: z.string().uuid(),
