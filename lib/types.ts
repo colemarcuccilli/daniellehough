@@ -30,6 +30,8 @@ export type Project = {
   gallery_enabled: boolean;
   gallery_downloads: boolean;
   gallery_intro: string | null;
+  /** Optional masthead image (site-relative path or URL); falls back to the cover photo. */
+  gallery_cover_url: string | null;
   created_at: string;
   updated_at: string;
 };

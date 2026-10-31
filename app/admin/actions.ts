@@ -485,6 +485,7 @@ const gallerySchema = z.object({
   gallery_enabled: z.boolean(),
   gallery_downloads: z.boolean(),
   gallery_intro: z.string().trim().max(2000).optional(),
+  gallery_cover_url: z.string().trim().max(500).optional(),
 });
 
 /** Gallery switches + intro. Mints a share slug the first time the gallery is enabled. */
@@ -495,6 +496,7 @@ export async function updateGallery(projectId: string, formData: FormData): Prom
       gallery_enabled: bool(formData.get("gallery_enabled")),
       gallery_downloads: bool(formData.get("gallery_downloads")),
       gallery_intro: str(formData.get("gallery_intro")),
+      gallery_cover_url: str(formData.get("gallery_cover_url")),
     });
     if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the form.");
     const { data: current } = await supabase.from("projects").select("gallery_slug").eq("id", projectId).maybeSingle();
@@ -503,6 +505,7 @@ export async function updateGallery(projectId: string, formData: FormData): Prom
       gallery_enabled: parsed.data.gallery_enabled,
       gallery_downloads: parsed.data.gallery_downloads,
       gallery_intro: parsed.data.gallery_intro || null,
+      gallery_cover_url: parsed.data.gallery_cover_url || null,
     };
     let slug = (current.gallery_slug as string | null) ?? null;
     if (!slug && parsed.data.gallery_enabled) {

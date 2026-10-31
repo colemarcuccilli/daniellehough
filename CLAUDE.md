@@ -89,6 +89,12 @@ normally `is_published = false` so it never shows in the portfolio; the
   only objects for which `vh.can_download_original(name)` is true, so switching
   the gallery or downloads off closes access immediately. Still no service
   role key anywhere.
+- **Masthead image**: `gallery_cover_url` (a path under `public/`, e.g.
+  `/galleries/hunkin-wedding-cover.jpg`, or a URL) wins over the cover photo.
+  The project's cover photo never appears in the grid unless it is in a
+  section. New uploads/imports with a section picked go to the originals
+  folder `<project-slug>/<section-slug>/`, so each section has its own bucket
+  folder for bulk drops.
 - `reorderPhotos` accepts a subset (the filtered view) and keeps the rest of
   the project in place; `sortPhotosByTakenAt` orders a whole project by EXIF
   time. Schema: `supabase/freewebsites/0002_vh_galleries.sql`.

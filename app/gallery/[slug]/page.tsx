@@ -21,9 +21,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     title: g.title,
     description: g.gallery_intro ?? `${g.title} — photographs by Danielle Hough.`,
     robots: { index: false, follow: false },
-    openGraph: g.cover
-      ? { title: g.title, images: [{ url: photoUrl(g.cover.web_path), width: g.cover.width, height: g.cover.height }] }
-      : undefined,
+    openGraph: g.gallery_cover_url
+      ? { title: g.title, images: [{ url: g.gallery_cover_url }] }
+      : g.cover
+        ? { title: g.title, images: [{ url: photoUrl(g.cover.web_path), width: g.cover.width, height: g.cover.height }] }
+        : undefined,
   };
 }
 
@@ -33,11 +35,25 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
   if (!g) notFound();
 
   const line = [g.shot_on ? formatDate(g.shot_on) : null, g.location].filter(Boolean).join(" · ");
+  const headerUrl = g.gallery_cover_url?.trim() || null;
+  const headerIsRemote = !!headerUrl && !headerUrl.startsWith("/") && !headerUrl.includes(".supabase.co/");
 
   return (
     <>
       <section className="relative isolate flex min-h-[72svh] flex-col overflow-hidden bg-sage-deep text-cream">
-        {g.cover ? (
+        {headerUrl ? (
+          <Image
+            src={headerUrl}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            quality={75}
+            unoptimized={headerIsRemote}
+            className="object-cover"
+            style={{ objectPosition: "center 40%" }}
+          />
+        ) : g.cover ? (
           <Image
             src={photoUrl(g.cover.web_path)}
             alt=""
@@ -73,7 +89,7 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
           {g.gallery_intro ? <p className="mt-5 max-w-2xl text-base leading-relaxed text-cream/85 sm:text-lg">{g.gallery_intro}</p> : null}
           <p className="caps mt-6 text-[0.62rem] text-cream/70">
             {pluralize(g.photos.length, "photograph")}
-            {g.gallery_downloads ? " · tap a photo to view it, then use the arrow to save the full-size file" : ""}
+            {g.gallery_downloads && g.photos.length > 0 ? " · tap a photo to view it, then use the arrow to save the full-size file" : ""}
           </p>
         </div>
       </section>

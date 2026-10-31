@@ -94,6 +94,9 @@ export function PhotoManager({ project, photos: initial, sections }: { project: 
   );
 
   const sectionName = (id: string | null) => sections.find((s) => s.id === id)?.name ?? null;
+  /** Originals folder for new files: `<project>/<section>` when a section is picked. */
+  const targetSlug = sections.find((s) => s.id === targetSection)?.slug;
+  const folder = targetSlug ? `${project.slug}/${targetSlug}` : project.slug;
   const visible = useMemo(
     () => (filter === "all" ? photos : filter === NONE ? photos.filter((p) => !p.section_id) : photos.filter((p) => p.section_id === filter)),
     [photos, filter],
@@ -165,10 +168,10 @@ export function PhotoManager({ project, photos: initial, sections }: { project: 
         async ({ f, job }) => {
           try {
             updateJob(job.key, { status: "uploading" });
-            let path = `${project.slug}/${safeFileName(f.name)}`;
+            let path = `${folder}/${safeFileName(f.name)}`;
             let { error } = await supabase.storage.from(ORIGINALS_BUCKET).upload(path, f, { contentType: f.type, upsert: false });
             if (error && /exist/i.test(error.message)) {
-              path = `${project.slug}/${Date.now().toString(36)}-${safeFileName(f.name)}`;
+              path = `${folder}/${Date.now().toString(36)}-${safeFileName(f.name)}`;
               ({ error } = await supabase.storage.from(ORIGINALS_BUCKET).upload(path, f, { contentType: f.type, upsert: false }));
             }
             if (error) throw new Error(error.message);
@@ -184,23 +187,23 @@ export function PhotoManager({ project, photos: initial, sections }: { project: 
       if (added) toast.success(`${added} photo${added === 1 ? "" : "s"} added`);
       router.refresh();
     },
-    [project.slug, supabase, processPath, router],
+    [folder, supabase, processPath, router],
   );
 
   const importFolder = useCallback(async () => {
-    const answer = window.prompt("Folder inside the PortfolioPhotos bucket to import from:", project.slug);
+    const answer = window.prompt(`Folder inside the ${ORIGINALS_BUCKET} bucket to import from:`, folder);
     if (answer === null) return;
-    const folder = answer.trim().replace(/^\/+|\/+$/g, "");
+    const source = answer.trim().replace(/^\/+|\/+$/g, "");
     setImporting(true);
     try {
       const { data, error } = await supabase.storage
         .from(ORIGINALS_BUCKET)
-        .list(folder, { limit: 1000, sortBy: { column: "name", order: "asc" } });
+        .list(source, { limit: 1000, sortBy: { column: "name", order: "asc" } });
       if (error) throw new Error(error.message);
       const existing = new Set(photos.map((p) => p.original_path));
       const files = (data ?? [])
         .filter((o) => o.id !== null && !o.name.startsWith(".") && /\.(jpe?g|png|webp|tiff?)$/i.test(o.name))
-        .map((o) => (folder ? `${folder}/${o.name}` : o.name))
+        .map((o) => (source ? `${source}/${o.name}` : o.name))
         .filter((p) => !existing.has(p));
       if (files.length === 0) {
         toast.message("Nothing new to import in that folder.");
@@ -225,7 +228,7 @@ export function PhotoManager({ project, photos: initial, sections }: { project: 
     } finally {
       setImporting(false);
     }
-  }, [project.slug, supabase, photos, processPath, router]);
+  }, [folder, supabase, photos, processPath, router]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),

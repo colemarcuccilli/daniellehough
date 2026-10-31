@@ -166,6 +166,10 @@ export function GalleryPanel({ project, sections, photoCount }: { project: Proje
           <Textarea id="gallery_intro" name="gallery_intro" rows={2} maxLength={2000} defaultValue={project.gallery_intro ?? ""} placeholder="Thank you for celebrating with us. Save any photo you like — they are yours." />
         </Field>
 
+        <Field label="Header image (optional)" htmlFor="gallery_cover_url" hint="A path under /public (e.g. /galleries/cover.jpg) or an image URL. Leave empty to use the project's cover photo. The cover photo stays out of the grid unless it is in a section.">
+          <Input id="gallery_cover_url" name="gallery_cover_url" maxLength={500} defaultValue={project.gallery_cover_url ?? ""} placeholder="/galleries/hunkin-wedding-cover.jpg" className="font-mono text-sm" />
+        </Field>
+
         <div className="flex justify-end">
           <Button type="submit" variant="primary" disabled={pending}>
             {pending ? "Saving…" : "Save gallery"}

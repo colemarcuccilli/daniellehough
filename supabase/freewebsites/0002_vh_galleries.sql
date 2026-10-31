@@ -62,3 +62,8 @@ grant execute on function vh.can_download_original(text) to anon, authenticated,
 
 create policy "vh originals: gallery download" on storage.objects for select to anon, authenticated
   using (bucket_id = 'vh-originals' and vh.can_download_original(name));
+
+-- 2026-10-31, later the same day: optional header image for the gallery
+-- masthead (a site-relative path under /public or a URL). When unset the
+-- masthead uses the project's cover photo.
+alter table vh.projects add column gallery_cover_url text check (char_length(gallery_cover_url) <= 500);

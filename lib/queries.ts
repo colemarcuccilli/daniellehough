@@ -199,7 +199,8 @@ export async function getGalleryBySlug(slug: string): Promise<Gallery | null> {
   ]);
   const list = (photos ?? []) as Photo[];
   const groups: GallerySection[] = ((sections ?? []) as Section[]).map((s) => ({ ...s, photos: list.filter((p) => p.section_id === s.id) }));
-  const loose = list.filter((p) => !p.section_id || !groups.some((g) => g.id === p.section_id));
+  // The cover photo lives in the masthead; it only joins the grid when it is in a section.
+  const loose = list.filter((p) => (!p.section_id || !groups.some((g) => g.id === p.section_id)) && p.id !== row.cover_photo_id);
   if (loose.length) {
     groups.push({
       id: "unsorted",
