@@ -89,7 +89,7 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
           {g.gallery_intro ? <p className="mt-5 max-w-2xl text-base leading-relaxed text-cream/85 sm:text-lg">{g.gallery_intro}</p> : null}
           <p className="caps mt-6 text-[0.62rem] text-cream/70">
             {pluralize(g.photos.length, "photograph")}
-            {g.gallery_downloads && g.photos.length > 0 ? " · tap a photo to view it, then use the arrow to save the full-size file" : ""}
+            {g.gallery_downloads && g.photos.length > 0 ? " · tap a photo to view it, then tap Save to keep the full-size file" : ""}
           </p>
         </div>
       </section>
