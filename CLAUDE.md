@@ -95,6 +95,21 @@ normally `is_published = false` so it never shows in the portfolio; the
   section. New uploads/imports with a section picked go to the originals
   folder `<project-slug>/<section-slug>/`, so each section has its own bucket
   folder for bulk drops.
+- **Automatic bucket import** (2026-10-31): a trigger on `storage.objects`
+  (`vh.poke_import_sync`, debounced through `vh.sync_state`, pg_net) POSTs
+  to `/api/import/sync` after uploads; a Vercel cron (`vercel.json`, every 5
+  min) sweeps; the gallery panel has "Sync now". The route reconciles each
+  gallery project's `<slug>/` and `<slug>/<section-slug>/` folders against
+  `photos` (`lib/photos/sync.ts`), processes what is missing through
+  `lib/photos/ingest.ts` (shared with the admin uploader), coordinates
+  overlapping runs with `vh.import_claims`, and hands off to a new run via
+  `after()` when the 240 s budget runs out. Secret callers (cron, trigger)
+  sign in as the **import account** `gallery-import@danicams.com`, an
+  ordinary row in `vh.admins` (`IMPORT_BOT_EMAIL` / `IMPORT_BOT_PASSWORD`
+  env), so RLS still gates everything and there is no service-role key.
+  `CRON_SECRET` is the bearer for the route; the same value sits in
+  `vh.sync_state.secret` for the trigger. Unknown folders are reported as
+  `skipped_folders`, never imported.
 - `reorderPhotos` accepts a subset (the filtered view) and keeps the rest of
   the project in place; `sortPhotosByTakenAt` orders a whole project by EXIF
   time. Schema: `supabase/freewebsites/0002_vh_galleries.sql`.

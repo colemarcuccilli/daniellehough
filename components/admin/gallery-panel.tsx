@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, FolderSync, Loader2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +25,27 @@ export function GalleryPanel({ project, sections, photoCount }: { project: Proje
   const [slug, setSlug] = useState(project.gallery_slug);
   const [copied, setCopied] = useState(false);
   const [newName, setNewName] = useState("");
+  const [syncing, setSyncing] = useState(false);
+
+  /** Processes anything in this project's bucket folders that is not on the site yet. */
+  const syncNow = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch(`/api/import/sync?project=${project.id}`, { method: "POST" });
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string; scanned?: number; processed?: number; remaining?: number; failed?: { path: string; error: string }[]; skipped_folders?: string[] };
+      if (!res.ok || !json.ok) throw new Error(json.error || `Sync failed (${res.status})`);
+      const bits = [`${json.processed ?? 0} added`];
+      if (json.remaining) bits.push(`${json.remaining} still queued (continuing in the background)`);
+      if (json.failed?.length) bits.push(`${json.failed.length} failed`);
+      if (json.skipped_folders?.length) bits.push(`ignored folders: ${json.skipped_folders.join(", ")}`);
+      toast.success(`Bucket scanned: ${json.scanned ?? 0} files · ${bits.join(" · ")}`, { duration: 8000 });
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Sync failed");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const link = slug ? galleryUrl(slug) : null;
 
@@ -176,6 +197,19 @@ export function GalleryPanel({ project, sections, photoCount }: { project: Proje
           </Button>
         </div>
       </form>
+
+      <div className="hairline pt-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="display text-xl">Bucket import</h3>
+          <p className="text-sm text-ink-soft">
+            Files dropped into <code className="font-mono text-xs">{project.slug}/&lt;section&gt;/</code> in the originals bucket are picked up
+            automatically within a few minutes. Press this to run it right now.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={syncNow} disabled={syncing}>
+          {syncing ? <Loader2 size={14} className="animate-spin" /> : <FolderSync size={14} />} {syncing ? "Scanning…" : "Sync now"}
+        </Button>
+      </div>
 
       <div className="hairline pt-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
