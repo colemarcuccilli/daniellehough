@@ -1,5 +1,5 @@
 import { createPublicClient } from "@/lib/supabase/public";
-import type { Category, CategoryWithCover, Photo, Project, ProjectWithCover } from "@/lib/types";
+import type { Category, CategoryWithCover, Photo, Project, ProjectWithCover, Section } from "@/lib/types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -148,6 +148,69 @@ export async function getHeroPhoto(): Promise<Photo | null> {
     const hit = list.find((p) => p.original_path === path);
     if (hit) return hit;
   }
-  const { data: fallback } = await supabase.from("photos").select("*").eq("is_published", true).order("created_at", { ascending: false }).limit(1);
-  return ((fallback ?? [])[0] as Photo | undefined) ?? null;
+  const { data: fallback } = await supabase
+    .from("photos")
+    .select("*, project:projects!photos_project_id_fkey!inner(is_published)")
+    .eq("is_published", true)
+    .eq("project.is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  const hit = (fallback ?? [])[0] as (Photo & { project: unknown }) | undefined;
+  if (!hit) return null;
+  const { project: _p, ...photo } = hit;
+  void _p;
+  return photo as Photo;
+}
+
+/* ------------------------------------------------------------------ */
+/* client galleries                                                    */
+/* ------------------------------------------------------------------ */
+
+export type GallerySection = Section & { photos: Photo[] };
+export type Gallery = Project & { cover: Photo | null; sections: GallerySection[]; photos: Photo[] };
+
+/**
+ * An unlisted client gallery by its share slug. Photos are grouped by section
+ * in section order; photos without a section land in a trailing "More" group
+ * (or form the only group when the project has no sections).
+ */
+export async function getGalleryBySlug(slug: string): Promise<Gallery | null> {
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) return null;
+  const supabase = createPublicClient();
+  const { data: project, error } = await supabase
+    .from("projects")
+    .select("*, cover:photos!projects_cover_photo_fk(*)")
+    .eq("gallery_slug", slug)
+    .eq("gallery_enabled", true)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!project) return null;
+  const { cover, ...row } = project as Project & { cover: Photo | null };
+
+  const [{ data: sections }, { data: photos }] = await Promise.all([
+    supabase.from("sections").select("*").eq("project_id", row.id).order("sort_order").order("created_at"),
+    supabase
+      .from("photos")
+      .select("*")
+      .eq("project_id", row.id)
+      .eq("is_published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
+  ]);
+  const list = (photos ?? []) as Photo[];
+  const groups: GallerySection[] = ((sections ?? []) as Section[]).map((s) => ({ ...s, photos: list.filter((p) => p.section_id === s.id) }));
+  const loose = list.filter((p) => !p.section_id || !groups.some((g) => g.id === p.section_id));
+  if (loose.length) {
+    groups.push({
+      id: "unsorted",
+      project_id: row.id,
+      slug: "more",
+      name: groups.length ? "More" : "Photographs",
+      sort_order: 9999,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      photos: loose,
+    });
+  }
+  return { ...row, cover: cover ?? list[0] ?? null, sections: groups.filter((g) => g.photos.length > 0), photos: list };
 }

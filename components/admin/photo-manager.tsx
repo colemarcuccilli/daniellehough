@@ -15,14 +15,15 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { AlertCircle, Check, Eye, EyeOff, FolderInput, GripVertical, Loader2, Pencil, Star, Trash2, Upload, X } from "lucide-react";
+import { AlertCircle, Check, CheckSquare, Clock, Eye, EyeOff, FolderInput, GripVertical, Loader2, Pencil, Star, Trash2, Upload, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ORIGINALS_BUCKET, photoUrl, safeFileName } from "@/lib/images";
-import type { Photo, Project } from "@/lib/types";
-import { deletePhoto, reorderPhotos, setProjectCover, togglePhotoPublished, updatePhoto } from "@/app/admin/actions";
+import type { Photo, Project, Section } from "@/lib/types";
+import { deletePhoto, reorderPhotos, setPhotosSection, setProjectCover, sortPhotosByTakenAt, togglePhotoPublished, updatePhoto } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 
@@ -42,7 +43,9 @@ async function runQueue<T>(items: T[], worker: (item: T) => Promise<void>, concu
   );
 }
 
-export function PhotoManager({ project, photos: initial }: { project: Project; photos: Photo[] }) {
+const NONE = "__none__";
+
+export function PhotoManager({ project, photos: initial, sections }: { project: Project; photos: Photo[]; sections: Section[] }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [photos, setPhotos] = useState<Photo[]>(initial);
@@ -51,6 +54,13 @@ export function PhotoManager({ project, photos: initial }: { project: Project; p
   const [editing, setEditing] = useState<Photo | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [importing, setImporting] = useState(false);
+  /** Section new uploads/imports land in ("" = none). */
+  const [targetSection, setTargetSection] = useState("");
+  /** Which photos are shown: "all", NONE, or a section id. */
+  const [filter, setFilter] = useState("all");
+  const [selecting, setSelecting] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const [moveTo, setMoveTo] = useState("");
   const [, start] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -74,14 +84,62 @@ export function PhotoManager({ project, photos: initial }: { project: Project; p
       const res = await fetch("/api/admin/photos/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId: project.id, originalPath }),
+        body: JSON.stringify({ projectId: project.id, originalPath, sectionId: targetSection || null }),
       });
       const json = (await res.json().catch(() => ({}))) as { photo?: Photo; error?: string };
       if (!res.ok || !json.photo) throw new Error(json.error || `Processing failed (${res.status})`);
       return json.photo;
     },
-    [project.id],
+    [project.id, targetSection],
   );
+
+  const sectionName = (id: string | null) => sections.find((s) => s.id === id)?.name ?? null;
+  const visible = useMemo(
+    () => (filter === "all" ? photos : filter === NONE ? photos.filter((p) => !p.section_id) : photos.filter((p) => p.section_id === filter)),
+    [photos, filter],
+  );
+  const counts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of photos) m.set(p.section_id ?? NONE, (m.get(p.section_id ?? NONE) ?? 0) + 1);
+    return m;
+  }, [photos]);
+
+  const toggleSelect = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const stopSelecting = () => {
+    setSelecting(false);
+    setSelected(new Set());
+  };
+
+  const moveSelected = () => {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    const sectionId = moveTo === NONE ? null : moveTo;
+    if (moveTo === "") return;
+    start(async () => {
+      const res = await setPhotosSection(project.id, ids, sectionId);
+      if (!res.ok) return void toast.error(res.error);
+      setPhotos((ps) => ps.map((p) => (selected.has(p.id) ? { ...p, section_id: sectionId } : p)));
+      toast.success(`${ids.length} moved to ${sectionId ? sectionName(sectionId) : "no section"}`);
+      setSelected(new Set());
+      router.refresh();
+    });
+  };
+
+  const sortByTime = () => {
+    if (!window.confirm("Reorder every photo in this project by the time it was taken?")) return;
+    start(async () => {
+      const res = await sortPhotosByTakenAt(project.id);
+      if (!res.ok) return void toast.error(res.error);
+      toast.success(res.data.count ? `Reordered ${res.data.count} photos` : "Already in time order");
+      router.refresh();
+    });
+  };
 
   const addPhoto = (photo: Photo) => {
     setPhotos((ps) => (ps.some((p) => p.id === photo.id) ? ps : [...ps, photo]));
@@ -177,14 +235,18 @@ export function PhotoManager({ project, photos: initial }: { project: Project; p
   const onDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
-    const from = photos.findIndex((p) => p.id === active.id);
-    const to = photos.findIndex((p) => p.id === over.id);
+    const from = visible.findIndex((p) => p.id === active.id);
+    const to = visible.findIndex((p) => p.id === over.id);
     if (from < 0 || to < 0) return;
     const previous = photos;
-    const next = arrayMove(photos, from, to);
+    const nextVisible = arrayMove(visible, from, to);
+    // The moved subset takes the slots it already occupied, in its new order.
+    const subset = new Set(nextVisible.map((p) => p.id));
+    let k = 0;
+    const next = photos.map((p) => (subset.has(p.id) ? nextVisible[k++] : p));
     setPhotos(next);
     start(async () => {
-      const res = await reorderPhotos(project.id, next.map((p) => p.id));
+      const res = await reorderPhotos(project.id, nextVisible.map((p) => p.id));
       if (!res.ok) {
         toast.error(res.error);
         setPhotos(previous);
@@ -235,7 +297,21 @@ export function PhotoManager({ project, photos: initial }: { project: Project; p
             {photos.length} in this project · drag to reorder · star sets the cover
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {sections.length > 0 ? (
+            <label className="inline-flex items-center gap-2 text-xs text-ink-soft">
+              New photos go to
+              <Select value={targetSection} onChange={(e) => setTargetSection(e.target.value)} className="h-8 w-auto min-w-40 text-sm" disabled={busy}>
+                <option value="">No section</option>
+                {sections.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </Select>
+            </label>
+          ) : null}
+          <Button variant="ghost" size="sm" onClick={sortByTime} disabled={busy || photos.length < 2} title="Order every photo by the time it was taken">
+            <Clock size={14} /> Sort by time taken
+          </Button>
           <Button variant="outline" size="sm" onClick={importFolder} disabled={busy}>
             {importing ? <Loader2 size={14} className="animate-spin" /> : <FolderInput size={14} />}
             Import from bucket folder
@@ -257,6 +333,49 @@ export function PhotoManager({ project, photos: initial }: { project: Project; p
           />
         </div>
       </div>
+
+      {sections.length > 0 || selecting ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {sections.length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              <FilterChip active={filter === "all"} onClick={() => setFilter("all")}>All · {photos.length}</FilterChip>
+              <FilterChip active={filter === NONE} onClick={() => setFilter(NONE)}>No section · {counts.get(NONE) ?? 0}</FilterChip>
+              {sections.map((s) => (
+                <FilterChip key={s.id} active={filter === s.id} onClick={() => setFilter(s.id)}>
+                  {s.name} · {counts.get(s.id) ?? 0}
+                </FilterChip>
+              ))}
+            </div>
+          ) : null}
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            {selecting ? (
+              <>
+                <span className="text-xs text-ink-soft">{selected.size} selected</span>
+                <Button variant="ghost" size="xs" onClick={() => setSelected(new Set(visible.map((p) => p.id)))}>
+                  Select all shown
+                </Button>
+                <Select value={moveTo} onChange={(e) => setMoveTo(e.target.value)} className="h-8 w-auto min-w-36 text-sm">
+                  <option value="">Move to…</option>
+                  <option value={NONE}>No section</option>
+                  {sections.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </Select>
+                <Button variant="primary" size="sm" onClick={moveSelected} disabled={busy || selected.size === 0 || moveTo === ""}>
+                  Move
+                </Button>
+                <Button variant="ghost" size="sm" onClick={stopSelecting}>
+                  <X size={14} /> Done
+                </Button>
+              </>
+            ) : (
+              <Button variant="soft" size="sm" onClick={() => setSelecting(true)} disabled={busy || photos.length === 0}>
+                <CheckSquare size={14} /> Select
+              </Button>
+            )}
+          </div>
+        </div>
+      ) : null}
 
       <div
         onDragOver={(e) => {
@@ -302,12 +421,17 @@ export function PhotoManager({ project, photos: initial }: { project: Project; p
           </p>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-            <SortableContext items={photos.map((p) => p.id)} strategy={rectSortingStrategy}>
+            <SortableContext items={visible.map((p) => p.id)} strategy={rectSortingStrategy}>
+              {visible.length === 0 ? <p className="py-8 text-center text-sm text-ink-faint">No photos here yet.</p> : null}
               <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-                {photos.map((p) => (
+                {visible.map((p) => (
                   <SortablePhoto
                     key={p.id}
                     photo={p}
+                    sectionName={filter === "all" ? sectionName(p.section_id) : null}
+                    selecting={selecting}
+                    selected={selected.has(p.id)}
+                    onSelect={() => toggleSelect(p.id)}
                     isCover={coverId === p.id}
                     onCover={() => onCover(p.id)}
                     onToggle={() => onToggle(p)}
@@ -335,8 +459,27 @@ export function PhotoManager({ project, photos: initial }: { project: Project; p
   );
 }
 
+function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "caps rounded-xs border px-2.5 py-1 text-[0.6rem] transition-colors",
+        active ? "border-ink bg-ink text-cream" : "border-line-strong text-ink-soft hover:border-ink hover:text-ink",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
 function SortablePhoto({
   photo,
+  sectionName,
+  selecting,
+  selected,
+  onSelect,
   isCover,
   onCover,
   onToggle,
@@ -344,24 +487,31 @@ function SortablePhoto({
   onDelete,
 }: {
   photo: Photo;
+  sectionName: string | null;
+  selecting: boolean;
+  selected: boolean;
+  onSelect: () => void;
   isCover: boolean;
   onCover: () => void;
   onToggle: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: photo.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: photo.id, disabled: selecting });
   const style = { transform: CSS.Transform.toString(transform), transition };
   return (
     <li
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
+      {...(selecting ? {} : listeners)}
+      onClick={selecting ? onSelect : undefined}
       className={cn(
         "group relative aspect-square overflow-hidden rounded-sm border bg-cream-deep touch-none select-none",
         isCover ? "border-ink ring-2 ring-marigold" : "border-line",
         isDragging && "z-10 opacity-70 shadow-hard",
+        selecting && "cursor-pointer",
+        selecting && selected && "ring-2 ring-teal border-teal",
       )}
     >
       <Image
@@ -383,10 +533,26 @@ function SortablePhoto({
           <span className="rounded-xs border border-ink bg-paper px-1.5 font-mono text-[9px] uppercase tracking-wider">Hidden</span>
         ) : null}
       </div>
+      {sectionName ? (
+        <span className="absolute inset-x-1.5 bottom-1.5 truncate rounded-xs bg-ink/70 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-cream group-hover:opacity-0">
+          {sectionName}
+        </span>
+      ) : null}
+      {selecting ? (
+        <span
+          aria-hidden
+          className={cn(
+            "absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full border",
+            selected ? "border-teal bg-teal text-paper" : "border-cream/80 bg-ink/40 text-cream",
+          )}
+        >
+          {selected ? <Check size={13} /> : null}
+        </span>
+      ) : null}
       <span className="absolute right-1.5 top-1.5 text-cream/90 opacity-0 transition-opacity group-hover:opacity-100 drop-shadow">
         <GripVertical size={14} />
       </span>
-      <div className="absolute inset-x-0 bottom-0 flex justify-between bg-ink/80 p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+      <div className={cn("absolute inset-x-0 bottom-0 flex justify-between bg-ink/80 p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100", selecting && "hidden")}>
         <TileButton title="Set as cover" onClick={onCover} active={isCover}>
           <Star size={13} fill={isCover ? "currentColor" : "none"} />
         </TileButton>

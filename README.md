@@ -49,5 +49,7 @@ The admin UI can do the same per project with "Import from bucket folder".
 | `/contact` → opens the inquiry pop-up on `/` | public |
 | `/portfolio/[category]`              | public |
 | `/portfolio/[category]/[project]`    | public |
+| `/gallery/[slug]`                    | anyone with the link (client gallery, noindex) |
+| `/api/gallery/[slug]/[photoId]`      | anyone with the link (original download) |
 | `/admin/...`                         | admins |
 | `/api/admin/photos/process`          | admins (derivative pipeline) |

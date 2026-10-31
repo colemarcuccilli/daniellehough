@@ -11,6 +11,7 @@ export const maxDuration = 60;
 const bodySchema = z.object({
   projectId: z.string().uuid(),
   originalPath: z.string().min(1).max(500),
+  sectionId: z.string().uuid().nullable().optional(),
 });
 
 /**
@@ -26,9 +27,14 @@ export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Bad request" }, { status: 400 });
   const { projectId, originalPath } = parsed.data;
+  let sectionId: string | null = parsed.data.sectionId ?? null;
 
   const { data: project } = await supabase.from("projects").select("id, slug, cover_photo_id").eq("id", projectId).maybeSingle();
   if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
+  if (sectionId) {
+    const { data: section } = await supabase.from("sections").select("id").eq("id", sectionId).eq("project_id", projectId).maybeSingle();
+    if (!section) sectionId = null;
+  }
 
   const { data: existing } = await supabase.from("photos").select("*").eq("original_path", originalPath).maybeSingle();
   if (existing) return NextResponse.json({ photo: existing, existed: true });
@@ -63,6 +69,7 @@ export async function POST(request: Request) {
     .from("photos")
     .insert({
       project_id: projectId,
+      section_id: sectionId,
       original_path: originalPath,
       web_path: webPath,
       width: derived.width,

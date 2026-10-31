@@ -25,6 +25,22 @@ export type Project = {
   sort_order: number;
   is_published: boolean;
   is_featured: boolean;
+  /** Client gallery: unlisted share link at /gallery/<gallery_slug>. */
+  gallery_slug: string | null;
+  gallery_enabled: boolean;
+  gallery_downloads: boolean;
+  gallery_intro: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/** A part of an event inside a project (ceremony, cocktail hour, reception…). */
+export type Section = {
+  id: string;
+  project_id: string;
+  slug: string;
+  name: string;
+  sort_order: number;
   created_at: string;
   updated_at: string;
 };
@@ -32,6 +48,7 @@ export type Project = {
 export type Photo = {
   id: string;
   project_id: string;
+  section_id: string | null;
   original_path: string;
   web_path: string;
   width: number;

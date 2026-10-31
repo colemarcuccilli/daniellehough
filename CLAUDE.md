@@ -60,6 +60,39 @@ original project's history. Schema and bucket names come from env
   then `npm run import:run` (see `scripts/import-storage.mjs` and
   `scripts/import-mapping.json`), or "Import from bucket folder" in the admin.
 
+## Client galleries (2026-10-31)
+
+Weddings and events are shared with guests by an **unlisted link**, separate
+from the portfolio: `/gallery/<gallery_slug>` (`app/gallery/[slug]`, its own
+quiet layout, `noindex`). `vh.projects` carries `gallery_slug` (random 12-char
+token minted by `updateGallery` the first time the gallery is enabled),
+`gallery_enabled`, `gallery_downloads`, `gallery_intro`. A gallery project is
+normally `is_published = false` so it never shows in the portfolio; the
+`projects: public read` policy is `is_published or gallery_enabled`.
+
+- **Sections** (`vh.sections`: ceremony, cocktail hour, reception…) group the
+  photos; `photos.section_id` is nullable, loose photos fall into a trailing
+  "More" group (`getGalleryBySlug` in `lib/queries.ts`). Admin manages them in
+  `components/admin/gallery-panel.tsx`; the photo manager has a "New photos go
+  to" section picker (passed as `sectionId` to `/api/admin/photos/process`),
+  section filter chips, and a Select → Move-to-section bulk action.
+- **Grid** is the stacked-columns "VSCO" layout (`lib/masonry.ts`, 2 columns on
+  phones, 3 from `md`), rendered by `components/gallery/gallery-view.tsx` with
+  the lightbox (swipe, zoom, a download button in the toolbar), hover download
+  per tile, and a desktop-only Select → "Download zip" flow built in the
+  browser with `client-zip` (streams to disk via `showSaveFilePicker` when the
+  browser has it, else a blob).
+- **Downloads are the originals.** `GET /api/gallery/<slug>/<photoId>` checks
+  the gallery is live with downloads on, then 302s to a 1-hour signed URL with
+  `Content-Disposition: attachment` (`?format=json` returns the URL for the
+  zipper). The storage policy `vh originals: gallery download` lets anon sign
+  only objects for which `vh.can_download_original(name)` is true, so switching
+  the gallery or downloads off closes access immediately. Still no service
+  role key anywhere.
+- `reorderPhotos` accepts a subset (the filtered view) and keeps the rest of
+  the project in place; `sortPhotosByTakenAt` orders a whole project by EXIF
+  time. Schema: `supabase/freewebsites/0002_vh_galleries.sql`.
+
 ## Design
 
 - Direction (2026-10-21, from Dani's wedding-quote stationery): elegant and

@@ -58,6 +58,7 @@ export default async function AdminProjectsPage() {
                   </p>
                 </div>
                 <div className="hidden sm:flex items-center gap-2">
+                  {p.gallery_enabled ? <Badge tone="sage">Gallery</Badge> : null}
                   {p.is_featured ? <Badge tone="marigold">Featured</Badge> : null}
                   <Badge tone={p.is_published ? "moss" : "outline"}>{p.is_published ? "Published" : "Draft"}</Badge>
                 </div>

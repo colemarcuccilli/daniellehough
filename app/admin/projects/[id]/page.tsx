@@ -4,18 +4,20 @@ import { ArrowLeft } from "lucide-react";
 import { requireAdmin } from "@/lib/admin";
 import { ProjectForm } from "@/components/admin/project-form";
 import { PhotoManager } from "@/components/admin/photo-manager";
+import { GalleryPanel } from "@/components/admin/gallery-panel";
 import { DeleteProjectButton } from "./delete-button";
-import type { Category, Photo, Project } from "@/lib/types";
+import type { Category, Photo, Project, Section } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase } = await requireAdmin();
-  const [{ data: project }, { data: categories }, { data: photos }] = await Promise.all([
+  const [{ data: project }, { data: categories }, { data: photos }, { data: sections }] = await Promise.all([
     supabase.from("projects").select("*").eq("id", id).maybeSingle(),
     supabase.from("categories").select("*").order("sort_order"),
     supabase.from("photos").select("*").eq("project_id", id).order("sort_order").order("created_at"),
+    supabase.from("sections").select("*").eq("project_id", id).order("sort_order").order("created_at"),
   ]);
   if (!project) notFound();
 
@@ -32,7 +34,9 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
         <ProjectForm project={project as Project} categories={(categories ?? []) as Category[]} />
       </div>
 
-      <PhotoManager project={project as Project} photos={(photos ?? []) as Photo[]} />
+      <GalleryPanel project={project as Project} sections={(sections ?? []) as Section[]} photoCount={(photos ?? []).length} />
+
+      <PhotoManager project={project as Project} photos={(photos ?? []) as Photo[]} sections={(sections ?? []) as Section[]} />
 
       <section className="rounded-md border border-coral/40 bg-coral-soft/40 p-5 flex flex-wrap items-center justify-between gap-4">
         <div>

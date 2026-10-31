@@ -6,7 +6,8 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 import { WEB_BUCKET, slugify } from "@/lib/images";
-import type { InquiryStatus, Photo } from "@/lib/types";
+import { randomGallerySlug } from "@/lib/gallery";
+import type { InquiryStatus, Photo, Section } from "@/lib/types";
 
 export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -174,16 +175,77 @@ export async function setProjectCover(projectId: string, photoId: string): Promi
 /* photos                                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Applies a new order to a set of photos. `orderedIds` may be a subset (for
+ * example only the photos shown under one section filter): those photos take
+ * the positions the subset already occupied, in the new order, and the rest
+ * of the project keeps its place. Every photo is then renumbered 1..n.
+ */
 export async function reorderPhotos(projectId: string, orderedIds: string[]): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
+    const { data: all, error: readErr } = await supabase
+      .from("photos")
+      .select("id, sort_order")
+      .eq("project_id", projectId)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (readErr) return fail(friendly(readErr.message));
+    const rows = (all ?? []) as Pick<Photo, "id" | "sort_order">[];
+    const subset = new Set(orderedIds);
+    let k = 0;
+    const next = rows.map((r) => (subset.has(r.id) ? orderedIds[k++] : r.id));
+    const changes = next
+      .map((id, i) => ({ id, sort_order: i + 1 }))
+      .filter((c) => rows.find((r) => r.id === c.id)?.sort_order !== c.sort_order);
     const results = await Promise.all(
-      orderedIds.map((id, i) =>
-        supabase.from("photos").update({ sort_order: i + 1 }).eq("id", id).eq("project_id", projectId),
-      ),
+      changes.map((c) => supabase.from("photos").update({ sort_order: c.sort_order }).eq("id", c.id).eq("project_id", projectId)),
     );
     const failed = results.find((r) => r.error);
     if (failed?.error) return fail(friendly(failed.error.message));
+    revalidateSite();
+    revalidatePath(`/admin/projects/${projectId}`);
+    return ok(undefined);
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
+  }
+}
+
+/** Orders the whole project by the time each photo was taken (EXIF), then by file name. */
+export async function sortPhotosByTakenAt(projectId: string): Promise<ActionResult<{ count: number }>> {
+  try {
+    const { supabase } = await requireAdmin();
+    const { data, error } = await supabase.from("photos").select("id, taken_at, original_path, sort_order").eq("project_id", projectId);
+    if (error) return fail(friendly(error.message));
+    const rows = (data ?? []) as Pick<Photo, "id" | "taken_at" | "original_path" | "sort_order">[];
+    rows.sort((a, b) => {
+      const ta = a.taken_at ?? "9999";
+      const tb = b.taken_at ?? "9999";
+      return ta.localeCompare(tb) || a.original_path.localeCompare(b.original_path, undefined, { numeric: true });
+    });
+    const changes = rows.map((r, i) => ({ id: r.id, sort_order: i + 1 })).filter((c, i) => rows[i].sort_order !== c.sort_order);
+    const results = await Promise.all(changes.map((c) => supabase.from("photos").update({ sort_order: c.sort_order }).eq("id", c.id)));
+    const failed = results.find((r) => r.error);
+    if (failed?.error) return fail(friendly(failed.error.message));
+    revalidateSite();
+    revalidatePath(`/admin/projects/${projectId}`);
+    return ok({ count: changes.length });
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
+  }
+}
+
+/** Moves photos into a section (or out of every section with `null`). */
+export async function setPhotosSection(projectId: string, photoIds: string[], sectionId: string | null): Promise<ActionResult> {
+  try {
+    const { supabase } = await requireAdmin();
+    if (photoIds.length === 0) return ok(undefined);
+    if (sectionId) {
+      const { data: section } = await supabase.from("sections").select("id").eq("id", sectionId).eq("project_id", projectId).maybeSingle();
+      if (!section) return fail("That section is not part of this project.");
+    }
+    const { error } = await supabase.from("photos").update({ section_id: sectionId }).eq("project_id", projectId).in("id", photoIds);
+    if (error) return fail(friendly(error.message));
     revalidateSite();
     revalidatePath(`/admin/projects/${projectId}`);
     return ok(undefined);
@@ -412,5 +474,163 @@ export async function markInquiryRead(id: string): Promise<void> {
     revalidatePath("/admin", "layout");
   } catch {
     // ignore
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* client galleries                                                    */
+/* ------------------------------------------------------------------ */
+
+const gallerySchema = z.object({
+  gallery_enabled: z.boolean(),
+  gallery_downloads: z.boolean(),
+  gallery_intro: z.string().trim().max(2000).optional(),
+});
+
+/** Gallery switches + intro. Mints a share slug the first time the gallery is enabled. */
+export async function updateGallery(projectId: string, formData: FormData): Promise<ActionResult<{ gallery_slug: string | null }>> {
+  try {
+    const { supabase } = await requireAdmin();
+    const parsed = gallerySchema.safeParse({
+      gallery_enabled: bool(formData.get("gallery_enabled")),
+      gallery_downloads: bool(formData.get("gallery_downloads")),
+      gallery_intro: str(formData.get("gallery_intro")),
+    });
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the form.");
+    const { data: current } = await supabase.from("projects").select("gallery_slug").eq("id", projectId).maybeSingle();
+    if (!current) return fail("Project not found.");
+    const update: Record<string, unknown> = {
+      gallery_enabled: parsed.data.gallery_enabled,
+      gallery_downloads: parsed.data.gallery_downloads,
+      gallery_intro: parsed.data.gallery_intro || null,
+    };
+    let slug = (current.gallery_slug as string | null) ?? null;
+    if (!slug && parsed.data.gallery_enabled) {
+      slug = randomGallerySlug();
+      update.gallery_slug = slug;
+    }
+    const { error } = await supabase.from("projects").update(update).eq("id", projectId);
+    if (error) return fail(friendly(error.message));
+    revalidateSite();
+    revalidatePath("/admin", "layout");
+    return ok({ gallery_slug: slug });
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
+  }
+}
+
+/** Replaces the share link; the old one stops working immediately. */
+export async function regenerateGallerySlug(projectId: string): Promise<ActionResult<{ gallery_slug: string }>> {
+  try {
+    const { supabase } = await requireAdmin();
+    const slug = randomGallerySlug();
+    const { error } = await supabase.from("projects").update({ gallery_slug: slug }).eq("id", projectId);
+    if (error) return fail(friendly(error.message));
+    revalidateSite();
+    revalidatePath("/admin", "layout");
+    return ok({ gallery_slug: slug });
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* sections                                                            */
+/* ------------------------------------------------------------------ */
+
+const sectionName = z.string().trim().min(1, "Give the section a name.").max(80);
+
+async function uniqueSectionSlug(supabase: Awaited<ReturnType<typeof createClient>>, projectId: string, name: string, excludeId?: string) {
+  const base = slugify(name) || "section";
+  const { data } = await supabase.from("sections").select("id, slug").eq("project_id", projectId);
+  const taken = new Set(((data ?? []) as Pick<Section, "id" | "slug">[]).filter((s) => s.id !== excludeId).map((s) => s.slug));
+  let slug = base;
+  for (let i = 2; taken.has(slug); i++) slug = `${base}-${i}`;
+  return slug;
+}
+
+export async function createSection(projectId: string, name: string): Promise<ActionResult<Section>> {
+  try {
+    const { supabase } = await requireAdmin();
+    const parsed = sectionName.safeParse(name);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the name.");
+    const { data: last } = await supabase
+      .from("sections")
+      .select("sort_order")
+      .eq("project_id", projectId)
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const { data, error } = await supabase
+      .from("sections")
+      .insert({
+        project_id: projectId,
+        name: parsed.data,
+        slug: await uniqueSectionSlug(supabase, projectId, parsed.data),
+        sort_order: ((last?.sort_order as number | undefined) ?? 0) + 1,
+      })
+      .select("*")
+      .single();
+    if (error) return fail(friendly(error.message));
+    revalidateSite();
+    revalidatePath(`/admin/projects/${projectId}`);
+    return ok(data as Section);
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
+  }
+}
+
+export async function renameSection(id: string, name: string): Promise<ActionResult<Section>> {
+  try {
+    const { supabase } = await requireAdmin();
+    const parsed = sectionName.safeParse(name);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the name.");
+    const { data: existing } = await supabase.from("sections").select("project_id").eq("id", id).maybeSingle();
+    if (!existing) return fail("Section not found.");
+    const projectId = existing.project_id as string;
+    const { data, error } = await supabase
+      .from("sections")
+      .update({ name: parsed.data, slug: await uniqueSectionSlug(supabase, projectId, parsed.data, id) })
+      .eq("id", id)
+      .select("*")
+      .single();
+    if (error) return fail(friendly(error.message));
+    revalidateSite();
+    revalidatePath(`/admin/projects/${projectId}`);
+    return ok(data as Section);
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
+  }
+}
+
+/** Deletes a section; its photos stay in the project without a section. */
+export async function deleteSection(id: string): Promise<ActionResult> {
+  try {
+    const { supabase } = await requireAdmin();
+    const { data: existing } = await supabase.from("sections").select("project_id").eq("id", id).maybeSingle();
+    if (!existing) return fail("Section not found.");
+    const { error } = await supabase.from("sections").delete().eq("id", id);
+    if (error) return fail(friendly(error.message));
+    revalidateSite();
+    revalidatePath(`/admin/projects/${existing.project_id as string}`);
+    return ok(undefined);
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
+  }
+}
+
+export async function reorderSections(projectId: string, orderedIds: string[]): Promise<ActionResult> {
+  try {
+    const { supabase } = await requireAdmin();
+    const results = await Promise.all(
+      orderedIds.map((id, i) => supabase.from("sections").update({ sort_order: i + 1 }).eq("id", id).eq("project_id", projectId)),
+    );
+    const failed = results.find((r) => r.error);
+    if (failed?.error) return fail(friendly(failed.error.message));
+    revalidateSite();
+    revalidatePath(`/admin/projects/${projectId}`);
+    return ok(undefined);
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "Failed");
   }
 }
