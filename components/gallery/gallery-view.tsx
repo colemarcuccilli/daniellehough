@@ -41,8 +41,32 @@ declare global {
 }
 
 type Zip = { done: number; total: number };
-/** A full-size original fetched on a phone, ready to hand to the share sheet ("Save Image" puts it in Photos). */
-type Share = { id: string; state: "fetching" | "ready"; pct: number; file?: File };
+/** Save-to-Photos progress for the photo open in the viewer. */
+type Share = { id: string; state: "loading" | "needs-tap"; pct: number };
+const PREFETCH_DELAY_MS = 500;
+const FILE_CACHE_MAX = 4;
+
+/** Streams a gallery original into a File, reporting progress 0–99. */
+async function fetchOriginal(slug: string, p: GalleryPhoto, onProgress: (pct: number) => void, signal?: AbortSignal): Promise<File> {
+  const meta = (await fetch(`${downloadPath(slug, p.id)}?format=json`, { signal }).then((r) => (r.ok ? r.json() : null))) as
+    | { url: string; filename: string }
+    | null;
+  if (!meta) throw new Error("Could not prepare the photo.");
+  const res = await fetch(meta.url, { signal });
+  if (!res.ok || !res.body) throw new Error("Could not fetch the photo.");
+  const total = Number(res.headers.get("content-length") || 0);
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let got = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    got += value.byteLength;
+    if (total) onProgress(Math.min(99, Math.round((got / total) * 100)));
+  }
+  return new File(chunks as BlobPart[], meta.filename, { type: "image/jpeg" });
+}
 
 let canShareCache: boolean | null = null;
 function canShareFilesNow() {
@@ -119,6 +143,8 @@ export function GalleryView({
   const [zip, setZip] = useState<Zip | null>(null);
   const [share, setShare] = useState<Share | null>(null);
   const canShareFiles = useCanShareFiles();
+  const fileCache = useRef(new Map<string, File>());
+  const inflight = useRef<{ id: string; promise: Promise<File>; controller: AbortController } | null>(null);
   const slugs = useMemo(() => sections.map((s) => s.slug), [sections]);
   const active = useActiveSection(slugs);
   const navRef = useRef<HTMLElement>(null);
@@ -134,53 +160,76 @@ export function GalleryView({
   }, [active]);
 
   /**
-   * Phones: fetch the original, then hand it to the share sheet, where
-   * "Save Image" drops it straight into Photos. If the browser has lost the
-   * tap by the time the file arrives, the button turns into a one-tap "Save".
+   * Phones: the share sheet's "Save Image" is the only way into Photos, and
+   * it must open on the tap itself. So the original starts loading as soon as
+   * a photo is open in the viewer; by the time someone taps Save it is usually
+   * in memory and the sheet opens at once. If they tap first, a big
+   * "Save to Photos" button appears when the file is ready.
    */
-  const saveToPhotos = async (p: GalleryPhoto) => {
-    if (share?.id === p.id && share.state === "ready" && share.file) {
-      await presentShare(share.file);
-      return;
-    }
-    if (share?.state === "fetching") return;
-    setShare({ id: p.id, state: "fetching", pct: 0 });
-    try {
-      const meta = (await fetch(`${downloadPath(slug, p.id)}?format=json`).then((r) => (r.ok ? r.json() : null))) as { url: string; filename: string } | null;
-      if (!meta) throw new Error("Could not prepare the photo.");
-      const res = await fetch(meta.url);
-      if (!res.ok || !res.body) throw new Error("Could not fetch the photo.");
-      const total = Number(res.headers.get("content-length") || 0);
-      const reader = res.body.getReader();
-      const chunks: Uint8Array[] = [];
-      let got = 0;
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        got += value.byteLength;
-        if (total) setShare({ id: p.id, state: "fetching", pct: Math.min(99, Math.round((got / total) * 100)) });
-      }
-      const file = new File(chunks as BlobPart[], meta.filename, { type: "image/jpeg" });
-      setShare({ id: p.id, state: "ready", pct: 100, file });
-      await presentShare(file);
-    } catch (e) {
-      setShare(null);
-      toast.error(e instanceof Error ? e.message : "Could not save the photo.");
-    }
-  };
+  const startFetch = useCallback(
+    (p: GalleryPhoto) => {
+      if (inflight.current?.id === p.id) return inflight.current.promise;
+      inflight.current?.controller.abort();
+      const controller = new AbortController();
+      const promise = fetchOriginal(slug, p, (pct) => setShare((cur) => (cur?.id === p.id && cur.state === "loading" ? { ...cur, pct } : cur)), controller.signal)
+        .then((file) => {
+          fileCache.current.set(p.id, file);
+          if (fileCache.current.size > FILE_CACHE_MAX) fileCache.current.delete(fileCache.current.keys().next().value as string);
+          return file;
+        })
+        .finally(() => {
+          if (inflight.current?.id === p.id) inflight.current = null;
+        });
+      inflight.current = { id: p.id, promise, controller };
+      return promise;
+    },
+    [slug],
+  );
 
-  const presentShare = async (file: File) => {
+  // Warm the file for the photo being viewed (after a short pause so swiping doesn't fetch everything).
+  useEffect(() => {
+    if (!canShareFiles || !downloads || index < 0) return;
+    const p = flat[index];
+    if (!p || fileCache.current.has(p.id)) return;
+    const t = setTimeout(() => {
+      startFetch(p).catch(() => {});
+    }, PREFETCH_DELAY_MS);
+    return () => clearTimeout(t);
+  }, [index, flat, canShareFiles, downloads, startFetch]);
+
+  const presentShare = async (p: GalleryPhoto, file: File) => {
     try {
       await navigator.share({ files: [file] });
       setShare(null);
     } catch (e) {
-      if (e instanceof DOMException && e.name === "AbortError") return; // sheet dismissed; keep the file ready
-      if (e instanceof DOMException && e.name === "NotAllowedError") {
-        toast.message("Ready — tap Save to add it to Photos.");
+      if (e instanceof DOMException && e.name === "AbortError") {
+        setShare(null); // sheet dismissed
         return;
       }
+      if (e instanceof DOMException && e.name === "NotAllowedError") {
+        setShare({ id: p.id, state: "needs-tap", pct: 100 }); // the tap expired while loading: ask for one more
+        return;
+      }
+      setShare(null);
       toast.error("Could not open the share sheet.");
+    }
+  };
+
+  const saveToPhotos = async (p: GalleryPhoto) => {
+    const cached = fileCache.current.get(p.id);
+    if (cached) {
+      await presentShare(p, cached); // still inside the tap: the sheet opens immediately
+      return;
+    }
+    if (share?.id === p.id && share.state === "loading") return;
+    setShare({ id: p.id, state: "loading", pct: 0 });
+    try {
+      const file = await startFetch(p);
+      await presentShare(p, file);
+    } catch (e) {
+      setShare(null);
+      if (e instanceof DOMException && e.name === "AbortError") return;
+      toast.error(e instanceof Error ? e.message : "Could not save the photo.");
     }
   };
 
@@ -283,6 +332,8 @@ export function GalleryView({
 
   const close = useCallback(() => setIndex(-1), []);
   const current = index >= 0 ? flat[index] : null;
+  // Share state is keyed by photo id, so moving to another photo simply hides it.
+  const needsTap = !!(share && current && share.id === current.id && share.state === "needs-tap");
 
   return (
     <>
@@ -420,24 +471,18 @@ export function GalleryView({
               <button
                 key="save"
                 type="button"
-                className="yarl__button"
                 onClick={() => void saveToPhotos(current)}
-                disabled={share?.state === "fetching"}
-                title="Save to Photos"
+                disabled={share?.id === current.id && share.state === "loading"}
                 aria-label="Save to Photos"
-                style={{ width: "auto", padding: "0 10px", gap: 6, fontFamily: "var(--font-sans)", fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase" }}
+                className="caps my-2 mr-1 inline-flex h-9 items-center gap-2 rounded-full border border-cream/70 bg-ink/40 px-4 text-[0.62rem] text-cream backdrop-blur disabled:opacity-80"
               >
-                {share?.id === current.id && share.state === "fetching" ? (
+                {share?.id === current.id && share.state === "loading" ? (
                   <>
-                    <Loader2 size={18} className="animate-spin" /> {share.pct}%
-                  </>
-                ) : share?.id === current.id && share.state === "ready" ? (
-                  <>
-                    <Share size={18} /> Save
+                    <Loader2 size={15} className="animate-spin" /> Loading {share.pct}%
                   </>
                 ) : (
                   <>
-                    <Download size={20} /> Save
+                    <Download size={15} /> Save to Photos
                   </>
                 )}
               </button>
@@ -458,6 +503,21 @@ export function GalleryView({
         }}
         styles={{ container: { backgroundColor: "rgba(35,40,35,0.97)" } }}
       />
+
+      {needsTap && current ? (
+        <div className="pointer-events-none fixed inset-x-0 bottom-24 z-[10000] flex justify-center px-6">
+          <button
+            type="button"
+            onClick={() => {
+              const file = fileCache.current.get(current.id);
+              if (file) void presentShare(current, file);
+            }}
+            className="caps pointer-events-auto inline-flex h-14 items-center gap-3 rounded-full border border-ink bg-marigold px-8 text-[0.72rem] text-ink shadow-soft"
+          >
+            <Share size={18} /> Save to Photos
+          </button>
+        </div>
+      ) : null}
     </>
   );
 }
