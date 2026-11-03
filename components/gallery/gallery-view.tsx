@@ -330,6 +330,53 @@ export function GalleryView({
     }
   };
 
+  // "Stuck" once the stacked index has scrolled above the viewport.
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setStuck(!entry.isIntersecting && entry.boundingClientRect.top < 0), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const controls = downloads ? (
+    <div className="hidden shrink-0 items-center gap-2 md:flex">
+      {selecting ? (
+        <>
+          <span className="caps text-[0.62rem] text-ink-soft">{zip ? `Preparing ${zip.done} / ${zip.total}` : `${selected.size} selected`}</span>
+          <button
+            type="button"
+            onClick={downloadSelected}
+            disabled={selected.size === 0 || !!zip}
+            className="caps inline-flex h-8 items-center gap-1.5 rounded-xs border border-ink bg-marigold px-3 text-[0.62rem] text-ink transition-colors hover:bg-marigold-bright disabled:pointer-events-none disabled:opacity-40"
+          >
+            {zip ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
+            Download zip
+          </button>
+          <button
+            type="button"
+            onClick={stopSelecting}
+            disabled={!!zip}
+            aria-label="Stop selecting"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-xs border border-line-strong text-ink-soft hover:border-ink hover:text-ink disabled:opacity-40"
+          >
+            <X size={14} />
+          </button>
+        </>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setSelecting(true)}
+          className="caps inline-flex h-8 items-center gap-1.5 rounded-xs border border-ink/70 px-3 text-[0.62rem] text-ink transition-colors hover:bg-cream"
+        >
+          <CheckSquare size={13} /> Select photos
+        </button>
+      )}
+    </div>
+  ) : null;
+
   const close = useCallback(() => setIndex(-1), []);
   const current = index >= 0 ? flat[index] : null;
   // Share state is keyed by photo id, so moving to another photo simply hides it.
@@ -337,7 +384,34 @@ export function GalleryView({
 
   return (
     <>
-      <div className="sticky top-0 z-30 border-b border-line bg-bg/92 backdrop-blur-md">
+      {/* Full index at the top of the page: every section, stacked. */}
+      <div className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-6">
+          <nav aria-label="Sections" className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
+            {sections.map((s) => (
+              <a
+                key={s.id}
+                href={`#s-${s.slug}`}
+                className="caps inline-flex items-center justify-between gap-3 rounded-xs border border-line-strong px-3.5 py-2.5 text-[0.64rem] text-ink transition-colors hover:border-sage-deep hover:bg-sage-deep hover:text-cream"
+              >
+                <span className="truncate">{s.name}</span>
+                <span className="text-ink-faint">{s.photos.length}</span>
+              </a>
+            ))}
+          </nav>
+          {controls}
+        </div>
+      </div>
+      <div ref={sentinelRef} aria-hidden className="h-px" />
+
+      {/* Slim one-row bar, fixed to the top once the index has scrolled away. */}
+      <div
+        className={cn(
+          "fixed inset-x-0 top-0 z-30 border-b border-line bg-bg/92 backdrop-blur-md transition-transform duration-200",
+          stuck ? "translate-y-0" : "pointer-events-none -translate-y-full",
+        )}
+        aria-hidden={!stuck}
+      >
         <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 sm:px-6">
           <nav ref={navRef} aria-label="Sections" className="-mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {sections.map((s) => {
@@ -348,6 +422,7 @@ export function GalleryView({
                   href={`#s-${s.slug}`}
                   data-chip={s.slug}
                   aria-current={on ? "location" : undefined}
+                  tabIndex={stuck ? undefined : -1}
                   className={cn(
                     "caps shrink-0 whitespace-nowrap rounded-xs border px-3 py-1.5 text-[0.62rem] transition-colors",
                     on ? "border-sage-deep bg-sage-deep text-cream" : "border-transparent text-ink-soft hover:border-sage hover:text-ink",
@@ -359,44 +434,7 @@ export function GalleryView({
               );
             })}
           </nav>
-
-          {downloads ? (
-            <div className="hidden shrink-0 items-center gap-2 md:flex">
-              {selecting ? (
-                <>
-                  <span className="caps text-[0.62rem] text-ink-soft">
-                    {zip ? `Preparing ${zip.done} / ${zip.total}` : `${selected.size} selected`}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={downloadSelected}
-                    disabled={selected.size === 0 || !!zip}
-                    className="caps inline-flex h-8 items-center gap-1.5 rounded-xs border border-ink bg-marigold px-3 text-[0.62rem] text-ink transition-colors hover:bg-marigold-bright disabled:pointer-events-none disabled:opacity-40"
-                  >
-                    {zip ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
-                    Download zip
-                  </button>
-                  <button
-                    type="button"
-                    onClick={stopSelecting}
-                    disabled={!!zip}
-                    aria-label="Stop selecting"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-xs border border-line-strong text-ink-soft hover:border-ink hover:text-ink disabled:opacity-40"
-                  >
-                    <X size={14} />
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setSelecting(true)}
-                  className="caps inline-flex h-8 items-center gap-1.5 rounded-xs border border-ink/70 px-3 text-[0.62rem] text-ink transition-colors hover:bg-cream"
-                >
-                  <CheckSquare size={13} /> Select photos
-                </button>
-              )}
-            </div>
-          ) : null}
+          {controls}
         </div>
       </div>
 
