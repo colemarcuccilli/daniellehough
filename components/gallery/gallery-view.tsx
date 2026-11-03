@@ -387,7 +387,7 @@ export function GalleryView({
       {/* Full index at the top of the page: every section, stacked. */}
       <div className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-6">
-          <nav aria-label="Sections" className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
+          <nav aria-label="Sections" className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap">
             {sections.map((s) => (
               <a
                 key={s.id}
