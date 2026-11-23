@@ -42,17 +42,11 @@ export async function submitInquiry(formData: FormData): Promise<InquiryResult> 
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
   if (turnstileSecret) {
     const token = (formData.get("cf-turnstile-response") as string | null) ?? "";
-    const clientError = (formData.get("cf-turnstile-error") as string | null) ?? "";
     const h = await headers();
+    // No token, no inquiry. The widget's own error code comes from the browser,
+    // so it is never trusted as a reason to skip the check.
     if (!token) {
-      // Widget configuration errors (1102xx: bad site key or hostname not on the
-      // widget's allowlist) are not bot verdicts. Fall back to the honeypot so the
-      // form never goes dead on an address that was not added in Cloudflare yet.
-      if (/^1102\d{2}$/.test(clientError)) {
-        console.warn(`turnstile skipped: widget error ${clientError} on host ${h.get("host") ?? "?"}`);
-      } else {
-        return { ok: false, error: "Please complete the verification and try again." };
-      }
+      return { ok: false, error: "Please complete the verification and try again." };
     } else {
       const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || undefined;
       const valid = await verifyTurnstile(turnstileSecret, token, ip);

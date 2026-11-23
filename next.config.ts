@@ -11,6 +11,18 @@ const supabaseHost = (() => {
 const webBucket = process.env.NEXT_PUBLIC_SUPABASE_WEB_BUCKET || "portfolio-web";
 
 const nextConfig: NextConfig = {
+  // The inquiry form's bot check only runs on danicams.com, so public pages on
+  // the vercel.app address go to the real one. The admin and API stay put.
+  async redirects() {
+    return [
+      {
+        source: "/((?!api|admin|_next).*)",
+        has: [{ type: "host", value: "daniellehough.vercel.app" }],
+        destination: "https://danicams.com/:path*",
+        permanent: false,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

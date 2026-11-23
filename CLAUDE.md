@@ -213,9 +213,12 @@ normally `is_published = false` so it never shows in the portfolio; the
   `RESEND_API_KEY` + `INQUIRY_NOTIFY_EMAIL` are set; failures never block the form.
 - Cloudflare Turnstile guards the inquiry form when `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
   + `TURNSTILE_SECRET_KEY` are set (`components/public/turnstile.tsx`,
-  `lib/turnstile.ts`); without them the form works with just the honeypot. Widget
-  config errors (1102xx, e.g. hostname missing from the widget's allowlist) also
-  fall back to the honeypot instead of blocking the form.
+  `lib/turnstile.ts`); both are set on production. With the secret set, an
+  inquiry without a valid token is always refused (2026-11-23: the old
+  fallback that skipped the check on a browser-reported 1102xx error was a
+  bypass and is gone). The widget's hostname list covers danicams.com, so
+  public pages on `daniellehough.vercel.app` redirect there (`next.config.ts`).
+  Previews have no keys and run on the honeypot alone.
 
 ## Deploy
 

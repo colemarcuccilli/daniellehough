@@ -45,10 +45,7 @@ export function InquiryForm({
   const couple = COUPLE_KINDS.includes(kind);
   const planner = kind === "planner";
   const company = COMPANY_KINDS.includes(kind);
-  // 1102xx codes are site-key / hostname configuration problems, not a bot
-  // verdict: let the form fall back to the honeypot instead of going dead.
-  const tsConfigError = !!tsError && /^1102\d{2}$/.test(tsError);
-  const needsToken = !!TURNSTILE_SITE_KEY && !token && !tsConfigError;
+  const needsToken = !!TURNSTILE_SITE_KEY && !token;
   const kinds = PUBLIC_INQUIRY_KINDS.includes(kind) ? PUBLIC_INQUIRY_KINDS : [kind, ...PUBLIC_INQUIRY_KINDS];
   const extras = PACKAGE_EXTRAS.filter((e) => e.value !== kind);
 
@@ -187,7 +184,7 @@ export function InquiryForm({
           <input type="hidden" name="cf-turnstile-response" value={token ?? ""} />
           <input type="hidden" name="cf-turnstile-error" value={tsError ?? ""} />
           <Turnstile key={widgetKey} siteKey={TURNSTILE_SITE_KEY} onToken={onToken} onError={onTsError} />
-          {tsError && !tsConfigError ? (
+          {tsError ? (
             <p className="text-xs text-coral">Verification could not load. Refresh the page and try again.</p>
           ) : null}
         </>
