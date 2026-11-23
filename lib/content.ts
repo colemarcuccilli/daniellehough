@@ -143,8 +143,8 @@ export const WEDDING_PROJECTS = [
     title: "Playa del Carmen Wedding",
     kind: "Wedding",
     place: "Playa del Carmen",
-    cover: "hunkin-wedding/sd506984-moekmi.jpg",
-    thumb: "hunkin-wedding/sd506984-moekmi.jpg",
+    cover: "hunkin-wedding/sd507153-e0g4h3.jpg",
+    thumb: "hunkin-wedding/sd507183-17bw9g.jpg",
   },
   {
     project: "ball-engagement",
@@ -178,7 +178,7 @@ export const COUPLES_PROJECT_SLUGS = ["lakeside-proposal"];
 export const HERO_SLIDES = [
   "blakeley-wedding/dsc-2054-pm8mly.jpg",
   "ball-engagement/dsc-9770-ffh854.jpg",
-  "hunkin-wedding/sd506925-aahxnj.jpg",
+  "hunkin-wedding/sd506984-moekmi.jpg",
 ];
 
 export const CARD_PHOTOS = {
@@ -208,7 +208,7 @@ export const FEATURED_PHOTOS = [
   "blakeley-wedding/dsc-2291-g6oaym.jpg",
   "gage-lexi-save-the-date/sd505046-ufxwrb.jpg",
   "ball-engagement/dsc-9751-o69cj8.jpg",
-  "hunkin-wedding/sd506984-moekmi.jpg",
+  "hunkin-wedding/sd506925-aahxnj.jpg",
   "blakeley-wedding/dsc-3909-al3pxp.jpg",
   "ball-engagement/dsc-0637-jnfzhc.jpg",
   "hunkin-wedding/sd506874-f5snst.jpg",
