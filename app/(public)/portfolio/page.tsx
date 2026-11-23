@@ -12,7 +12,7 @@ export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Portfolio",
-  description: "Military and aviation, events, families and couples, portraits, and nature by Danielle Hough.",
+  description: "Couples, families, events, and more by Indiana wedding photographer Danielle Hough.",
 };
 
 export default async function PortfolioPage() {
@@ -22,8 +22,8 @@ export default async function PortfolioPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Portfolio"
-        title="Past projects"
+        eyebrow="The work"
+        title="Portfolio"
         body={`${pluralize(projects.length, "project")} · ${pluralize(totalPhotos, "photograph")}`}
       >
         <CategoryChips categories={categories} tone="dark" />

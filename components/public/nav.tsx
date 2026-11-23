@@ -5,9 +5,10 @@ import { NavShell } from "@/components/public/nav-shell";
 import { InquiryButton } from "@/components/public/inquiry-modal";
 
 export const NAV_LINKS = [
-  { href: "/portfolio", label: "Portfolio", accent: "var(--color-marigold)" },
-  { href: "/services", label: "Services", accent: "var(--color-teal)" },
-  { href: "/about", label: "About", accent: "var(--color-purple)" },
+  { href: "/services", label: "Services", accent: "var(--color-marigold)" },
+  { href: "/portfolio", label: "Portfolio", accent: "var(--color-blush)" },
+  { href: "/about", label: "About", accent: "var(--color-green)" },
+  { href: "/planners", label: "For planners", accent: "var(--color-blush)" },
 ];
 
 export function Nav() {
@@ -24,7 +25,7 @@ export function Nav() {
         </ul>
         <div className="flex items-center gap-2">
           <InquiryButton variant="cream" size="sm" className="h-9 px-4">
-            Start a project
+            Check your date
           </InquiryButton>
           <MobileMenu links={NAV_LINKS} />
         </div>

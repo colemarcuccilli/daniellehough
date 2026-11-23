@@ -68,6 +68,10 @@ export type Photo = {
 };
 
 export type InquiryKind =
+  | "wedding"
+  | "engagement"
+  | "save_the_date"
+  | "planner"
   | "retainer"
   | "headshots"
   | "event"
@@ -96,15 +100,44 @@ export type Inquiry = {
 };
 
 export const INQUIRY_KINDS: Record<InquiryKind, string> = {
-  retainer: "Business photography (quarterly or monthly)",
+  wedding: "Wedding photography",
+  engagement: "Engagement session",
+  save_the_date: "Save-the-date photos",
+  planner: "Wedding planner partnership",
+  retainer: "Business photography",
   headshots: "Headshot day",
   event: "Event coverage",
   product: "Product, menu, or facility shoot",
-  mini_session: "Mini session",
+  mini_session: "Family or mini session",
   other: "Something else",
 };
 
+/** What the public form offers. Older kinds stay valid for past inquiries. */
+export const PUBLIC_INQUIRY_KINDS: InquiryKind[] = [
+  "wedding",
+  "engagement",
+  "save_the_date",
+  "mini_session",
+  "planner",
+  "retainer",
+  "other",
+];
+
+export const ALL_INQUIRY_KINDS = Object.keys(INQUIRY_KINDS) as InquiryKind[];
+
+/** Things a couple can add to a wedding package; sent with the inquiry. */
+export const PACKAGE_EXTRAS = [
+  { value: "engagement", label: "Engagement session" },
+  { value: "save_the_date", label: "Save-the-date photos" },
+  { value: "video", label: "Video team" },
+  { value: "website", label: "Wedding website and evites" },
+] as const;
+
 export const INQUIRY_KIND_SHORT: Record<InquiryKind, string> = {
+  wedding: "Wedding",
+  engagement: "Engagement",
+  save_the_date: "Save the date",
+  planner: "Planner",
   retainer: "Business",
   headshots: "Headshots",
   event: "Event",

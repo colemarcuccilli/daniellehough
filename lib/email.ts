@@ -21,7 +21,7 @@ export async function notifyNewInquiry(inquiry: Inquiry, adminUrl: string) {
     ["Phone", inquiry.phone],
     ["Company", inquiry.company],
     ["Budget", inquiry.budget],
-    ["Timeline", inquiry.timeline],
+    ["Date / timeline", inquiry.timeline],
     ["Location", inquiry.location],
   ];
   const html = `

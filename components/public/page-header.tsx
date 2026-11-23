@@ -1,5 +1,5 @@
 import { Container } from "@/components/public/section";
-import { Sprig } from "@/components/public/sprig";
+import { Branch } from "@/components/public/greenery";
 import { cn } from "@/lib/utils";
 
 /** Sage masthead for inner pages, so the transparent nav always sits on a dark ground. */
@@ -20,7 +20,7 @@ export function PageHeader({
 }) {
   return (
     <section className={cn("relative overflow-hidden bg-sage-deep text-cream pt-24 pb-12 sm:pt-32 sm:pb-16", className)}>
-      <Sprig className="pointer-events-none absolute -right-8 -top-10 h-56 w-auto text-cream opacity-25 sm:h-80" />
+      <Branch className="pointer-events-none absolute -right-12 top-14 h-28 w-auto -scale-x-100 -rotate-[20deg] text-cream opacity-30 sm:h-44" />
       <Container className="relative">
         <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
           <div>

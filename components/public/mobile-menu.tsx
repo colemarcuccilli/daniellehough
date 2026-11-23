@@ -55,7 +55,7 @@ export function MobileMenu({ links }: { links: { href: string; label: string; ac
                   <Link
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="display flex items-center gap-4 border-b border-cream/15 py-4 text-[2.9rem] leading-none"
+                    className="display flex items-center gap-4 border-b border-cream/15 py-4 text-[2.6rem] leading-none"
                   >
                     <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.accent }} aria-hidden />
                     {l.label}
@@ -64,8 +64,8 @@ export function MobileMenu({ links }: { links: { href: string; label: string; ac
               ))}
             </ul>
             <div className="relative px-5 pb-8" onClick={() => setOpen(false)}>
-              <InquiryButton variant="primary" size="lg" className="w-full">Start a project</InquiryButton>
-              <p className="caps mt-4 text-[0.6rem] text-cream/60">Danielle Hough · Photographer · Indiana</p>
+              <InquiryButton variant="primary" size="lg" className="w-full">Check your date</InquiryButton>
+              <p className="caps mt-4 text-[0.6rem] text-cream/60">Danielle Hough · Wedding photographer · Indiana</p>
             </div>
           </div>,
           document.body,

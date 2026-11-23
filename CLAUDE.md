@@ -2,11 +2,35 @@
 
 # Project: Dani Cams (Danielle Hough)
 
-Photography business site + private admin. Danielle Hough is a photographer and
-a current member of the Indiana National Guard / United States Air Force. The
-business is built around **quarterly and monthly photography for businesses**,
-with headshot days, event coverage, and consumer mini sessions around them. See
-`lib/content.ts` for the offers copy.
+Wedding photography site + private admin. Danielle Hough is a photographer and
+a current member of the Indiana National Guard / United States Air Force.
+
+**Direction since 2026-11-23 (branch `weddings-redesign`): the site sells to
+couples.** Weddings, engagements, and save the dates are the three services
+(`SERVICES` in `lib/content.ts`). Two add-ons combine with them: a partner
+**video team** (photo + video booked together cost less) and a **wedding
+website with RSVP and evites** (package rate). Packages differ per couple, so
+there are no prices; the offer and pricing come later. Rules for this direction:
+
+- Bridal, greenery, calm, professional. Plain words only: no metaphors, no
+  poetic copy. Weddings are confusing and expensive; every line should make
+  the next step obvious ("Check your date", "one clear quote").
+- The military service stays visible ("Military-owned", hero line, facts strip,
+  About), but business and military *work* is not up front: it lives in the
+  portfolio and one small "Need photos for a business?" link.
+- Wedding planners get a side door: `/planners`, the blush `PlannerBand`, and
+  the `planner` inquiry kind. Never let it compete with the couples' path.
+- Hero and service-card photos come from `getSiteImages()`: a published
+  `weddings` category takes over the hero and Weddings card automatically;
+  until then they fall back to the public couples sessions. Client galleries
+  are private: never surface gallery photos without the owner's say-so.
+- Greenery art is `components/public/greenery.tsx` (`Branch`, `Wreath`,
+  `Garland`); arched photo frames are `.arch` / `.arch-ring`; blush tokens pair
+  with sage. Teal and purple are no longer used on the couples' pages.
+- Inquiry kinds added: `wedding`, `engagement`, `save_the_date`, `planner`
+  (check constraint widened in `supabase/freewebsites/0004`). Partner name and
+  package add-ons are appended to the message; wedding date uses `timeline`,
+  venue uses `location`. The budget field is gone from the public form.
 
 Brand rules from the owner (2026-09-03): the name is **Dani Cams** (the Supabase
 project is still called VisionaryHaus); never use the words "retainer" or

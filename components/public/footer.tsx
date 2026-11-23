@@ -16,23 +16,24 @@ export function Footer() {
             <Wordmark className="text-[1.1rem]" />
           </div>
           <p className="text-sm text-ink-soft max-w-sm leading-relaxed">{SITE.tagline}</p>
-          <p className="caps text-[0.6rem] text-ink-faint">{SITE.owner} · Indiana National Guard · U.S. Air Force</p>
+          <p className="caps text-[0.6rem] text-ink-faint">Military-owned · {SITE.owner} · Indiana National Guard · U.S. Air Force</p>
         </div>
 
         <div>
           <p className="eyebrow mb-4">Explore</p>
           <ul className="grid gap-2 text-sm">
+            <li><Link className="hover:text-marigold-deep transition-colors" href="/services">Services and packages</Link></li>
             <li><Link className="hover:text-marigold-deep transition-colors" href="/portfolio">Portfolio</Link></li>
-            <li><Link className="hover:text-marigold-deep transition-colors" href="/services">Services</Link></li>
-            <li><Link className="hover:text-marigold-deep transition-colors" href="/services#mini-sessions">Mini sessions</Link></li>
-            <li><Link className="hover:text-marigold-deep transition-colors" href="/about">About</Link></li>
+            <li><Link className="hover:text-marigold-deep transition-colors" href="/about">About Dani</Link></li>
+            <li><Link className="hover:text-marigold-deep transition-colors" href="/planners">For wedding planners</Link></li>
+            <li><Link className="hover:text-marigold-deep transition-colors" href="/services#families">Family sessions</Link></li>
           </ul>
         </div>
 
         <div className="space-y-4">
           <p className="eyebrow">Get in touch</p>
           <div>
-            <InquiryButton variant="primary" size="md">Start a project</InquiryButton>
+            <InquiryButton kind="wedding" variant="primary" size="md">Check your date</InquiryButton>
           </div>
           {SITE.email ? (
             <p className="text-sm">
@@ -40,6 +41,10 @@ export function Footer() {
             </p>
           ) : null}
           <p className="text-xs text-ink-faint">{SITE.region}</p>
+          <p className="text-xs text-ink-faint">
+            Need photos for a business?{" "}
+            <InquiryButton kind="retainer" variant="link" className="text-xs text-ink-soft">Ask here</InquiryButton>
+          </p>
         </div>
       </div>
       <div className="relative border-t border-line">

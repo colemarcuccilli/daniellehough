@@ -3,89 +3,101 @@ import type { InquiryKind } from "@/lib/types";
 export const SITE = {
   name: "Dani Cams",
   owner: "Danielle Hough",
-  tagline: "Photography for businesses and families across Indiana.",
+  tagline: "Wedding, engagement, and save-the-date photography across Indiana.",
   region: "Fort Wayne & Northeast Indiana · travels statewide",
   /** Set when Dani has a business inbox; the site shows the form only until then. */
   email: "" as string,
 };
 
-export type Offer = {
-  slug: string;
+/** Wedding work first; everything else follows. Unknown slugs keep their admin order after these. */
+export const CATEGORY_ORDER = ["weddings", "families-couples", "events", "portraits-creative", "nature-animals", "military-aviation"];
+
+export type Service = {
+  slug: "weddings" | "engagements" | "save-the-dates";
   name: string;
-  tag?: string;
+  kind: InquiryKind;
   summary: string;
   includes: string[];
-  terms?: string[];
-  kind: InquiryKind;
+  ask: string;
 };
 
-export const PLANS: Offer[] = [
+/** No prices here: packages and rates are set per couple (see CLAUDE.md). */
+export const SERVICES: Service[] = [
   {
-    slug: "quarterly",
-    name: "Quarterly Photography",
-    tag: "Quarterly",
-    kind: "retainer",
-    summary: "One capture day every quarter. You pick what it points at.",
-    includes: [
-      "Facility, event, headshots, product, or process",
-      "Edited, captioned, delivered to a shared folder",
-      "Annual headshot day included",
-    ],
-    terms: ["Use it within the quarter", "Two weeks notice on event dates"],
+    slug: "weddings",
+    name: "Weddings",
+    kind: "wedding",
+    summary: "Your whole day, from getting ready to the last dance.",
+    includes: ["Ceremony, portraits, and reception", "Family and wedding party photos", "Private online gallery with downloads"],
+    ask: "Check your date",
   },
   {
-    slug: "monthly",
-    name: "Monthly Photography",
-    tag: "Monthly",
-    kind: "retainer",
-    summary: "One session a month for businesses that post every week.",
-    includes: ["Restaurants, hospitality, multi-location groups", "Capped image count", "Delivered ready to post"],
-    terms: ["Managed posting not included"],
+    slug: "engagements",
+    name: "Engagements",
+    kind: "engagement",
+    summary: "A relaxed session at a place you choose.",
+    includes: ["Photos for invitations and your website", "A chance to get comfortable on camera", "Proposals too, planned in secret"],
+    ask: "Ask about engagements",
+  },
+  {
+    slug: "save-the-dates",
+    name: "Save the dates",
+    kind: "save_the_date",
+    summary: "Photos made for your announcement.",
+    includes: ["Framed for cards and evites", "Works with the wedding website add-on", "Booked alone or with your wedding"],
+    ask: "Ask about save the dates",
   },
 ];
 
 export const ADD_ONS = [
-  { name: "Drone", body: "Facility aerials yearly, or monthly progress on construction sites." },
-  { name: "Vertical video", body: "Short vertical clips from the same session." },
-  { name: "Extra capture days", body: "For launches, openings, and events." },
-];
-
-export const ONE_OFFS: Offer[] = [
   {
-    slug: "headshots",
-    name: "Headshot days",
-    kind: "headshots",
-    summary: "The whole team, one visit, one look.",
-    includes: ["Setup at your location", "Web and print sizes"],
+    slug: "video",
+    name: "Video team",
+    summary: "My partner video team films your day.",
+    deal: "Book photo and video together and you pay less for both.",
   },
   {
-    slug: "product",
-    name: "Product, menu & facility",
-    kind: "product",
-    summary: "Menus, product lines, showrooms, facilities.",
-    includes: ["Shot list agreed ahead", "Matches your existing brand"],
-  },
-  {
-    slug: "events",
-    name: "Events",
-    kind: "event",
-    summary: "Fundraisers, openings, race days, company events.",
-    includes: ["Candid and posed", "Highlights within the week"],
+    slug: "website",
+    name: "Wedding website and evites",
+    summary: "A save-the-date and RSVP website, with evites to send your guests.",
+    deal: "Offered at a package rate when you book photography.",
   },
 ];
 
-export const MINI_SESSIONS = {
-  name: "Mini sessions",
-  duration: "15 minutes",
-  summary: "Quick sessions for families and individuals, a few dates a year.",
-  includes: ["Three prints", "A small set of digitals", "No watermarks"],
-  upsell: "Full gallery available after the session.",
-  kind: "mini_session" as InquiryKind,
-};
+export const COMBINATIONS = [
+  "Wedding photography",
+  "Wedding + engagement session",
+  "Wedding + engagement + save the dates",
+  "Any of the above + video team",
+  "Any of the above + wedding website and evites",
+];
 
 export const PROCESS = [
-  { step: "01", title: "Pick the target", body: "A short call to decide what the photographs need to do." },
-  { step: "02", title: "Capture day", body: "I show up ready and work the shot list." },
-  { step: "03", title: "Edit and caption", body: "One consistent look, captioned." },
-  { step: "04", title: "Delivered to your folder", body: "Sized for web and print, ready to post." },
+  { title: "Send your date", body: "Tell me your date, your venue, and what you need." },
+  { title: "Get one clear quote", body: "Everything you picked, priced together, in writing." },
+  { title: "Your wedding day", body: "I arrive early with a plan and a list of the photos you asked for." },
+  { title: "Your gallery", body: "A private online gallery to view, share, and download." },
 ];
+
+export const FAQ = [
+  {
+    q: "How much does it cost?",
+    a: "It depends on what you combine. Send your date and what you need, and you get one quote with everything in it.",
+  },
+  { q: "Do you travel?", a: "Yes. I am based in Northeast Indiana and photograph weddings anywhere in the state." },
+  { q: "How do we get our photos?", a: "In a private online gallery. You and your family can view, share, and download the full-quality files." },
+  { q: "Can we add video or a website later?", a: "Yes. The combined rate applies when they are booked together with photography." },
+  { q: "We already have a planner. Is that a problem?", a: "No. I work with your planner on the timeline and the photo list." },
+];
+
+export const PLANNER_POINTS = [
+  { title: "Better rates for your couples", body: "Partner planners get a set rate to pass on to every couple they send." },
+  { title: "One contact for more of the list", body: "Photography, a partner video team, and wedding websites with RSVP and evites." },
+  { title: "The same team every time", body: "You know who is showing up, how they work, and when the gallery arrives." },
+];
+
+export const FAMILY_SESSIONS = {
+  name: "Family sessions",
+  summary: "Family, newborn, and mini sessions for the years after the wedding.",
+  kind: "mini_session" as InquiryKind,
+};

@@ -20,6 +20,11 @@
   --color-sage-deep: #3d4a3a;
   --color-sage-soft: #e3e7de;
 
+  /* blush: the warm bridal counterpart to sage */
+  --color-blush: #e9cfc4;
+  --color-blush-deep: #b9857a;
+  --color-blush-soft: #f7ece6;
+
   /* the bright four, kept for memorability */
   --color-marigold: #f8c858;
   --color-marigold-bright: #ffd966;
@@ -137,7 +142,7 @@ body {
   }
   /* Home masthead headline: two lines that never wrap, sized to the viewport. */
   .hero-title {
-    font-size: clamp(2.1rem, 9.3vw, 8rem);
+    font-size: clamp(1.9rem, 9.3vw, 8rem);
     line-height: 0.98;
   }
   .serif-accent {
@@ -178,6 +183,17 @@ body {
     pointer-events: none;
   }
   /* a thin coloured rule across the top of a framed card */
+  /* arched photo frame, like a chapel window */
+  .arch {
+    border-radius: 999px 999px 3px 3px;
+    overflow: hidden;
+  }
+  .arch-ring {
+    border-radius: 999px 999px 6px 6px;
+    border: 1px solid var(--color-line-strong);
+    padding: 7px;
+    background: var(--color-paper);
+  }
   .ribbon { border-top-width: 3px; border-top-color: var(--color-marigold); }
   .ribbon-marigold { border-top-color: var(--color-marigold); }
   .ribbon-teal { border-top-color: var(--color-teal); }

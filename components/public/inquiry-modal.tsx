@@ -6,18 +6,21 @@ import { X } from "lucide-react";
 import type { VariantProps } from "class-variance-authority";
 import { buttonStyles } from "@/components/ui/button";
 import { InquiryForm } from "@/components/public/inquiry-form";
-import type { InquiryKind } from "@/lib/types";
+import { ALL_INQUIRY_KINDS, type InquiryKind } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const KINDS: InquiryKind[] = ["retainer", "headshots", "event", "product", "mini_session", "other"];
-const isKind = (v: string | null): v is InquiryKind => !!v && (KINDS as string[]).includes(v);
+const isKind = (v: string | null): v is InquiryKind => !!v && (ALL_INQUIRY_KINDS as string[]).includes(v);
 
 const HEADLINES: Record<InquiryKind, string> = {
+  wedding: "Check your date",
+  engagement: "Engagement session",
+  save_the_date: "Save-the-date photos",
+  planner: "Partner with Dani Cams",
   retainer: "Photography for your business",
   headshots: "Headshot day",
   event: "Event coverage",
   product: "Product, menu, or facility",
-  mini_session: "Mini session dates",
+  mini_session: "Family session",
   other: "Tell me about it",
 };
 
@@ -31,8 +34,8 @@ export function useInquiry() {
 }
 
 export function InquiryProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<{ open: boolean; kind: InquiryKind }>({ open: false, kind: "retainer" });
-  const open = useCallback((kind?: InquiryKind) => setState({ open: true, kind: kind ?? "retainer" }), []);
+  const [state, setState] = useState<{ open: boolean; kind: InquiryKind }>({ open: false, kind: "wedding" });
+  const open = useCallback((kind?: InquiryKind) => setState({ open: true, kind: kind ?? "wedding" }), []);
   const close = useCallback(() => setState((s) => ({ ...s, open: false })), []);
 
   useEffect(() => {
@@ -74,7 +77,7 @@ function InquiryDialog({ kind, onClose }: { kind: InquiryKind; onClose: () => vo
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-line bg-paper/95 px-5 py-4 backdrop-blur sm:px-7">
           <div>
-            <p className="eyebrow mb-1">Start a project</p>
+            <p className="eyebrow mb-1">{kind === "planner" ? "For planners" : "Get a quote"}</p>
             <h2 id="inquiry-title" className="display text-3xl sm:text-4xl">{HEADLINES[kind]}</h2>
           </div>
           <button
@@ -95,7 +98,7 @@ function InquiryDialog({ kind, onClose }: { kind: InquiryKind; onClose: () => vo
 }
 
 export function InquiryButton({
-  kind = "retainer",
+  kind = "wedding",
   className,
   variant,
   size,
@@ -118,7 +121,7 @@ function InquiryFromUrlInner() {
   const kind = sp.get("inquire");
   useEffect(() => {
     if (!kind) return;
-    open(isKind(kind) ? kind : "other");
+    open(isKind(kind) ? kind : "wedding");
     const params = new URLSearchParams(sp.toString());
     params.delete("inquire");
     const q = params.toString();

@@ -17,18 +17,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://danicams.com";
 
 export const metadata: Metadata = {
   title: {
-    default: "Dani Cams · Danielle Hough, Photographer",
+    default: "Dani Cams · Indiana Wedding Photographer",
     template: "%s · Dani Cams",
   },
   description:
-    "Photography for businesses and families across Indiana. Quarterly and monthly business photography, headshot days, events, and sessions by Danielle Hough.",
+    "Wedding, engagement, and save-the-date photography across Indiana by Danielle Hough. Military-owned. Add video or a wedding website and get one clear quote.",
   metadataBase: new URL(siteUrl),
   openGraph: {
     siteName: "Dani Cams",
-    title: "Dani Cams · Danielle Hough, Photographer",
-    description: "Photography for businesses and families across Indiana.",
+    title: "Dani Cams · Indiana Wedding Photographer",
+    description: "Wedding, engagement, and save-the-date photography across Indiana.",
     type: "website",
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Dani Cams photography" }],
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Dani Cams wedding photography" }],
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },

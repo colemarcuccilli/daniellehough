@@ -16,25 +16,27 @@ export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Danielle Hough is an Indiana photographer and a current member of the Indiana National Guard and the United States Air Force.",
+  description: "Danielle Hough is an Indiana wedding photographer and a current member of the Indiana National Guard and the United States Air Force.",
 };
 
 const PRINCIPLES = [
-  { title: "Show up ready", body: "Shot list built, gear checked, plan for the light." },
-  { title: "Consistent", body: "Every gallery edited to the same standard, so your library matches." },
-  { title: "On time", body: "You get a delivery date and the files on it." },
+  { title: "A plan for the day", body: "Your timeline and photo list are settled before the wedding, not during it." },
+  { title: "Early, every time", body: "I am at the venue before I need to be, with backup gear." },
+  { title: "A gallery you can share", body: "Private, online, with full-quality downloads for you and your family." },
 ];
 
 export default async function AboutPage() {
-  const projects = await getProjects({ featuredOnly: true });
-  const strip = projects.filter((p) => p.cover).slice(0, 5);
+  const projects = await getProjects();
+  const strip = projects
+    .filter((p) => p.cover && p.category && ["weddings", "families-couples"].includes(p.category.slug))
+    .slice(0, 5);
 
   return (
     <>
       <PageHeader
         eyebrow="Dani Cams"
         title="Danielle Hough"
-        body="Photographer, based in Indiana. Current member of the Indiana National Guard and the United States Air Force."
+        body="Wedding photographer, based in Indiana. Current member of the Indiana National Guard and the United States Air Force."
       />
 
       <Container className="mt-12 sm:mt-16">
@@ -42,13 +44,16 @@ export default async function AboutPage() {
           <div>
             <div className="prose-basic text-lg text-ink-soft leading-relaxed max-w-xl">
               <p>
-                Most of my hours behind a camera have been on the flight line: airmen, aircraft, ceremonies. That work runs on
-                a schedule, in whatever light there is, with no do-overs. Dani Cams runs the same way, for businesses and for
-                families.
+                I photograph weddings, engagements, and save the dates across Indiana. I also serve in the Indiana National
+                Guard and the U.S. Air Force, where I work as a photographer.
+              </p>
+              <p className="mt-5">
+                Military photography happens on a schedule, in whatever light there is, with no second try. A wedding day is
+                the same. So I plan ahead, show up early, and keep things calm.
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <InquiryButton variant="primary" size="lg">Start a project</InquiryButton>
+              <InquiryButton kind="wedding" variant="primary" size="lg">Check your date</InquiryButton>
               <Link href="/portfolio" className={buttonStyles({ variant: "outline", size: "lg" })}>
                 Portfolio
               </Link>
@@ -60,8 +65,9 @@ export default async function AboutPage() {
               {[
                 ["Based in", "Indiana"],
                 ["Serving", "Indiana National Guard · United States Air Force"],
-                ["For businesses", "Quarterly and monthly photography"],
-                ["Also", "Headshot days, events, families, proposals"],
+                ["Photographs", "Weddings, engagements, save the dates"],
+                ["Also", "Families, newborns, proposals"],
+                ["Business", "Military-owned"],
               ].map(([k, v]) => (
                 <div key={k} className="grid grid-cols-[110px_1fr] gap-3 border-t border-line pt-3">
                   <dt className="caps text-[0.58rem] text-ink-faint pt-1">{k}</dt>
@@ -99,11 +105,11 @@ export default async function AboutPage() {
       ) : null}
 
       <Container className="mt-20 sm:mt-28">
-        <SectionHeading eyebrow="How I work" title="Three things you can count on" />
+        <SectionHeading eyebrow="How I work" title="What you can count on" />
         <ol className="mt-10 grid gap-px overflow-hidden rounded-xs border border-sage bg-line md:grid-cols-3">
           {PRINCIPLES.map((p, i) => (
             <li key={p.title} className="bg-paper p-7">
-              <span className="display text-4xl" style={{ color: ["var(--color-teal)", "var(--color-purple)", "var(--color-green)"][i] }}>0{i + 1}</span>
+              <span className="display text-4xl text-sage">0{i + 1}</span>
               <h3 className="mt-3 display text-3xl">{p.title}</h3>
               <p className="mt-2 text-sm text-ink-soft leading-relaxed">{p.body}</p>
             </li>
@@ -111,7 +117,15 @@ export default async function AboutPage() {
         </ol>
       </Container>
 
-      <div className="mt-24">
+      <Container className="mt-12">
+        <p className="text-sm text-ink-soft">
+          Dani also photographs for businesses and the military.{" "}
+          <Link href="/portfolio" className="underline underline-offset-4 decoration-sage hover:text-ink">See all of her work</Link>, or{" "}
+          <InquiryButton kind="retainer" variant="link" className="text-sm">ask about business photography</InquiryButton>.
+        </p>
+      </Container>
+
+      <div className="mt-20">
         <CtaBand />
       </div>
     </>

@@ -7,15 +7,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
-import { INQUIRY_KINDS, BUDGET_OPTIONS, type InquiryKind } from "@/lib/types";
+import { INQUIRY_KINDS, PACKAGE_EXTRAS, PUBLIC_INQUIRY_KINDS, type InquiryKind } from "@/lib/types";
 import { submitInquiry } from "@/app/(public)/contact/actions";
 import { Turnstile } from "@/components/public/turnstile";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-const BUSINESS_KINDS: InquiryKind[] = ["retainer", "headshots", "event", "product"];
+const COUPLE_KINDS: InquiryKind[] = ["wedding", "engagement", "save_the_date"];
+const COMPANY_KINDS: InquiryKind[] = ["planner", "retainer", "headshots", "event", "product"];
 
-export function InquiryForm({ initialKind = "retainer", source }: { initialKind?: InquiryKind; source?: string }) {
+export function InquiryForm({ initialKind = "wedding", source }: { initialKind?: InquiryKind; source?: string }) {
   const [kind, setKind] = useState<InquiryKind>(initialKind);
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -25,11 +26,15 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
   const [tsError, setTsError] = useState<string | null>(null);
   const onToken = useCallback((t: string | null) => setToken(t), []);
   const onTsError = useCallback((code: string) => setTsError(code), []);
-  const business = BUSINESS_KINDS.includes(kind);
+  const couple = COUPLE_KINDS.includes(kind);
+  const planner = kind === "planner";
+  const company = COMPANY_KINDS.includes(kind);
   // 1102xx codes are site-key / hostname configuration problems, not a bot
   // verdict: let the form fall back to the honeypot instead of going dead.
   const tsConfigError = !!tsError && /^1102\d{2}$/.test(tsError);
   const needsToken = !!TURNSTILE_SITE_KEY && !token && !tsConfigError;
+  const kinds = PUBLIC_INQUIRY_KINDS.includes(kind) ? PUBLIC_INQUIRY_KINDS : [kind, ...PUBLIC_INQUIRY_KINDS];
+  const extras = PACKAGE_EXTRAS.filter((e) => e.value !== kind);
 
   if (done) {
     return (
@@ -73,9 +78,9 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
 
       <Field label="What do you need?" htmlFor="kind">
         <Select id="kind" name="kind" value={kind} onChange={(e) => setKind(e.target.value as InquiryKind)}>
-          {(Object.keys(INQUIRY_KINDS) as InquiryKind[]).map((k) => (
+          {kinds.map((k) => (
             <option key={k} value={k}>
-              {INQUIRY_KINDS[k]}
+              {k === "planner" ? "I'm a wedding planner" : INQUIRY_KINDS[k]}
             </option>
           ))}
         </Select>
@@ -85,50 +90,77 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
         <Field label="Your name" htmlFor="name">
           <Input id="name" name="name" required maxLength={120} autoComplete="name" placeholder="Full name" />
         </Field>
-        <Field label="Email" htmlFor="email">
-          <Input id="email" name="email" type="email" required maxLength={200} autoComplete="email" placeholder="you@company.com" />
-        </Field>
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Phone (optional)" htmlFor="phone">
-          <Input id="phone" name="phone" type="tel" maxLength={40} autoComplete="tel" placeholder="(260) 555-0100" />
-        </Field>
-        {business ? (
-          <Field label="Company" htmlFor="company">
+        {couple ? (
+          <Field label="Partner's name" htmlFor="partner">
+            <Input id="partner" name="partner" maxLength={120} placeholder="Full name" />
+          </Field>
+        ) : company ? (
+          <Field label={planner ? "Your business" : "Company"} htmlFor="company">
             <Input id="company" name="company" maxLength={160} autoComplete="organization" placeholder="Business name" />
           </Field>
         ) : (
           <Field label="Location (optional)" htmlFor="location">
-            <Input id="location" name="location" maxLength={160} placeholder="City or venue" />
+            <Input id="location" name="location" maxLength={160} placeholder="City" />
           </Field>
         )}
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Budget" htmlFor="budget">
-          <Select id="budget" name="budget" defaultValue="">
-            <option value="">Choose a range</option>
-            {BUDGET_OPTIONS.map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </Select>
+        <Field label="Email" htmlFor="email">
+          <Input id="email" name="email" type="email" required maxLength={200} autoComplete="email" placeholder="you@email.com" />
         </Field>
-        <Field label="Timeline" htmlFor="timeline">
-          <Input id="timeline" name="timeline" maxLength={200} placeholder={business ? "Starting when?" : "Preferred dates"} />
+        <Field label="Phone (optional)" htmlFor="phone">
+          <Input id="phone" name="phone" type="tel" maxLength={40} autoComplete="tel" placeholder="(260) 555-0100" />
         </Field>
       </div>
 
-      {business ? (
-        <Field label="Location" htmlFor="location">
-          <Input id="location" name="location" maxLength={160} placeholder="City, or how many locations" />
+      {couple ? (
+        <div className="grid items-start gap-5 sm:grid-cols-2">
+          <Field label="Wedding date" htmlFor="timeline" hint="A month or season is fine if the date is not set.">
+            <Input id="timeline" name="timeline" maxLength={200} placeholder="June 12, 2027" />
+          </Field>
+          <Field label="Venue or city" htmlFor="location">
+            <Input id="location" name="location" maxLength={160} placeholder="Where it will be" />
+          </Field>
+        </div>
+      ) : company ? (
+        <Field label={planner ? "Where you work" : "Location"} htmlFor="location">
+          <Input id="location" name="location" maxLength={160} placeholder="City or region" />
         </Field>
       ) : null}
 
-      <Field label="Tell me about it" htmlFor="message">
-        <Textarea id="message" name="message" required minLength={10} maxLength={5000} rows={5} placeholder="What the photographs need to do, and for whom." />
+      {couple ? (
+        <fieldset className="grid gap-2">
+          <legend className="caps mb-2 text-[0.64rem] text-sage">Add to your package (optional)</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {extras.map((e) => (
+              <label
+                key={e.value}
+                className="flex cursor-pointer items-center gap-3 rounded-xs border border-line-strong bg-paper px-3.5 py-3 text-sm transition-colors hover:border-sage has-[:checked]:border-sage has-[:checked]:bg-sage-soft"
+              >
+                <input type="checkbox" name="extras" value={e.value} className="h-4 w-4 accent-[var(--color-sage-deep)]" />
+                {e.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
+
+      <Field label={couple ? "Anything else? (optional)" : "Tell me about it"} htmlFor="message">
+        <Textarea
+          id="message"
+          name="message"
+          required={!couple}
+          maxLength={4500}
+          rows={couple ? 3 : 5}
+          placeholder={
+            couple
+              ? "Guest count, timing, questions."
+              : planner
+                ? "How many weddings you plan a year, and what you want for your couples."
+                : "What you need photographed, and when."
+          }
+        />
       </Field>
 
       {TURNSTILE_SITE_KEY ? (
@@ -145,9 +177,9 @@ export function InquiryForm({ initialKind = "retainer", source }: { initialKind?
       {error ? <p className="text-sm text-coral">{error}</p> : null}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <p className="text-xs text-ink-faint max-w-xs">Two business days. No newsletters.</p>
+        <p className="text-xs text-ink-faint max-w-xs">Reply within two business days. No newsletters.</p>
         <Button type="submit" variant="primary" size="lg" disabled={pending || needsToken}>
-          {pending ? "Sending…" : "Send inquiry"}
+          {pending ? "Sending…" : couple ? "Get my quote" : "Send"}
         </Button>
       </div>
     </form>

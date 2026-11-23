@@ -52,7 +52,7 @@ export function BrandLink({
           <>
             <span aria-hidden className={cn("hidden h-5 w-px lg:block", dark ? "bg-cream/40" : "bg-line-strong")} />
             <span className={cn("caps hidden text-[0.56rem] tracking-[0.3em] lg:inline", dark ? "text-cream/70" : "text-ink-soft")}>
-              Danielle Hough, Photographer
+              Wedding photography
             </span>
           </>
         ) : null}

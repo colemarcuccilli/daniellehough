@@ -6,15 +6,16 @@ import { z } from "zod";
 import { createPublicClient } from "@/lib/supabase/public";
 import { notifyNewInquiry } from "@/lib/email";
 import { verifyTurnstile } from "@/lib/turnstile";
-import type { Inquiry } from "@/lib/types";
+import { ALL_INQUIRY_KINDS, PACKAGE_EXTRAS, type Inquiry, type InquiryKind } from "@/lib/types";
 
 const schema = z.object({
-  kind: z.enum(["retainer", "headshots", "event", "product", "mini_session", "other"]).default("other"),
+  kind: z.enum(ALL_INQUIRY_KINDS as [InquiryKind, ...InquiryKind[]]).default("other"),
   name: z.string().trim().min(1, "Please add your name.").max(120),
   email: z.string().trim().email("That email doesn't look right.").max(200),
   phone: z.string().trim().max(40).optional(),
   company: z.string().trim().max(160).optional(),
-  message: z.string().trim().min(10, "Tell me a little more (at least a sentence).").max(5000),
+  message: z.string().trim().max(4500),
+  partner: z.string().trim().max(120).optional(),
   budget: z.string().trim().max(80).optional(),
   timeline: z.string().trim().max(200).optional(),
   location: z.string().trim().max(160).optional(),
@@ -26,7 +27,7 @@ export type InquiryResult = { ok: true } | { ok: false; error: string };
 
 export async function submitInquiry(formData: FormData): Promise<InquiryResult> {
   const raw = Object.fromEntries(
-    ["kind", "name", "email", "phone", "company", "message", "budget", "timeline", "location", "source", "website"].map((k) => [
+    ["kind", "name", "email", "phone", "company", "message", "partner", "budget", "timeline", "location", "source", "website"].map((k) => [
       k,
       (formData.get(k) as string | null) ?? "",
     ]),
@@ -59,6 +60,20 @@ export async function submitInquiry(formData: FormData): Promise<InquiryResult> 
     }
   }
 
+  // Partner name and package add-ons have no columns of their own; they travel
+  // at the end of the message so the admin and the email both show them.
+  const couple = ["wedding", "engagement", "save_the_date"].includes(parsed.data.kind);
+  const picked = formData.getAll("extras").map(String);
+  const extras = PACKAGE_EXTRAS.filter((e) => picked.includes(e.value)).map((e) => e.label);
+  const details = [
+    parsed.data.partner ? `Partner: ${parsed.data.partner}` : null,
+    extras.length ? `Also interested in: ${extras.join(", ")}` : null,
+  ].filter(Boolean);
+  if (!couple && parsed.data.message.length < 10) {
+    return { ok: false, error: "Tell me a little more (at least a sentence)." };
+  }
+  const message = [parsed.data.message || (couple ? "No message added." : ""), details.join("\n")].filter(Boolean).join("\n\n");
+
   const id = crypto.randomUUID();
   const row: Inquiry = {
     id,
@@ -67,7 +82,7 @@ export async function submitInquiry(formData: FormData): Promise<InquiryResult> 
     email: parsed.data.email.toLowerCase(),
     phone: parsed.data.phone || null,
     company: parsed.data.company || null,
-    message: parsed.data.message,
+    message,
     budget: parsed.data.budget || null,
     timeline: parsed.data.timeline || null,
     location: parsed.data.location || null,

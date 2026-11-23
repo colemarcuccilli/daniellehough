@@ -1,5 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Category, CategoryWithCover, Photo, Project, ProjectWithCover, Section } from "@/lib/types";
+import { CATEGORY_ORDER } from "@/lib/content";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -51,7 +52,12 @@ export async function getCategories(): Promise<Category[]> {
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data ?? []) as Category[];
+  // Wedding and couples work leads; the rest keeps its admin order behind it.
+  const rank = (c: Category) => {
+    const i = CATEGORY_ORDER.indexOf(c.slug);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  };
+  return ((data ?? []) as Category[]).sort((a, b) => rank(a) - rank(b));
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
@@ -214,4 +220,54 @@ export async function getGalleryBySlug(slug: string): Promise<Gallery | null> {
     });
   }
   return { ...row, cover: cover ?? list[0] ?? null, sections: groups.filter((g) => g.photos.length > 0), photos: list };
+}
+
+
+const SITE_IMAGE_FALLBACKS = {
+  hero: "lakeside-proposal/dsc-9804-307.jpg",
+  weddings: "lakeside-proposal/dsc-9849-301.jpg",
+  engagements: "lakeside-proposal/dsc-9457-294.jpg",
+  "save-the-dates": "lakeside-proposal/dsc-9726-300.jpg",
+  about: "lakeside-proposal/dsc-9785-308.jpg",
+} as const;
+
+export type SiteImages = Record<keyof typeof SITE_IMAGE_FALLBACKS, Photo | null>;
+
+/**
+ * Photos for the hero and the service cards. Once a published "weddings"
+ * category has photos, they take over the hero and the Weddings card; until
+ * then every slot falls back to the couples work already public.
+ */
+export async function getSiteImages(): Promise<SiteImages> {
+  const supabase = createPublicClient();
+  const paths = Object.values(SITE_IMAGE_FALLBACKS);
+  const [{ data: rows }, { data: cat }] = await Promise.all([
+    supabase.from("photos").select("*").in("web_path", paths).eq("is_published", true),
+    supabase.from("categories").select("id, cover_photo_id").eq("slug", "weddings").eq("is_published", true).maybeSingle(),
+  ]);
+  const byPath = new Map(((rows ?? []) as Photo[]).map((p) => [p.web_path, p]));
+  const out = Object.fromEntries(
+    Object.entries(SITE_IMAGE_FALLBACKS).map(([k, path]) => [k, byPath.get(path) ?? null]),
+  ) as SiteImages;
+
+  if (cat) {
+    const { data: projects } = await supabase.from("projects").select("id").eq("category_id", cat.id).eq("is_published", true);
+    const ids = (projects ?? []).map((p: { id: string }) => p.id);
+    if (ids.length) {
+      const { data: wed } = await supabase
+        .from("photos")
+        .select("*")
+        .in("project_id", ids)
+        .eq("is_published", true)
+        .order("sort_order", { ascending: true })
+        .limit(60);
+      const list = (wed ?? []) as Photo[];
+      const cover = list.find((p) => p.id === cat.cover_photo_id);
+      const wide = cover && cover.width > cover.height ? cover : list.find((p) => p.width > p.height);
+      const tall = list.find((p) => p.height > p.width && p.id !== wide?.id);
+      if (wide) out.hero = wide;
+      if (tall) out.weddings = tall;
+    }
+  }
+  return out;
 }

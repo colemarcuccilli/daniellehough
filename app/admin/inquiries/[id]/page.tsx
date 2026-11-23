@@ -28,7 +28,7 @@ export default async function InquiryDetailPage({ params }: { params: Promise<{ 
     ["Phone", inquiry.phone],
     ["Company", inquiry.company],
     ["Budget", inquiry.budget],
-    ["Timeline", inquiry.timeline],
+    ["Date / timeline", inquiry.timeline],
     ["Location", inquiry.location],
     ["Came from", inquiry.source],
   ];
