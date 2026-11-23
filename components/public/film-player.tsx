@@ -24,8 +24,8 @@ export function FilmPlayer({ film, className, style }: { film: Film; className?:
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={filmPoster(film)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
             <span className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/10" aria-hidden />
-            <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-cream/80 bg-black/30 text-cream backdrop-blur-sm transition-colors group-hover:bg-marigold group-hover:text-ink group-hover:border-marigold">
-              <Play size={20} className="translate-x-0.5" fill="currentColor" />
+            <span className="absolute right-3 top-3 grid h-11 w-11 place-items-center sm:right-4 sm:top-4 sm:h-12 sm:w-12 rounded-full border border-cream/80 bg-black/30 text-cream backdrop-blur-sm transition-colors group-hover:bg-marigold group-hover:text-ink group-hover:border-marigold">
+              <Play size={16} className="translate-x-0.5" fill="currentColor" />
             </span>
           </button>
         )}
