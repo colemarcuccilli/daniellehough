@@ -1,26 +1,13 @@
-import Image from "next/image";
 import type { Photo } from "@/lib/types";
-import { photoUrl } from "@/lib/images";
+import { HeroSlides } from "@/components/public/hero-slides";
 import { buttonStyles } from "@/components/ui/button";
 import { Container } from "@/components/public/section";
 import { InquiryButton } from "@/components/public/inquiry-modal";
 
-export function Hero({ photo }: { photo: Photo | null }) {
+export function Hero({ photos }: { photos: Photo[] }) {
   return (
     <section className="relative flex min-h-[92svh] items-end overflow-hidden bg-sage-deep text-cream sm:min-h-[100svh]">
-      {photo ? (
-        <Image
-          src={photoUrl(photo.web_path)}
-          alt={photo.alt ?? ""}
-          fill
-          priority
-          sizes="100vw"
-          quality={85}
-          placeholder={photo.blur_data_url ? "blur" : "empty"}
-          blurDataURL={photo.blur_data_url ?? undefined}
-          className="object-cover object-[center_32%]"
-        />
-      ) : null}
+      <HeroSlides photos={photos} />
       <div className="absolute inset-0 bg-gradient-to-t from-[rgba(20,22,20,0.82)] via-[rgba(20,22,20,0.08)] to-[rgba(20,22,20,0.38)]" aria-hidden />
       <Container className="relative w-full pb-10 pt-40 sm:pb-14">
         <h1 className="display hero-title rise">

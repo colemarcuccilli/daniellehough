@@ -99,27 +99,53 @@ export const OFFER = [
 ];
 
 /**
- * Wedding photos shown on the site, in order. Paths are from the client
- * galleries the owner cleared for public use (2026-11-23). Any other gallery
- * whose slug says wedding or engagement is sampled automatically after these.
+ * Photos shown on the site, from the client galleries the owner cleared for
+ * public use (2026-11-23: any wedding, engagement, or family gallery). The
+ * order mixes the shoots on purpose: no single couple leads the site. A new
+ * gallery with no picks here is sampled automatically and appended.
  */
-export const FEATURED_WEDDING_PHOTOS = [
+export const HERO_SLIDES = [
+  "blakeley-wedding/dsc-2054-pm8mly.jpg",
+  "ball-engagement/dsc-9770-ffh854.jpg",
   "hunkin-wedding/sd507153-e0g4h3.jpg",
-  "hunkin-wedding/sd506874-f5snst.jpg",
+];
+
+export const CARD_PHOTOS = {
+  weddings: "blakeley-wedding/dsc-2201-2-ubqzu9.jpg",
+  engagements: "ball-engagement/dsc-0162-fwltxf.jpg",
+  "save-the-dates": "ball-engagement/dsc-0694-6fxalu.jpg",
+} as const;
+
+export const FEATURED_PHOTOS = [
+  "blakeley-wedding/dsc-2242-syjqkx.jpg",
+  "ball-engagement/dsc-0030-15lppe.jpg",
+  "gage-lexi-save-the-date/sd504824-2-wir7wo.jpg",
   "hunkin-wedding/sd507183-17bw9g.jpg",
+  "blakeley-wedding/dsc-3884-mi3t4j.jpg",
+  "ball-engagement/dsc-0472-vygts4.jpg",
+  "gage-lexi-save-the-date/sd504875-djzsj3.jpg",
   "hunkin-wedding/sd506912-iingfd.jpg",
-  "hunkin-wedding/sd507149-wyiwok.jpg",
-  "hunkin-wedding/sd506877-1-cv9kcl.jpg",
+  "blakeley-wedding/dsc-2034-xmb6hs.jpg",
+  "ball-engagement/dsc-0613-dc2sfa.jpg",
+  "gage-lexi-save-the-date/sd504973-5i5sqb.jpg",
+  "blakeley-wedding/dsc-2583-2-nzfm1l.jpg",
   "hunkin-wedding/sd507170-mpgiak.jpg",
-  "hunkin-wedding/sd506921-m1xk2l.jpg",
+  "blakeley-wedding/dsc-3857-aqgxc2.jpg",
+  "gage-lexi-save-the-date/sd504898-cbxe2s.jpg",
+  "ball-engagement/dsc-0090-usme13.jpg",
   "hunkin-wedding/sd507142-2-uk8i9s.jpg",
+  "blakeley-wedding/dsc-2291-g6oaym.jpg",
+  "gage-lexi-save-the-date/sd505046-ufxwrb.jpg",
+  "ball-engagement/dsc-9751-o69cj8.jpg",
   "hunkin-wedding/sd506984-moekmi.jpg",
-  "hunkin-wedding/sd506886-1-rmvki5.jpg",
-  "hunkin-wedding/sd507167-s1r0nr.jpg",
-  "hunkin-wedding/sd506925-aahxnj.jpg",
-  "hunkin-wedding/sd506937-zeqdh8.jpg",
-  "hunkin-wedding/sd507144-kmvf0y.jpg",
-  "hunkin-wedding/sd506878-bv5nrl.jpg",
+  "blakeley-wedding/dsc-3909-al3pxp.jpg",
+  "ball-engagement/dsc-0637-jnfzhc.jpg",
+  "hunkin-wedding/sd506874-f5snst.jpg",
+  "blakeley-wedding/dsc-2107-lh3tzm.jpg",
+  "ball-engagement/dsc-0268-vj017f.jpg",
+  "hunkin-wedding/sd506921-m1xk2l.jpg",
+  "blakeley-wedding/dsc-2220-utwafc.jpg",
+  "hunkin-wedding/sd507149-wyiwok.jpg",
 ];
 
 export const FAQ = [

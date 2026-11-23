@@ -1,6 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Category, CategoryWithCover, Photo, Project, ProjectWithCover, Section } from "@/lib/types";
-import { CATEGORY_ORDER, FEATURED_WEDDING_PHOTOS } from "@/lib/content";
+import { CARD_PHOTOS, CATEGORY_ORDER, FEATURED_PHOTOS, HERO_SLIDES } from "@/lib/content";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -224,67 +224,77 @@ export async function getGalleryBySlug(slug: string): Promise<Gallery | null> {
 
 
 const SITE_IMAGE_FALLBACKS = {
-  hero: "lakeside-proposal/dsc-9804-307.jpg",
   weddings: "lakeside-proposal/dsc-9849-301.jpg",
   engagements: "lakeside-proposal/dsc-9457-294.jpg",
   "save-the-dates": "lakeside-proposal/dsc-9726-300.jpg",
 } as const;
 
 export type SiteImages = Record<keyof typeof SITE_IMAGE_FALLBACKS, Photo | null>;
-export type WeddingWork = { weddings: Photo[]; engagements: Photo[]; images: SiteImages };
+export type WeddingWork = {
+  /** Header rotation, one photo per shoot. */
+  hero: Photo[];
+  /** Curated mix across shoots, then samples from galleries without picks. */
+  photos: Photo[];
+  images: SiteImages;
+};
 
 const spread = <T,>(list: T[], n: number): T[] =>
   list.length <= n ? list : Array.from({ length: n }, (_, i) => list[Math.floor((i * list.length) / n)]);
 
 /**
- * Wedding and engagement photos for the public pages. Sources are the client
- * galleries the owner cleared for public use: any project that is published
- * or has its gallery on, with "wedding", "engagement" or "proposal" in the
- * slug. Curated picks (FEATURED_WEDDING_PHOTOS) lead; other galleries are
- * sampled evenly so a new one shows up without a code change.
+ * Wedding, engagement and save-the-date photos for the public pages. Sources
+ * are the client galleries the owner cleared for public use. Picks in
+ * `lib/content.ts` lead, interleaved across shoots; any other gallery project
+ * with wedding / engagement / proposal / save-the-date in its slug is sampled
+ * evenly and woven in, so a new shoot shows up without a code change.
  */
 export async function getWeddingWork(): Promise<WeddingWork> {
   const supabase = createPublicClient();
-  const fallbackPaths = Object.values(SITE_IMAGE_FALLBACKS);
-  const [{ data: fb }, { data: projs }] = await Promise.all([
-    supabase.from("photos").select("*").in("web_path", fallbackPaths).eq("is_published", true),
-    supabase.from("projects").select("id, slug, cover_photo_id, created_at").or("slug.ilike.*wedding*,slug.ilike.*engagement*,slug.ilike.*proposal*"),
+  const cardPaths = Object.values(CARD_PHOTOS) as string[];
+  const fallbackPaths = Object.values(SITE_IMAGE_FALLBACKS) as string[];
+  const named = [...HERO_SLIDES, ...FEATURED_PHOTOS, ...cardPaths, ...fallbackPaths];
+  const [{ data: rows }, { data: projs }] = await Promise.all([
+    supabase.from("photos").select("*").in("web_path", named).eq("is_published", true),
+    supabase
+      .from("projects")
+      .select("id, slug")
+      .or("slug.ilike.*wedding*,slug.ilike.*engagement*,slug.ilike.*proposal*,slug.ilike.*save-the-date*")
+      .order("created_at", { ascending: false }),
   ]);
-  const byPath = new Map(((fb ?? []) as Photo[]).map((p) => [p.web_path, p]));
+  const byPath = new Map(((rows ?? []) as Photo[]).map((p) => [p.web_path, p]));
+  const pick = (paths: readonly string[]) => paths.map((p) => byPath.get(p)).filter(Boolean) as Photo[];
+
   const images = Object.fromEntries(
-    Object.entries(SITE_IMAGE_FALLBACKS).map(([k, path]) => [k, byPath.get(path) ?? null]),
+    (Object.keys(SITE_IMAGE_FALLBACKS) as (keyof typeof SITE_IMAGE_FALLBACKS)[]).map((k) => [
+      k,
+      byPath.get(CARD_PHOTOS[k]) ?? byPath.get(SITE_IMAGE_FALLBACKS[k]) ?? null,
+    ]),
   ) as SiteImages;
 
-  const projects = (projs ?? []) as { id: string; slug: string; cover_photo_id: string | null; created_at: string }[];
-  const weddings: Photo[] = [];
-  const engagements: Photo[] = [];
-  const featured = new Map<string, Photo>();
-  await Promise.all(
-    projects.map(async (p) => {
+  // Galleries with no curated picks yet: take an even sample of each.
+  const curatedFolders = new Set(named.map((p) => p.split("/")[0]));
+  const fresh = ((projs ?? []) as { id: string; slug: string }[]).filter((p) => !curatedFolders.has(p.slug));
+  const samples = await Promise.all(
+    fresh.map(async (p) => {
       const { data } = await supabase
         .from("photos")
         .select("*")
         .eq("project_id", p.id)
         .eq("is_published", true)
         .order("sort_order", { ascending: true })
-        .limit(400);
-      const list = (data ?? []) as Photo[];
-      const picked = list.filter((ph) => FEATURED_WEDDING_PHOTOS.includes(ph.web_path));
-      picked.forEach((ph) => featured.set(ph.web_path, ph));
-      const rest = picked.length ? [] : spread(list, 8);
-      (/wedding/i.test(p.slug) ? weddings : engagements).push(...rest);
+        .limit(300);
+      return spread((data ?? []) as Photo[], 8);
     }),
   );
-  const lead = FEATURED_WEDDING_PHOTOS.map((path) => featured.get(path)).filter(Boolean) as Photo[];
-  const allWeddings = [...lead, ...weddings];
 
-  const wide = allWeddings.find((p) => p.width > p.height);
-  const tall = allWeddings.find((p) => p.height > p.width);
-  const tallEngagement = engagements.find((p) => p.height > p.width && !p.web_path.startsWith("lakeside-proposal/"));
-  if (wide) images.hero = wide;
-  if (tall) images.weddings = tall;
-  if (tallEngagement) images.engagements = tallEngagement;
-  return { weddings: allWeddings, engagements, images };
+  // Weave the samples into the curated list, one every third tile.
+  const photos = pick(FEATURED_PHOTOS);
+  const extra = samples.flat();
+  for (let i = 0; i < extra.length; i++) photos.splice(Math.min(photos.length, 1 + i * 3), 0, extra[i]);
+
+  const hero = pick(HERO_SLIDES);
+  const newestWide = samples.map((s) => s.find((p) => p.width > p.height)).filter(Boolean) as Photo[];
+  return { hero: [...hero, ...newestWide].slice(0, 5), photos, images };
 }
 
 export async function getSiteImages(): Promise<SiteImages> {
