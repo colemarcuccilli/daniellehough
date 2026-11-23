@@ -1,6 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Category, CategoryWithCover, Photo, Project, ProjectWithCover, Section } from "@/lib/types";
-import { CATEGORY_ORDER } from "@/lib/content";
+import { CATEGORY_ORDER, FEATURED_WEDDING_PHOTOS } from "@/lib/content";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -228,46 +228,65 @@ const SITE_IMAGE_FALLBACKS = {
   weddings: "lakeside-proposal/dsc-9849-301.jpg",
   engagements: "lakeside-proposal/dsc-9457-294.jpg",
   "save-the-dates": "lakeside-proposal/dsc-9726-300.jpg",
-  about: "lakeside-proposal/dsc-9785-308.jpg",
 } as const;
 
 export type SiteImages = Record<keyof typeof SITE_IMAGE_FALLBACKS, Photo | null>;
+export type WeddingWork = { weddings: Photo[]; engagements: Photo[]; images: SiteImages };
+
+const spread = <T,>(list: T[], n: number): T[] =>
+  list.length <= n ? list : Array.from({ length: n }, (_, i) => list[Math.floor((i * list.length) / n)]);
 
 /**
- * Photos for the hero and the service cards. Once a published "weddings"
- * category has photos, they take over the hero and the Weddings card; until
- * then every slot falls back to the couples work already public.
+ * Wedding and engagement photos for the public pages. Sources are the client
+ * galleries the owner cleared for public use: any project that is published
+ * or has its gallery on, with "wedding", "engagement" or "proposal" in the
+ * slug. Curated picks (FEATURED_WEDDING_PHOTOS) lead; other galleries are
+ * sampled evenly so a new one shows up without a code change.
  */
-export async function getSiteImages(): Promise<SiteImages> {
+export async function getWeddingWork(): Promise<WeddingWork> {
   const supabase = createPublicClient();
-  const paths = Object.values(SITE_IMAGE_FALLBACKS);
-  const [{ data: rows }, { data: cat }] = await Promise.all([
-    supabase.from("photos").select("*").in("web_path", paths).eq("is_published", true),
-    supabase.from("categories").select("id, cover_photo_id").eq("slug", "weddings").eq("is_published", true).maybeSingle(),
+  const fallbackPaths = Object.values(SITE_IMAGE_FALLBACKS);
+  const [{ data: fb }, { data: projs }] = await Promise.all([
+    supabase.from("photos").select("*").in("web_path", fallbackPaths).eq("is_published", true),
+    supabase.from("projects").select("id, slug, cover_photo_id, created_at").or("slug.ilike.*wedding*,slug.ilike.*engagement*,slug.ilike.*proposal*"),
   ]);
-  const byPath = new Map(((rows ?? []) as Photo[]).map((p) => [p.web_path, p]));
-  const out = Object.fromEntries(
+  const byPath = new Map(((fb ?? []) as Photo[]).map((p) => [p.web_path, p]));
+  const images = Object.fromEntries(
     Object.entries(SITE_IMAGE_FALLBACKS).map(([k, path]) => [k, byPath.get(path) ?? null]),
   ) as SiteImages;
 
-  if (cat) {
-    const { data: projects } = await supabase.from("projects").select("id").eq("category_id", cat.id).eq("is_published", true);
-    const ids = (projects ?? []).map((p: { id: string }) => p.id);
-    if (ids.length) {
-      const { data: wed } = await supabase
+  const projects = (projs ?? []) as { id: string; slug: string; cover_photo_id: string | null; created_at: string }[];
+  const weddings: Photo[] = [];
+  const engagements: Photo[] = [];
+  const featured = new Map<string, Photo>();
+  await Promise.all(
+    projects.map(async (p) => {
+      const { data } = await supabase
         .from("photos")
         .select("*")
-        .in("project_id", ids)
+        .eq("project_id", p.id)
         .eq("is_published", true)
         .order("sort_order", { ascending: true })
-        .limit(60);
-      const list = (wed ?? []) as Photo[];
-      const cover = list.find((p) => p.id === cat.cover_photo_id);
-      const wide = cover && cover.width > cover.height ? cover : list.find((p) => p.width > p.height);
-      const tall = list.find((p) => p.height > p.width && p.id !== wide?.id);
-      if (wide) out.hero = wide;
-      if (tall) out.weddings = tall;
-    }
-  }
-  return out;
+        .limit(400);
+      const list = (data ?? []) as Photo[];
+      const picked = list.filter((ph) => FEATURED_WEDDING_PHOTOS.includes(ph.web_path));
+      picked.forEach((ph) => featured.set(ph.web_path, ph));
+      const rest = picked.length ? [] : spread(list, 8);
+      (/wedding/i.test(p.slug) ? weddings : engagements).push(...rest);
+    }),
+  );
+  const lead = FEATURED_WEDDING_PHOTOS.map((path) => featured.get(path)).filter(Boolean) as Photo[];
+  const allWeddings = [...lead, ...weddings];
+
+  const wide = allWeddings.find((p) => p.width > p.height);
+  const tall = allWeddings.find((p) => p.height > p.width);
+  const tallEngagement = engagements.find((p) => p.height > p.width && !p.web_path.startsWith("lakeside-proposal/"));
+  if (wide) images.hero = wide;
+  if (tall) images.weddings = tall;
+  if (tallEngagement) images.engagements = tallEngagement;
+  return { weddings: allWeddings, engagements, images };
+}
+
+export async function getSiteImages(): Promise<SiteImages> {
+  return (await getWeddingWork()).images;
 }

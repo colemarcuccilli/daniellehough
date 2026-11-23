@@ -20,9 +20,9 @@ export const metadata: Metadata = {
 };
 
 const PRINCIPLES = [
-  { title: "A plan for the day", body: "Your timeline and photo list are settled before the wedding, not during it." },
-  { title: "Early, every time", body: "I am at the venue before I need to be, with backup gear." },
-  { title: "A gallery you can share", body: "Private, online, with full-quality downloads for you and your family." },
+  { title: "Photo, film, website", body: "One quote for all of it." },
+  { title: "Online gallery", body: "Private. Full-quality downloads." },
+  { title: "Indiana and destination", body: "Based in Northeast Indiana. Travels." },
 ];
 
 export default async function AboutPage() {
@@ -44,12 +44,8 @@ export default async function AboutPage() {
           <div>
             <div className="prose-basic text-lg text-ink-soft leading-relaxed max-w-xl">
               <p>
-                I photograph weddings, engagements, and save the dates across Indiana. I also serve in the Indiana National
-                Guard and the U.S. Air Force, where I work as a photographer.
-              </p>
-              <p className="mt-5">
-                Military photography happens on a schedule, in whatever light there is, with no second try. A wedding day is
-                the same. So I plan ahead, show up early, and keep things calm.
+                I photograph weddings, engagements, and save the dates in Indiana and at destination weddings. I serve in the
+                Indiana National Guard and the U.S. Air Force as a photographer.
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -105,7 +101,7 @@ export default async function AboutPage() {
       ) : null}
 
       <Container className="mt-20 sm:mt-28">
-        <SectionHeading eyebrow="How I work" title="What you can count on" />
+        <SectionHeading title="What you get" />
         <ol className="mt-10 grid gap-px overflow-hidden rounded-xs border border-sage bg-line md:grid-cols-3">
           {PRINCIPLES.map((p, i) => (
             <li key={p.title} className="bg-paper p-7">
@@ -125,7 +121,7 @@ export default async function AboutPage() {
         </p>
       </Container>
 
-      <div className="mt-20">
+      <div className="mt-16">
         <CtaBand />
       </div>
     </>

@@ -21,9 +21,13 @@
   --color-sage-soft: #e3e7de;
 
   /* blush: the warm bridal counterpart to sage */
-  --color-blush: #e9cfc4;
+  --color-blush: #f0d3c7;
   --color-blush-deep: #b9857a;
   --color-blush-soft: #f7ece6;
+  /* colour blocks for the page flow */
+  --color-clay: #cc8468;
+  --color-clay-deep: #a8593f;
+  --color-plum: #34202c;
 
   /* the bright four, kept for memorability */
   --color-marigold: #f8c858;
@@ -142,8 +146,9 @@ body {
   }
   /* Home masthead headline: two lines that never wrap, sized to the viewport. */
   .hero-title {
-    font-size: clamp(1.9rem, 9.3vw, 8rem);
-    line-height: 0.98;
+    font-size: clamp(3.4rem, 15vw, 12.5rem);
+    line-height: 0.86;
+    letter-spacing: -0.015em;
   }
   .serif-accent {
     font-family: var(--font-serif), Georgia, "Times New Roman", serif;

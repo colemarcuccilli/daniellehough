@@ -4,17 +4,13 @@ import { Branch } from "@/components/public/greenery";
 import { InquiryButton } from "@/components/public/inquiry-modal";
 import type { InquiryKind } from "@/lib/types";
 
-/** The sage "total" band from the stationery: solid fill, inset hairline, sprigs in the corners. */
+/** Marigold band that closes every page: the ask, and who is behind the camera. */
 export function CtaBand({
-  title = (
-    <>
-      Is your date <em className="serif-accent text-marigold">open?</em>
-    </>
-  ),
-  body = "Send your date and what you need. I reply within two business days with a clear quote.",
+  title = "Check your date",
+  body = "Danielle Hough. Indiana National Guard and U.S. Air Force. Military-owned.",
   kind = "wedding",
   primaryLabel = "Check your date",
-  secondary = { href: "/services", label: "Services and packages" },
+  secondary = { href: "/planners", label: "For planners" },
 }: {
   title?: React.ReactNode;
   body?: string;
@@ -23,20 +19,17 @@ export function CtaBand({
   secondary?: { href: string; label: string };
 }) {
   return (
-    <section className="mx-auto max-w-7xl px-5 sm:px-8">
-      <div className="frame-inset relative overflow-hidden rounded-xs bg-sage-deep px-6 py-14 text-cream sm:px-12 sm:py-20">
-        <Branch className="pointer-events-none absolute -right-10 top-4 hidden h-44 w-auto -scale-x-100 -rotate-[18deg] text-cream opacity-35 sm:block" />
-        <Branch className="pointer-events-none absolute -bottom-6 -left-10 h-32 w-auto rotate-[14deg] text-cream opacity-25 sm:h-40" />
-        <div className="relative max-w-2xl">
-          <p className="eyebrow mb-5 text-cream/70 [&::before]:bg-marigold">Get in touch</p>
-          <h2 className="display text-5xl sm:text-6xl">{title}</h2>
-          <p className="mt-4 text-cream/80 text-[17px] leading-relaxed">{body}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <InquiryButton kind={kind} variant="primary" size="lg">{primaryLabel}</InquiryButton>
-            <Link href={secondary.href} className={buttonStyles({ variant: "cream", size: "lg" })}>
-              {secondary.label}
-            </Link>
-          </div>
+    <section className="relative overflow-hidden bg-marigold py-16 text-ink sm:py-24">
+      <Branch className="pointer-events-none absolute -left-10 bottom-2 h-32 w-auto rotate-[10deg] text-marigold-deep opacity-60 sm:h-44" />
+      <Branch className="pointer-events-none absolute -right-10 top-6 hidden h-44 w-auto -scale-x-100 -rotate-[16deg] text-marigold-deep opacity-60 sm:block" />
+      <div className="relative mx-auto max-w-7xl px-5 text-center sm:px-8">
+        <h2 className="display text-6xl sm:text-7xl lg:text-8xl">{title}</h2>
+        <p className="mx-auto mt-5 max-w-xl text-lg">{body}</p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <InquiryButton kind={kind} variant="ink" size="lg">{primaryLabel}</InquiryButton>
+          <Link href={secondary.href} className={buttonStyles({ variant: "outline", size: "lg" })}>
+            {secondary.label}
+          </Link>
         </div>
       </div>
     </section>

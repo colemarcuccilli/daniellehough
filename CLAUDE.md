@@ -12,18 +12,26 @@ couples.** Weddings, engagements, and save the dates are the three services
 website with RSVP and evites** (package rate). Packages differ per couple, so
 there are no prices; the offer and pricing come later. Rules for this direction:
 
-- Bridal, greenery, calm, professional. Plain words only: no metaphors, no
-  poetic copy. Weddings are confusing and expensive; every line should make
-  the next step obvious ("Check your date", "one clear quote").
-- The military service stays visible ("Military-owned", hero line, facts strip,
-  About), but business and military *work* is not up front: it lives in the
-  portfolio and one small "Need photos for a business?" link.
+- Premium, colour-blocked, few sections. The home page is five blocks: photo
+  hero, wedding photo grid (cream), `Films` (plum), `Offer` (blush), `CtaBand`
+  (marigold). Do not add sections; the work carries the page.
+- Copy states what it is and stops. No adjectives, no selling verbs, no
+  metaphors, and never the word "simple" (owner, 2026-11-23). Headings are
+  nouns: "Wedding photography", "Films", "Packages", "Check your date".
+- Films are Cloudflare Stream embeds (`FILMS` in `lib/content.ts`,
+  `film-player.tsx` loads the player on click). The wedding film and
+  save-the-date film are made with partner **Sweet Dreams**; the vertical
+  "social recap" is the lower-cost option.
+- The military service stays visible (hero line, closing band, About, footer),
+  but business and military *work* is not up front.
 - Wedding planners get a side door: `/planners`, the blush `PlannerBand`, and
   the `planner` inquiry kind. Never let it compete with the couples' path.
-- Hero and service-card photos come from `getSiteImages()`: a published
-  `weddings` category takes over the hero and Weddings card automatically;
-  until then they fall back to the public couples sessions. Client galleries
-  are private: never surface gallery photos without the owner's say-so.
+- Wedding photos come from `getWeddingWork()`: client galleries the owner
+  cleared for public use (2026-11-23: any wedding, engagement, or family
+  gallery). `FEATURED_WEDDING_PHOTOS` is the curated lead; any other project
+  with wedding / engagement / proposal in its slug that is published or has
+  its gallery on is sampled automatically. Gallery titles carry client names,
+  so show the photos, not the project titles.
 - Greenery art is `components/public/greenery.tsx` (`Branch`, `Wreath`,
   `Garland`); arched photo frames are `.arch` / `.arch-ring`; blush tokens pair
   with sage. Teal and purple are no longer used on the couples' pages.

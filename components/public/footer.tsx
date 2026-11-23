@@ -7,7 +7,7 @@ import { SITE } from "@/lib/content";
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="relative mt-24 overflow-hidden border-t border-sage bg-cream">
+    <footer className="relative overflow-hidden border-t border-sage bg-cream">
       <Sprig className="pointer-events-none absolute -bottom-12 -right-4 h-56 w-auto text-sage opacity-[0.14]" />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 py-14 grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-4">

@@ -129,10 +129,7 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
       ) : null}
 
       <div className="mt-24">
-        <CtaBand
-          title="Something like this?"
-          body="Tell me what it needs to do. Business or family, I reply within two business days."
-        />
+        <CtaBand />
       </div>
     </>
   );
