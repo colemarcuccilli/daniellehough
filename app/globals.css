@@ -3,9 +3,9 @@
 
 @theme inline {
   /* paper, like the stationery */
-  --color-bg: #fbfaf6;
+  --color-bg: #f3f0e6;
   --color-paper: #fdfcf9;
-  --color-cream: #f3f1ea;
+  --color-cream: #ebe7da;
   --color-cream-deep: #e8e5db;
 
   /* ink: charcoal with a green cast */

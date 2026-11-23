@@ -22,7 +22,7 @@ export function Hero({ photos }: { photos: Photo[] }) {
             </a>
           </div>
           <dl className="caps grid gap-1.5 text-[0.62rem] leading-5 text-cream/80 sm:text-right">
-            <div>Photo · Film · Wedding websites</div>
+            <div>Photography · Social media recap · Wedding website</div>
             <div>Indiana · Destination</div>
             <div className="text-cream/60">Danielle Hough · Indiana National Guard · U.S. Air Force</div>
           </dl>

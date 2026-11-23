@@ -1,6 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Category, CategoryWithCover, Photo, Project, ProjectWithCover, Section } from "@/lib/types";
-import { CARD_PHOTOS, CATEGORY_ORDER, FEATURED_PHOTOS, HERO_SLIDES } from "@/lib/content";
+import { CARD_PHOTOS, CATEGORY_ORDER, FEATURED_PHOTOS, HERO_SLIDES, STRIP } from "@/lib/content";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -233,6 +233,8 @@ export type SiteImages = Record<keyof typeof SITE_IMAGE_FALLBACKS, Photo | null>
 export type WeddingWork = {
   /** Header rotation, one photo per shoot. */
   hero: Photo[];
+  /** One photo per couple, with its label, for the home strip. */
+  strip: { photo: Photo; label: string; place: string }[];
   /** Curated mix across shoots, then samples from galleries without picks. */
   photos: Photo[];
   images: SiteImages;
@@ -252,7 +254,7 @@ export async function getWeddingWork(): Promise<WeddingWork> {
   const supabase = createPublicClient();
   const cardPaths = Object.values(CARD_PHOTOS) as string[];
   const fallbackPaths = Object.values(SITE_IMAGE_FALLBACKS) as string[];
-  const named = [...HERO_SLIDES, ...FEATURED_PHOTOS, ...cardPaths, ...fallbackPaths];
+  const named = [...HERO_SLIDES, ...FEATURED_PHOTOS, ...STRIP.map((x) => x.path), ...cardPaths, ...fallbackPaths];
   const [{ data: rows }, { data: projs }] = await Promise.all([
     supabase.from("photos").select("*").in("web_path", named).eq("is_published", true),
     supabase
@@ -294,7 +296,11 @@ export async function getWeddingWork(): Promise<WeddingWork> {
 
   const hero = pick(HERO_SLIDES);
   const newestWide = samples.map((s) => s.find((p) => p.width > p.height)).filter(Boolean) as Photo[];
-  return { hero: [...hero, ...newestWide].slice(0, 5), photos, images };
+  const strip = STRIP.flatMap((x) => {
+    const photo = byPath.get(x.path);
+    return photo ? [{ photo, label: x.label, place: x.place }] : [];
+  });
+  return { hero: [...hero, ...newestWide].slice(0, 5), strip, photos, images };
 }
 
 export async function getSiteImages(): Promise<SiteImages> {

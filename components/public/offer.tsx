@@ -1,33 +1,55 @@
-import { OFFER } from "@/lib/content";
+import { Check, Gift } from "lucide-react";
+import { FILM_ADD_ON, PACKAGES } from "@/lib/content";
 import { Container } from "@/components/public/section";
 import { Branch } from "@/components/public/greenery";
 import { InquiryButton } from "@/components/public/inquiry-modal";
 
-/** Blush band: the offer as a plain list. No prices until the owner sets them. */
+/** Green band: the two photo packages with what comes free, then the film team as a separate hire. No prices yet. */
 export function Offer({ id = "packages" }: { id?: string }) {
   return (
-    <section id={id} className="relative scroll-mt-16 overflow-hidden bg-blush py-16 sm:py-24">
-      <Branch className="pointer-events-none absolute -right-10 top-8 hidden h-40 w-auto -scale-x-100 text-clay opacity-50 lg:block" />
+    <section id={id} className="relative scroll-mt-16 overflow-hidden bg-sage-deep py-16 text-cream sm:py-24">
+      <Branch className="pointer-events-none absolute -right-10 top-10 hidden h-44 w-auto -scale-x-100 text-cream opacity-20 lg:block" />
       <Container className="relative">
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <div>
-            <h2 className="display text-6xl sm:text-7xl lg:text-8xl">Packages</h2>
-            <p className="mt-6 max-w-md text-lg leading-relaxed">
-              Photography, with film and a wedding website added. Booked together, each costs less.
-            </p>
-            <div className="mt-8">
-              <InquiryButton kind="wedding" variant="ink" size="lg">Check your date</InquiryButton>
-            </div>
+        <h2 className="display mb-10 text-6xl sm:text-7xl lg:text-8xl">Packages</h2>
+        <div className="grid gap-5 lg:grid-cols-2">
+          {PACKAGES.map((p) => (
+            <article key={p.name} className="flex flex-col rounded-xs bg-bg p-7 text-ink sm:p-10">
+              <p className="caps text-[0.6rem] text-sage">Photo package</p>
+              <h3 className="display mt-2 text-5xl sm:text-6xl">{p.name}</h3>
+              <ul className="mt-7 grid gap-3">
+                {p.includes.map((line) => (
+                  <li key={line} className="flex gap-3">
+                    <Check size={18} className="mt-1 shrink-0 text-green" />
+                    {line}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-7 border-t border-line-strong pt-6">
+                <p className="caps text-[0.6rem] text-clay-deep">Free with this package</p>
+                <ul className="mt-3 grid gap-3">
+                  {p.free.map((line) => (
+                    <li key={line} className="flex gap-3 font-medium">
+                      <Gift size={18} className="mt-1 shrink-0 text-clay-deep" />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-auto pt-8">
+                <InquiryButton kind={p.kind} variant="primary" size="lg">Check your date</InquiryButton>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-x-10 gap-y-4 rounded-xs border border-cream/35 p-7 sm:p-10">
+          <div className="max-w-2xl">
+            <p className="caps text-[0.6rem] text-marigold">In addition</p>
+            <h3 className="display mt-2 text-4xl sm:text-5xl">{FILM_ADD_ON.name}</h3>
+            <p className="mt-2 text-cream/80">{FILM_ADD_ON.body}</p>
           </div>
-          <ol className="border-t border-ink/25">
-            {OFFER.map((o, i) => (
-              <li key={o.name} className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-4 border-b border-ink/25 py-5 sm:grid-cols-[3rem_13rem_1fr]">
-                <span className="display text-2xl text-clay-deep">{i === 0 ? "" : "+"}</span>
-                <h3 className="display text-3xl sm:text-4xl">{o.name}</h3>
-                <p className="col-start-2 mt-1 text-ink-soft sm:col-start-3 sm:mt-0">{o.body}</p>
-              </li>
-            ))}
-          </ol>
+          <a href="#films" className="caps border-b border-cream/60 pb-1 text-[0.64rem] hover:border-marigold hover:text-marigold">
+            Films
+          </a>
         </div>
       </Container>
     </section>

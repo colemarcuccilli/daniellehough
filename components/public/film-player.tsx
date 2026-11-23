@@ -6,10 +6,10 @@ import { filmEmbed, filmPoster, type Film } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 /** Poster first; the Cloudflare Stream player loads only after a click. */
-export function FilmPlayer({ film, className }: { film: Film; className?: string }) {
+export function FilmPlayer({ film, className, style }: { film: Film; className?: string; style?: React.CSSProperties }) {
   const [playing, setPlaying] = useState(false);
   return (
-    <figure className={className}>
+    <figure className={className} style={style}>
       <div className={cn("relative overflow-hidden rounded-xs bg-black", film.vertical ? "aspect-[9/16]" : "aspect-video")}>
         {playing ? (
           <iframe
@@ -30,10 +30,10 @@ export function FilmPlayer({ film, className }: { film: Film; className?: string
           </button>
         )}
       </div>
-      <figcaption className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <span className="display text-2xl sm:text-3xl">{film.title}</span>
-        <span className="caps text-[0.58rem] text-marigold">{film.label}</span>
-        <span className="w-full text-sm opacity-70">{film.note}</span>
+      <figcaption className="mt-3">
+        <span className="display block text-2xl sm:text-3xl">{film.title}</span>
+        <span className="caps mt-1.5 block text-[0.58rem] text-marigold">{film.label}</span>
+        <span className="mt-1 block text-sm opacity-70">{film.note}</span>
       </figcaption>
     </figure>
   );

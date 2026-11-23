@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 const PRINCIPLES = [
-  { title: "Photo, film, website", body: "One quote for all of it." },
+  { title: "Photo, recap, website", body: "Recap video and wedding website included." },
   { title: "Online gallery", body: "Private. Full-quality downloads." },
   { title: "Indiana and destination", body: "Based in Northeast Indiana. Travels." },
 ];

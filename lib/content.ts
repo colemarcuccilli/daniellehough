@@ -43,8 +43,8 @@ export const SERVICES: Service[] = [
     slug: "save-the-dates",
     name: "Save the dates",
     kind: "save_the_date",
-    summary: "Photos and films for the announcement.",
-    includes: ["Sized for cards and evites", "Save-the-date film", "Pairs with the wedding website"],
+    summary: "Photos for the announcement.",
+    includes: ["Sized for cards and evites", "Combines with the wedding package", "Online gallery, full-quality downloads"],
     ask: "Book save the dates",
   },
 ];
@@ -61,27 +61,32 @@ export type Film = {
   posterAt: number;
 };
 
-/** Cloudflare Stream videos. The two films are produced with Sweet Dreams; the recap is the lower-cost option. */
+/**
+ * Cloudflare Stream videos, in display order. The wedding film and the
+ * save-the-date video are made by Sweet Dreams, a separate film team hired in
+ * addition to photography. The social media recap comes free with every
+ * wedding photo package.
+ */
 export const FILMS: Film[] = [
   {
     id: "78c8e2c6224bee3ab39b9eb056bd6b55",
     title: "Wedding film",
-    label: "Film · with Sweet Dreams",
-    note: "Full production. The day, start to finish.",
-    posterAt: 6,
+    label: "Sweet Dreams film team",
+    note: "Booked in addition to photography.",
+    posterAt: 19,
   },
   {
     id: "aba5343289e3f79c7b11974a0d839e57",
-    title: "Save-the-date film",
-    label: "Film · with Sweet Dreams",
-    note: "Full production. Made to send with the invitation.",
-    posterAt: 4,
+    title: "Save-the-date video",
+    label: "Sweet Dreams film team",
+    note: "Booked in addition to photography.",
+    posterAt: 25,
   },
   {
     id: "e7102fe5a6fbcd387e8f25a6a9a8d6a7",
-    title: "Social recap",
-    label: "Recap",
-    note: "Vertical, for social. Costs less than a film.",
+    title: "Social media recap",
+    label: "Free with wedding photography",
+    note: "Included in every wedding package.",
     vertical: true,
     posterAt: 4,
   },
@@ -90,12 +95,38 @@ export const FILMS: Film[] = [
 export const filmPoster = (f: Film) => `${STREAM}/${f.id}/thumbnails/thumbnail.jpg?time=${f.posterAt}s&height=${f.vertical ? 1100 : 720}`;
 export const filmEmbed = (f: Film) => `${STREAM}/${f.id}/iframe?autoplay=true&poster=${encodeURIComponent(filmPoster(f))}`;
 
-/** The offer, as a list. Photography is the base; the rest is added to it. */
-export const OFFER = [
-  { name: "Photography", body: "Weddings, engagements, save the dates." },
-  { name: "Film", body: "Wedding films and save-the-date films, with Sweet Dreams." },
-  { name: "Social recap", body: "Vertical video of the day. Costs less than a film." },
-  { name: "Wedding website", body: "Save the date, RSVP, evites." },
+/**
+ * The offer (owner, 2026-11-23). Two photo packages. Every wedding package
+ * includes the social media recap. Wedding + engagement also includes the
+ * wedding website. A full wedding film is a separate team, hired in addition.
+ * No prices yet.
+ */
+export const PACKAGES = [
+  {
+    name: "Wedding",
+    kind: "wedding" as InquiryKind,
+    includes: ["Wedding day photography", "Online gallery, full-quality downloads"],
+    free: ["Social media recap video"],
+  },
+  {
+    name: "Wedding + engagement",
+    kind: "wedding" as InquiryKind,
+    includes: ["Wedding day photography", "Engagement or save-the-date session", "Online gallery, full-quality downloads"],
+    free: ["Social media recap video", "Wedding website: save the date, RSVP, evites"],
+  },
+];
+
+export const FILM_ADD_ON = {
+  name: "Wedding film",
+  body: "A separate film team, Sweet Dreams, hired in addition to photography. Wedding films and save-the-date videos.",
+};
+
+/** One photo per couple for the home page strip, so no single shoot leads. */
+export const STRIP = [
+  { path: "blakeley-wedding/dsc-2242-syjqkx.jpg", label: "Wedding", place: "Las Vegas" },
+  { path: "ball-engagement/dsc-0030-15lppe.jpg", label: "Engagement", place: "Indiana" },
+  { path: "hunkin-wedding/sd507183-17bw9g.jpg", label: "Wedding", place: "Playa del Carmen" },
+  { path: "gage-lexi-save-the-date/sd504824-2-wir7wo.jpg", label: "Save the date", place: "Indiana" },
 ];
 
 /**
@@ -107,7 +138,7 @@ export const OFFER = [
 export const HERO_SLIDES = [
   "blakeley-wedding/dsc-2054-pm8mly.jpg",
   "ball-engagement/dsc-9770-ffh854.jpg",
-  "hunkin-wedding/sd507153-e0g4h3.jpg",
+  "hunkin-wedding/sd506925-aahxnj.jpg",
 ];
 
 export const CARD_PHOTOS = {
@@ -146,19 +177,20 @@ export const FEATURED_PHOTOS = [
   "hunkin-wedding/sd506921-m1xk2l.jpg",
   "blakeley-wedding/dsc-2220-utwafc.jpg",
   "hunkin-wedding/sd507149-wyiwok.jpg",
+  "hunkin-wedding/sd507153-e0g4h3.jpg",
 ];
 
 export const FAQ = [
-  { q: "What does it cost?", a: "Each package is quoted for the wedding. Send the date and what you want. The quote covers all of it." },
+  { q: "What does it cost?", a: "Each package is quoted for the wedding. Send the date and the package. The quote covers all of it." },
+  { q: "What comes free?", a: "The social media recap video, with every wedding package. The wedding website, with wedding + engagement." },
+  { q: "Who makes the wedding film?", a: "Sweet Dreams, a separate film team. It is hired in addition to photography." },
   { q: "Where?", a: "Based in Northeast Indiana. Weddings anywhere in the state, and destination weddings." },
   { q: "How do we get the photos?", a: "A private online gallery. View, share, download the full-quality files." },
-  { q: "Who makes the films?", a: "Sweet Dreams, the partner video team. Photo and film booked together cost less than booked apart." },
-  { q: "Is there a lower-cost video?", a: "Yes. The social recap: a vertical video of the day, without a full film crew." },
 ];
 
 export const PLANNER_POINTS = [
   { title: "Partner rate", body: "A set rate for every couple you send." },
-  { title: "Photo, film, website", body: "One contact for photography, Sweet Dreams films, and wedding websites with RSVP and evites." },
+  { title: "Photo, recap, website", body: "Photography with the social media recap and wedding website included. Sweet Dreams films in addition." },
   { title: "Same team", body: "The same people at every wedding." },
 ];
 

@@ -21,7 +21,7 @@ export default async function ServicesPage() {
   const images = await getSiteImages();
   return (
     <>
-      <PageHeader eyebrow="Services" title="Photo, film, website" body="Weddings, engagements, save the dates. One quote for all of it.">
+      <PageHeader eyebrow="Services" title="Packages" body="Weddings, engagements, save the dates. Social media recap and wedding website included.">
         <InquiryButton kind="wedding" variant="primary" size="lg">Check your date</InquiryButton>
       </PageHeader>
 

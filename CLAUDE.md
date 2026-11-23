@@ -13,8 +13,17 @@ website with RSVP and evites** (package rate). Packages differ per couple, so
 there are no prices; the offer and pricing come later. Rules for this direction:
 
 - Premium, colour-blocked, few sections. The home page is five blocks: photo
-  hero, wedding photo grid (cream), `Films` (plum), `Offer` (blush), `CtaBand`
-  (marigold). Do not add sections; the work carries the page.
+  hero (rotates one photo per shoot), `CouplesStrip` (four equal frames, one
+  couple each; never a grid that reads as one project's portfolio), `Films`
+  (plum, one row: wedding film, save-the-date video, social media recap),
+  `Offer` (green), `CtaBand` (marigold). Page ground is cream, never white;
+  no peach or blush backgrounds (owner dislikes them).
+- The offer (2026-11-23): two photo packages, **Wedding** and **Wedding +
+  engagement** (engagement or save-the-date session). Every wedding package
+  includes the **social media recap** video free. Wedding + engagement also
+  includes the **wedding website** free. A full **wedding film** is a separate
+  team (Sweet Dreams) hired in addition. `PACKAGES` / `FILM_ADD_ON` in
+  `lib/content.ts`. No prices yet.
 - Copy states what it is and stops. No adjectives, no selling verbs, no
   metaphors, and never the word "simple" (owner, 2026-11-23). Headings are
   nouns: "Wedding photography", "Films", "Packages", "Check your date".
