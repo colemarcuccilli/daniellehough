@@ -16,8 +16,24 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 const COUPLE_KINDS: InquiryKind[] = ["wedding", "engagement", "save_the_date"];
 const COMPANY_KINDS: InquiryKind[] = ["planner", "retainer", "headshots", "event", "product"];
 
-export function InquiryForm({ initialKind = "wedding", source }: { initialKind?: InquiryKind; source?: string }) {
+export function InquiryForm({
+  initialKind = "wedding",
+  source,
+  signal = 0,
+  onDone,
+}: {
+  initialKind?: InquiryKind;
+  source?: string;
+  /** Goes up each time the dock is opened with a choice: the form takes that choice and keeps what was typed. */
+  signal?: number;
+  onDone?: () => void;
+}) {
   const [kind, setKind] = useState<InquiryKind>(initialKind);
+  const [seen, setSeen] = useState(signal);
+  if (signal !== seen) {
+    setSeen(signal);
+    setKind(initialKind);
+  }
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -54,7 +70,10 @@ export function InquiryForm({ initialKind = "wedding", source }: { initialKind?:
     setError(null);
     start(async () => {
       const res = await submitInquiry(data);
-      if (res.ok) setDone(true);
+      if (res.ok) {
+        setDone(true);
+        onDone?.();
+      }
       else {
         setError(res.error);
         // Turnstile tokens are single-use: mount a fresh widget for the retry.

@@ -9,7 +9,7 @@ export function Hero({ photos }: { photos: Photo[] }) {
     <section className="relative flex min-h-[92svh] items-end overflow-hidden bg-sage-deep text-cream sm:min-h-[100svh]">
       <HeroSlides photos={photos} />
       <div className="absolute inset-0 bg-gradient-to-t from-[rgba(20,22,20,0.82)] via-[rgba(20,22,20,0.08)] to-[rgba(20,22,20,0.38)]" aria-hidden />
-      <Container className="relative w-full pb-10 pt-40 sm:pb-14">
+      <Container className="relative w-full pb-36 pt-40 lg:pb-32">
         <h1 className="display hero-title rise">
           <span className="block whitespace-nowrap">Wedding</span>
           <span className="block whitespace-nowrap">photography</span>

@@ -53,6 +53,18 @@ there are no prices; the offer and pricing come later. Rules for this direction:
 - Greenery art is `components/public/greenery.tsx` (`Branch`, `Wreath`,
   `Garland`); arched photo frames are `.arch` / `.arch-ring`; blush tokens pair
   with sage. Teal and purple are no longer used on the couples' pages.
+- **Bottom form dock** (2026-11-23, after Sweet Dreams' `docs/BOTTOM-FORM-DOCK.md`):
+  `InquiryProvider` in `components/public/inquiry-modal.tsx` draws a bar along
+  the bottom of every public page with the form's first question ("What do
+  you need?": Wedding, Engagement, Save the date; on `/planners` one button,
+  "Partner with Dani Cams") and the whole form as a sheet that rises from the
+  bottom (full width on phones, a centered 600px panel from `lg`). Every
+  `InquiryButton`, every `<a href="#start">` (optional `data-kind`) and
+  `?inquire=<kind>` open the same sheet with the answer chosen; what was typed
+  stays until reload; the bar goes away after the form is sent. Layers: bar
+  z-30 (under nav 40 and phone menu 50), dimming 70, sheet 80. The provider
+  adds a spacer under the footer, and the home hero has extra bottom padding
+  so the bar never covers its buttons. Galleries and the admin have no dock.
 - Inquiry kinds added: `wedding`, `engagement`, `save_the_date`, `planner`
   (check constraint widened in `supabase/freewebsites/0004`). Partner name and
   package add-ons are appended to the message; wedding date uses `timeline`,
