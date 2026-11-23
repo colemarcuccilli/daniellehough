@@ -123,8 +123,8 @@ export const FILM_ADD_ON = {
 
 /**
  * Wedding, engagement and save-the-date projects on the portfolio page. Each
- * is a client gallery shown under a public title and address with no client
- * name in it. `project` is the gallery project's slug. Add a line here when a
+ * card opens the project's gallery page (sections, full-quality downloads).
+ * `project` is the gallery project's slug. Add a line here when a
  * new gallery should appear; galleries are never listed automatically.
  */
 export const WEDDING_PROJECTS = [
@@ -143,8 +143,8 @@ export const WEDDING_PROJECTS = [
     title: "Playa del Carmen Wedding",
     kind: "Wedding",
     place: "Playa del Carmen",
-    cover: "hunkin-wedding/sd507153-e0g4h3.jpg",
-    thumb: "hunkin-wedding/sd507183-17bw9g.jpg",
+    cover: "hunkin-wedding/sd506984-moekmi.jpg",
+    thumb: "hunkin-wedding/sd506984-moekmi.jpg",
   },
   {
     project: "ball-engagement",

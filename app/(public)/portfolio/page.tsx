@@ -27,20 +27,36 @@ export default async function PortfolioPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Portfolio" title="Weddings, engagements, couples" />
+      <PageHeader eyebrow="Portfolio" title="Projects" />
 
-      <Container className="py-12 sm:py-16">
-        <div className="grid gap-5 sm:grid-cols-2">
-          {weddings.map((w, i) => (
-            <WeddingProjectCard key={w.slug} project={w} priority={i < 2} />
-          ))}
-          {couples.map((p) => (
-            <ProjectCard key={p.id} project={p} />
-          ))}
-        </div>
+      <Container className="pt-12 sm:pt-16">
+        <section id="weddings" className="scroll-mt-24">
+          <h2 className="display text-5xl sm:text-6xl">Wedding projects</h2>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2">
+            {weddings
+              .filter((w) => w.kind === "Wedding")
+              .map((w, i) => (
+                <WeddingProjectCard key={w.slug} project={w} priority={i < 2} />
+              ))}
+          </div>
+        </section>
+
+        <section id="engagements" className="scroll-mt-24 py-14 sm:py-20">
+          <h2 className="display text-5xl sm:text-6xl">Engagement and save-the-date projects</h2>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {weddings
+              .filter((w) => w.kind !== "Wedding")
+              .map((w) => (
+                <WeddingProjectCard key={w.slug} project={w} />
+              ))}
+            {couples.map((p) => (
+              <ProjectCard key={p.id} project={p} />
+            ))}
+          </div>
+        </section>
       </Container>
 
-      <section className="border-t border-line bg-cream py-14 sm:py-20">
+      <section id="side-projects" className="scroll-mt-24 border-t border-line bg-cream py-14 sm:py-20">
         <Container>
           <h2 className="display text-5xl sm:text-6xl">Side projects</h2>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

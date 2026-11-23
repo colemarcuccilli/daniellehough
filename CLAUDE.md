@@ -35,14 +35,19 @@ there are no prices; the offer and pricing come later. Rules for this direction:
   but business and military *work* is not up front.
 - Wedding planners get a side door: `/planners`, the blush `PlannerBand`, and
   the `planner` inquiry kind. Never let it compete with the couples' path.
-- **Portfolio is projects, not mixed photos** (owner, 2026-11-23). The page
-  lists wedding / engagement / save-the-date project cards first
-  (`WEDDING_PROJECTS` in `lib/content.ts`, plus `COUPLES_PROJECT_SLUGS`), then
-  "Side projects" (everything else). No category bands, no mixed grid. Each
-  wedding project is a client gallery shown at `/portfolio/weddings/<public
-  slug>` under a public title with no client name (`getWeddingProject` shows
-  an even sample of 48 photos; the full set and downloads stay on the private
-  gallery link). The home page shows only a small four-frame strip.
+- **Portfolio is projects, not mixed photos** (owner, 2026-11-23). Three
+  groups: "Wedding projects" (`#weddings`), "Engagement and save-the-date
+  projects" (`#engagements`, includes `COUPLES_PROJECT_SLUGS`), then "Side
+  projects". No category bands, no mixed grid. The home page shows only three
+  small dimmed tiles with a card over each (Weddings, Engagements, Save the
+  dates) that jump to those groups; engagements and save the dates share a
+  portfolio group but stay separate on the home and services pages.
+- **Every project opens in the gallery format** (`/gallery/<token>`: sections,
+  full-quality downloads). All projects have `gallery_enabled` on;
+  `projectHref` returns the gallery link. Galleries are publicly linked from
+  the portfolio now. The gallery grid is 2 / 3 / 4 / 5 columns (phone, tablet,
+  laptop, wide). "Newborn at Home" has downloads off: its originals are not in
+  the bucket.
 - `/about` is hidden for now (redirects home; old page kept as
   `_page.hidden.tsx.txt`).
 - Greenery art is `components/public/greenery.tsx` (`Branch`, `Wreath`,

@@ -28,8 +28,9 @@ export type GalleryPhoto = {
 export type GalleryViewSection = { id: string; slug: string; name: string; photos: GalleryPhoto[] };
 
 const LIGHTBOX_WIDTHS = [828, 1200, 1920, 2048];
-const COLUMNS = { phone: 2, desktop: 3 } as const;
-const SIZES = "(min-width: 1400px) 460px, (min-width: 768px) 33vw, 50vw";
+// Two columns on phones, three on tablets, four on laptops, five on wide screens.
+const COLUMNS = { phone: 2, tablet: 3, desktop: 4, wide: 5 } as const;
+const SIZES = "(min-width: 1536px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
 
 declare global {
   interface Window {
@@ -438,7 +439,7 @@ export function GalleryView({
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-1 sm:px-2">
+      <div className="mx-auto max-w-[1400px] px-1 sm:px-2 2xl:max-w-[1840px]">
         {sections.map((s) => {
           const base = offsets.get(s.id) ?? 0;
           const allOn = s.photos.every((p) => selected.has(p.id));
@@ -475,8 +476,8 @@ export function GalleryView({
               />
               <Columns
                 photos={s.photos}
-                columns={COLUMNS.desktop}
-                className="hidden md:flex"
+                columns={COLUMNS.tablet}
+                className="hidden md:flex lg:hidden"
                 base={base}
                 slug={slug}
                 downloads={downloads}
@@ -485,6 +486,32 @@ export function GalleryView({
                 onOpen={setIndex}
                 onToggle={toggle}
                 priorityCount={base === 0 ? 3 : 0}
+              />
+              <Columns
+                photos={s.photos}
+                columns={COLUMNS.desktop}
+                className="hidden lg:flex 2xl:hidden"
+                base={base}
+                slug={slug}
+                downloads={downloads}
+                selecting={selecting}
+                selected={selected}
+                onOpen={setIndex}
+                onToggle={toggle}
+                priorityCount={base === 0 ? 4 : 0}
+              />
+              <Columns
+                photos={s.photos}
+                columns={COLUMNS.wide}
+                className="hidden 2xl:flex"
+                base={base}
+                slug={slug}
+                downloads={downloads}
+                selecting={selecting}
+                selected={selected}
+                onOpen={setIndex}
+                onToggle={toggle}
+                priorityCount={base === 0 ? 5 : 0}
               />
             </section>
           );

@@ -5,7 +5,9 @@ import { photoUrl } from "@/lib/images";
 import { formatMonthYear, pluralize } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
-export function projectHref(p: { slug: string; category?: { slug: string } | null }) {
+/** Every project opens in the gallery format (sections, full-quality downloads) when its gallery is on. */
+export function projectHref(p: { slug: string; category?: { slug: string } | null; gallery_slug?: string | null; gallery_enabled?: boolean }) {
+  if (p.gallery_enabled && p.gallery_slug) return `/gallery/${p.gallery_slug}`;
   return p.category ? `/portfolio/${p.category.slug}/${p.slug}` : `/portfolio/all/${p.slug}`;
 }
 

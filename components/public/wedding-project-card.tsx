@@ -7,7 +7,7 @@ import { pluralize } from "@/lib/utils";
 export function WeddingProjectCard({ project, priority }: { project: WeddingProject; priority?: boolean }) {
   const cover = project.cover ?? project.thumb;
   return (
-    <Link href={`/portfolio/weddings/${project.slug}`} className="group block overflow-hidden outline-card-soft transition-colors hover:border-sage">
+    <Link href={project.href} className="group block overflow-hidden outline-card-soft transition-colors hover:border-sage">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-cream-deep" style={{ backgroundColor: cover?.dominant_color ?? undefined }}>
         {cover ? (
           <Image
