@@ -16,9 +16,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/((?!api|admin|_next).*)",
+        source: "/:path((?!api|admin|_next).*)",
         has: [{ type: "host", value: "daniellehough.vercel.app" }],
-        destination: "https://danicams.com/:path*",
+        destination: "https://danicams.com/:path",
         permanent: false,
       },
     ];

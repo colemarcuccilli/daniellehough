@@ -5,13 +5,13 @@ import { PageHeader } from "@/components/public/page-header";
 import { ProjectCard } from "@/components/public/project-card";
 import { WeddingProjectCard } from "@/components/public/wedding-project-card";
 import { CtaBand } from "@/components/public/cta-band";
-import { CATEGORY_ORDER, COUPLES_PROJECT_SLUGS } from "@/lib/content";
+import { CATEGORY_ORDER, COUPLES_PROJECT_SLUGS, FAMILY_PROJECT_SLUGS } from "@/lib/content";
 
 export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Portfolio",
-  description: "Weddings, engagements, and save the dates by Danielle Hough, followed by side projects.",
+  description: "Weddings, engagements, and save the dates by Danielle Hough, then family and side projects.",
 };
 
 export default async function PortfolioPage() {
@@ -21,8 +21,9 @@ export default async function PortfolioPage() {
     const i = CATEGORY_ORDER.indexOf(slug ?? "");
     return i === -1 ? CATEGORY_ORDER.length : i;
   };
+  const families = FAMILY_PROJECT_SLUGS.flatMap((slug) => projects.filter((p) => p.slug === slug));
   const side = projects
-    .filter((p) => !COUPLES_PROJECT_SLUGS.includes(p.slug))
+    .filter((p) => !COUPLES_PROJECT_SLUGS.includes(p.slug) && !FAMILY_PROJECT_SLUGS.includes(p.slug))
     .sort((a, b) => rank(a.category?.slug) - rank(b.category?.slug) || (b.shot_on ?? b.created_at).localeCompare(a.shot_on ?? a.created_at));
 
   return (
@@ -41,7 +42,7 @@ export default async function PortfolioPage() {
           </div>
         </section>
 
-        <section id="engagements" className="scroll-mt-24 py-14 sm:py-20">
+        <section id="engagements" className="scroll-mt-24 pt-14 sm:pt-20">
           <h2 className="display text-5xl sm:text-6xl">Engagement and save-the-date projects</h2>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {weddings
@@ -50,6 +51,15 @@ export default async function PortfolioPage() {
                 <WeddingProjectCard key={w.slug} project={w} />
               ))}
             {couples.map((p) => (
+              <ProjectCard key={p.id} project={p} />
+            ))}
+          </div>
+        </section>
+
+        <section id="families" className="scroll-mt-24 py-14 sm:py-20">
+          <h2 className="display text-5xl sm:text-6xl">Family projects</h2>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {families.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
           </div>

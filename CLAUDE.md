@@ -35,10 +35,11 @@ there are no prices; the offer and pricing come later. Rules for this direction:
   but business and military *work* is not up front.
 - Wedding planners get a side door: `/planners`, the blush `PlannerBand`, and
   the `planner` inquiry kind. Never let it compete with the couples' path.
-- **Portfolio is projects, not mixed photos** (owner, 2026-11-23). Three
+- **Portfolio is projects, not mixed photos** (owner, 2026-11-23). Four
   groups: "Wedding projects" (`#weddings`), "Engagement and save-the-date
-  projects" (`#engagements`, includes `COUPLES_PROJECT_SLUGS`), then "Side
-  projects". No category bands, no mixed grid. The home page shows only three
+  projects" (`#engagements`, includes `COUPLES_PROJECT_SLUGS`), "Family
+  projects" (`#families`, `FAMILY_PROJECT_SLUGS`: newborn, baby shower, family
+  in the woods, fall family session), then "Side projects". No category bands, no mixed grid. The home page shows only three
   small dimmed tiles with a card over each (Weddings, Engagements, Save the
   dates) that jump to those groups; engagements and save the dates share a
   portfolio group but stay separate on the home and services pages.

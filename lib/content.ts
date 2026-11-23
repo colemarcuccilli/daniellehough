@@ -169,6 +169,9 @@ export const WEDDING_PROJECTS = [
 /** Published portfolio projects that belong with the couples work, shown right after the weddings. */
 export const COUPLES_PROJECT_SLUGS = ["lakeside-proposal"];
 
+/** Portfolio "Family projects" group, in this order, between the couples' groups and the side projects. */
+export const FAMILY_PROJECT_SLUGS = ["newborn-at-home", "baby-shower", "family-in-the-woods", "fall-family-session"];
+
 /**
  * Photos shown on the site, from the client galleries the owner cleared for
  * public use (2026-11-23: any wedding, engagement, or family gallery). The
