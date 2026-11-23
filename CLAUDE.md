@@ -35,12 +35,16 @@ there are no prices; the offer and pricing come later. Rules for this direction:
   but business and military *work* is not up front.
 - Wedding planners get a side door: `/planners`, the blush `PlannerBand`, and
   the `planner` inquiry kind. Never let it compete with the couples' path.
-- Wedding photos come from `getWeddingWork()`: client galleries the owner
-  cleared for public use (2026-11-23: any wedding, engagement, or family
-  gallery). `FEATURED_WEDDING_PHOTOS` is the curated lead; any other project
-  with wedding / engagement / proposal in its slug that is published or has
-  its gallery on is sampled automatically. Gallery titles carry client names,
-  so show the photos, not the project titles.
+- **Portfolio is projects, not mixed photos** (owner, 2026-11-23). The page
+  lists wedding / engagement / save-the-date project cards first
+  (`WEDDING_PROJECTS` in `lib/content.ts`, plus `COUPLES_PROJECT_SLUGS`), then
+  "Side projects" (everything else). No category bands, no mixed grid. Each
+  wedding project is a client gallery shown at `/portfolio/weddings/<public
+  slug>` under a public title with no client name (`getWeddingProject` shows
+  an even sample of 48 photos; the full set and downloads stay on the private
+  gallery link). The home page shows only a small four-frame strip.
+- `/about` is hidden for now (redirects home; old page kept as
+  `_page.hidden.tsx.txt`).
 - Greenery art is `components/public/greenery.tsx` (`Branch`, `Wreath`,
   `Garland`); arched photo frames are `.arch` / `.arch-ring`; blush tokens pair
   with sage. Teal and purple are no longer used on the couples' pages.

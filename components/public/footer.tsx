@@ -24,7 +24,6 @@ export function Footer() {
           <ul className="grid gap-2 text-sm">
             <li><Link className="hover:text-marigold-deep transition-colors" href="/services">Services and packages</Link></li>
             <li><Link className="hover:text-marigold-deep transition-colors" href="/portfolio">Portfolio</Link></li>
-            <li><Link className="hover:text-marigold-deep transition-colors" href="/about">About Dani</Link></li>
             <li><Link className="hover:text-marigold-deep transition-colors" href="/planners">For wedding planners</Link></li>
             <li><Link className="hover:text-marigold-deep transition-colors" href="/services#families">Family sessions</Link></li>
           </ul>

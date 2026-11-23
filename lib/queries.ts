@@ -1,6 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Category, CategoryWithCover, Photo, Project, ProjectWithCover, Section } from "@/lib/types";
-import { CARD_PHOTOS, CATEGORY_ORDER, FEATURED_PHOTOS, HERO_SLIDES, STRIP } from "@/lib/content";
+import { CARD_PHOTOS, CATEGORY_ORDER, FEATURED_PHOTOS, HERO_SLIDES, WEDDING_PROJECTS } from "@/lib/content";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -233,8 +233,6 @@ export type SiteImages = Record<keyof typeof SITE_IMAGE_FALLBACKS, Photo | null>
 export type WeddingWork = {
   /** Header rotation, one photo per shoot. */
   hero: Photo[];
-  /** One photo per couple, with its label, for the home strip. */
-  strip: { photo: Photo; label: string; place: string }[];
   /** Curated mix across shoots, then samples from galleries without picks. */
   photos: Photo[];
   images: SiteImages;
@@ -254,7 +252,7 @@ export async function getWeddingWork(): Promise<WeddingWork> {
   const supabase = createPublicClient();
   const cardPaths = Object.values(CARD_PHOTOS) as string[];
   const fallbackPaths = Object.values(SITE_IMAGE_FALLBACKS) as string[];
-  const named = [...HERO_SLIDES, ...FEATURED_PHOTOS, ...STRIP.map((x) => x.path), ...cardPaths, ...fallbackPaths];
+  const named = [...HERO_SLIDES, ...FEATURED_PHOTOS, ...cardPaths, ...fallbackPaths];
   const [{ data: rows }, { data: projs }] = await Promise.all([
     supabase.from("photos").select("*").in("web_path", named).eq("is_published", true),
     supabase
@@ -296,13 +294,63 @@ export async function getWeddingWork(): Promise<WeddingWork> {
 
   const hero = pick(HERO_SLIDES);
   const newestWide = samples.map((s) => s.find((p) => p.width > p.height)).filter(Boolean) as Photo[];
-  const strip = STRIP.flatMap((x) => {
-    const photo = byPath.get(x.path);
-    return photo ? [{ photo, label: x.label, place: x.place }] : [];
-  });
-  return { hero: [...hero, ...newestWide].slice(0, 5), strip, photos, images };
+  return { hero: [...hero, ...newestWide].slice(0, 5), photos, images };
 }
 
 export async function getSiteImages(): Promise<SiteImages> {
   return (await getWeddingWork()).images;
+}
+
+export type WeddingProject = {
+  slug: string;
+  title: string;
+  kind: string;
+  place: string;
+  cover: Photo | null;
+  thumb: Photo | null;
+  photo_count: number;
+};
+
+/** The wedding, engagement and save-the-date projects, with covers and counts, in the configured order. */
+export async function getWeddingProjects(): Promise<WeddingProject[]> {
+  const supabase = createPublicClient();
+  const paths = WEDDING_PROJECTS.flatMap((w) => [w.cover, w.thumb]);
+  const [{ data: rows }, { data: projs }] = await Promise.all([
+    supabase.from("photos").select("*").in("web_path", paths).eq("is_published", true),
+    supabase
+      .from("projects")
+      .select("slug, photo_count:photos!photos_project_id_fkey(count)")
+      .in("slug", WEDDING_PROJECTS.map((w) => w.project)),
+  ]);
+  const byPath = new Map(((rows ?? []) as Photo[]).map((p) => [p.web_path, p]));
+  const counts = new Map(((projs ?? []) as any[]).map((p) => [p.slug, p.photo_count?.[0]?.count ?? 0]));
+  return WEDDING_PROJECTS.filter((w) => counts.has(w.project)).map((w) => ({
+    slug: w.slug,
+    title: w.title,
+    kind: w.kind,
+    place: w.place,
+    cover: byPath.get(w.cover) ?? null,
+    thumb: byPath.get(w.thumb) ?? null,
+    photo_count: counts.get(w.project) ?? 0,
+  }));
+}
+
+/** One wedding project by its public slug, with an even sample of its photos (the full set stays in the client gallery). */
+export async function getWeddingProject(slug: string): Promise<(WeddingProject & { photos: Photo[] }) | null> {
+  const entry = WEDDING_PROJECTS.find((w) => w.slug === slug);
+  if (!entry) return null;
+  const supabase = createPublicClient();
+  const { data: project } = await supabase.from("projects").select("id").eq("slug", entry.project).maybeSingle();
+  if (!project) return null;
+  const { data } = await supabase
+    .from("photos")
+    .select("*")
+    .eq("project_id", project.id)
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .limit(600);
+  const all = (data ?? []) as Photo[];
+  const cover = all.find((p) => p.web_path === entry.cover) ?? null;
+  const thumb = all.find((p) => p.web_path === entry.thumb) ?? null;
+  return { slug: entry.slug, title: entry.title, kind: entry.kind, place: entry.place, cover, thumb, photo_count: all.length, photos: spread(all, 48) };
 }

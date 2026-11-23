@@ -121,13 +121,53 @@ export const FILM_ADD_ON = {
   body: "A separate film team, Sweet Dreams, hired in addition to photography. Wedding films and save-the-date videos.",
 };
 
-/** One photo per couple for the home page strip, so no single shoot leads. */
-export const STRIP = [
-  { path: "blakeley-wedding/dsc-2242-syjqkx.jpg", label: "Wedding", place: "Las Vegas" },
-  { path: "ball-engagement/dsc-0030-15lppe.jpg", label: "Engagement", place: "Indiana" },
-  { path: "hunkin-wedding/sd507183-17bw9g.jpg", label: "Wedding", place: "Playa del Carmen" },
-  { path: "gage-lexi-save-the-date/sd504824-2-wir7wo.jpg", label: "Save the date", place: "Indiana" },
-];
+/**
+ * Wedding, engagement and save-the-date projects on the portfolio page. Each
+ * is a client gallery shown under a public title and address with no client
+ * name in it. `project` is the gallery project's slug. Add a line here when a
+ * new gallery should appear; galleries are never listed automatically.
+ */
+export const WEDDING_PROJECTS = [
+  {
+    project: "blakeley-wedding",
+    slug: "las-vegas-wedding",
+    title: "Las Vegas Wedding",
+    kind: "Wedding",
+    place: "Las Vegas",
+    cover: "blakeley-wedding/dsc-2054-pm8mly.jpg",
+    thumb: "blakeley-wedding/dsc-2242-syjqkx.jpg",
+  },
+  {
+    project: "hunkin-wedding",
+    slug: "playa-del-carmen-wedding",
+    title: "Playa del Carmen Wedding",
+    kind: "Wedding",
+    place: "Playa del Carmen",
+    cover: "hunkin-wedding/sd507153-e0g4h3.jpg",
+    thumb: "hunkin-wedding/sd507183-17bw9g.jpg",
+  },
+  {
+    project: "ball-engagement",
+    slug: "lake-engagement",
+    title: "Engagement on the Lake",
+    kind: "Engagement",
+    place: "Indiana",
+    cover: "ball-engagement/dsc-9770-ffh854.jpg",
+    thumb: "ball-engagement/dsc-0030-15lppe.jpg",
+  },
+  {
+    project: "gage-lexi-save-the-date",
+    slug: "dock-save-the-date",
+    title: "Save the Date on the Dock",
+    kind: "Save the date",
+    place: "Indiana",
+    cover: "gage-lexi-save-the-date/sd504875-djzsj3.jpg",
+    thumb: "gage-lexi-save-the-date/sd504824-2-wir7wo.jpg",
+  },
+] as const;
+
+/** Published portfolio projects that belong with the couples work, shown right after the weddings. */
+export const COUPLES_PROJECT_SLUGS = ["lakeside-proposal"];
 
 /**
  * Photos shown on the site, from the client galleries the owner cleared for

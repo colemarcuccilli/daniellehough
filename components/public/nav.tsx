@@ -7,7 +7,6 @@ import { InquiryButton } from "@/components/public/inquiry-modal";
 export const NAV_LINKS = [
   { href: "/services", label: "Services", accent: "var(--color-marigold)" },
   { href: "/portfolio", label: "Portfolio", accent: "var(--color-marigold)" },
-  { href: "/about", label: "About", accent: "var(--color-green)" },
   { href: "/planners", label: "For planners", accent: "var(--color-marigold)" },
 ];
 

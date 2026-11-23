@@ -1,65 +1,57 @@
 import type { Metadata } from "next";
-import { getPortfolioIndex, getWeddingWork } from "@/lib/queries";
-import { PhotoGrid } from "@/components/public/photo-grid";
-import { Container, SectionHeading } from "@/components/public/section";
+import { getProjects, getWeddingProjects } from "@/lib/queries";
+import { Container } from "@/components/public/section";
 import { PageHeader } from "@/components/public/page-header";
-import { CategoryStack } from "@/components/public/category-stack";
-import { CategoryChips } from "@/components/public/category-chips";
 import { ProjectCard } from "@/components/public/project-card";
+import { WeddingProjectCard } from "@/components/public/wedding-project-card";
 import { CtaBand } from "@/components/public/cta-band";
-import { pluralize } from "@/lib/utils";
+import { CATEGORY_ORDER, COUPLES_PROJECT_SLUGS } from "@/lib/content";
 
 export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Portfolio",
-  description: "Couples, families, events, and more by Indiana wedding photographer Danielle Hough.",
+  description: "Weddings, engagements, and save the dates by Danielle Hough, followed by side projects.",
 };
 
 export default async function PortfolioPage() {
-  const [{ categories, projects }, work] = await Promise.all([getPortfolioIndex(), getWeddingWork()]);
-  const weddingPhotos = work.photos;
-  const totalPhotos = projects.reduce((n, p) => n + p.photo_count, 0);
+  const [weddings, projects] = await Promise.all([getWeddingProjects(), getProjects()]);
+  const couples = projects.filter((p) => COUPLES_PROJECT_SLUGS.includes(p.slug));
+  const rank = (slug?: string) => {
+    const i = CATEGORY_ORDER.indexOf(slug ?? "");
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  };
+  const side = projects
+    .filter((p) => !COUPLES_PROJECT_SLUGS.includes(p.slug))
+    .sort((a, b) => rank(a.category?.slug) - rank(b.category?.slug) || (b.shot_on ?? b.created_at).localeCompare(a.shot_on ?? a.created_at));
 
   return (
     <>
-      <PageHeader
-        eyebrow="The work"
-        title="Portfolio"
-        body={`${pluralize(projects.length, "project")} · ${pluralize(totalPhotos, "photograph")}`}
-      >
-        <CategoryChips categories={categories} tone="dark" />
-      </PageHeader>
+      <PageHeader eyebrow="Portfolio" title="Weddings, engagements, couples" />
 
-      {weddingPhotos.length > 0 ? (
-        <section id="weddings" className="scroll-mt-20 pb-14 pt-12 sm:pb-20 sm:pt-16">
-          <Container className="mb-8">
-            <h2 className="display text-6xl sm:text-7xl">Weddings and engagements</h2>
-          </Container>
-          <div className="px-1 sm:px-2">
-            <PhotoGrid photos={weddingPhotos} />
-          </div>
-        </section>
-      ) : null}
-
-      <div className="mt-2 sm:mt-3">
-        <CategoryStack categories={categories} compact id="categories" />
-      </div>
-
-      <Container className="mt-20 sm:mt-28">
-        <SectionHeading title="All projects" />
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {[...projects]
-            .sort((a, b) => (b.shot_on ?? b.created_at).localeCompare(a.shot_on ?? a.created_at))
-            .map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
+      <Container className="py-12 sm:py-16">
+        <div className="grid gap-5 sm:grid-cols-2">
+          {weddings.map((w, i) => (
+            <WeddingProjectCard key={w.slug} project={w} priority={i < 2} />
+          ))}
+          {couples.map((p) => (
+            <ProjectCard key={p.id} project={p} />
+          ))}
         </div>
       </Container>
 
-      <div className="mt-24">
-        <CtaBand />
-      </div>
+      <section className="border-t border-line bg-cream py-14 sm:py-20">
+        <Container>
+          <h2 className="display text-5xl sm:text-6xl">Side projects</h2>
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {side.map((p) => (
+              <ProjectCard key={p.id} project={p} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      <CtaBand />
     </>
   );
 }

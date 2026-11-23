@@ -1,4 +1,4 @@
-import { getWeddingWork } from "@/lib/queries";
+import { getWeddingProjects, getWeddingWork } from "@/lib/queries";
 import { Hero } from "@/components/public/hero";
 import { CouplesStrip } from "@/components/public/couples-strip";
 import { Films } from "@/components/public/films";
@@ -8,11 +8,11 @@ import { CtaBand } from "@/components/public/cta-band";
 export const revalidate = 600;
 
 export default async function HomePage() {
-  const { hero, strip } = await getWeddingWork();
+  const [{ hero }, projects] = await Promise.all([getWeddingWork(), getWeddingProjects()]);
   return (
     <>
       <Hero photos={hero} />
-      <CouplesStrip items={strip} />
+      <CouplesStrip projects={projects} />
       <Films />
       <Offer />
       <CtaBand />
